@@ -482,6 +482,7 @@ const coloredText = new Box({
 ```
 
 **Features:**
+
 - Four modes: `wrap`, `truncate-end`, `truncate-middle`, `truncate-start`
 - ANSI escape code preservation during truncation
 - Wide character support (CJK, emoji)
@@ -489,6 +490,7 @@ const coloredText = new Box({
 - Backward compatible (legacy `wrap: boolean` still works)
 
 **Text Utilities:**
+
 ```typescript
 import { truncateText } from "@unblessed/core/lib/text-utils";
 

@@ -36,75 +36,9 @@ something.on('event', () => {
 
 ---
 
-### 2. Add automatic cursor restoration on exit
-**Effort:** Low (~30 minutes)
-**Status:** Ready to implement
-
-**Description:**
-Automatically restore cursor visibility on program exit/crash to prevent stuck hidden cursor.
-
-**Implementation:**
-```typescript
-// In Program._exitHandler
-Program.instances.forEach((program) => {
-  if (program.cursorHidden) {
-    program.showCursor();
-  }
-  program.flush();
-  program._exiting = true;
-});
-```
-
-**Files to modify:**
-- `packages/core/src/lib/program.ts`
-
-**Testing:**
-- Test normal exit with hidden cursor
-- Test error exit with hidden cursor
-- Test Ctrl+C interrupt
-
----
-
-### 3. Improve keyboard callback signatures
-**Effort:** Medium (~2-3 hours)
-**Status:** Needs investigation
-
-**Description:**
-Add proper TypeScript types for keyboard event callbacks instead of `any`.
-
-**Current pattern:**
-```typescript
-const handleKeyPress = (_ch: string, key: any) => {
-  if (key.name === "t") { ... }
-};
-```
-
-**Desired pattern:**
-```typescript
-interface KeyEvent {
-  name: string;
-  ctrl?: boolean;
-  shift?: boolean;
-  meta?: boolean;
-  sequence?: string;
-  full?: string;
-}
-
-const handleKeyPress = (_ch: string, key: KeyEvent) => {
-  if (key.name === "t") { ... }
-};
-```
-
-**Files to investigate:**
-- `packages/core/src/lib/keys.ts` - Define KeyEvent interface
-- `packages/core/src/types/events.ts` - Export type
-- All widgets that use keypress events
-
----
-
 ## Medium Priority
 
-### 4. useFocus hook for React
+### 2. useFocus hook for React
 **Effort:** Medium (~3-4 hours)
 **Status:** Design phase
 
@@ -141,7 +75,7 @@ const MyInput = () => {
 
 ---
 
-### 5. Implement remaining ANSI effect tags
+### 3. Implement remaining ANSI effect tags
 **Effort:** Low (~1-2 hours)
 **Status:** Ready to implement
 
@@ -164,7 +98,7 @@ Add support for remaining ANSI SGR codes in tag parser.
 
 ---
 
-### 6. Investigate VRT runtime initialization
+### 4. Investigate VRT runtime initialization
 **Effort:** Medium (~2-3 hours)
 **Status:** Investigation needed
 
@@ -180,7 +114,7 @@ Understand why `setRuntime(new NodeRuntime())` is explicitly needed in VRT tests
 
 ## Low Priority
 
-### 7. Replace `var` with `const`/`let`
+### 5. Replace `var` with `const`/`let`
 **Effort:** Medium (~3-4 hours)
 **Status:** Future improvement
 
@@ -203,7 +137,7 @@ Replace all `var` declarations with modern ES6 `const`/`let`.
 
 ## Future / Ideas
 
-### 8. @unblessed/charts package
+### 6. @unblessed/charts package
 **Effort:** Large (~2-3 weeks)
 **Status:** Future enhancement
 
@@ -232,7 +166,7 @@ Create dedicated charting package built on BrailleCanvas for data visualization.
 
 ---
 
-### 9. Screen reader support
+### 7. Screen reader support
 **Effort:** Large (~3-4 weeks)
 **Status:** Research phase
 
@@ -253,7 +187,7 @@ Add accessibility support for screen readers in terminal UIs.
 
 ---
 
-### 10. Additional text animation types
+### 8. Additional text animation types
 **Effort:** Medium (~1-2 days per type)
 **Status:** Future enhancement
 
@@ -288,6 +222,20 @@ Only need to add new generators to `packages/react/src/animations/text-generator
 
 These items were completed recently:
 
+- ✅ **Automatic cursor restoration on exit** (2025-11-09)
+  - Automatically restore cursor visibility on program exit/crash
+  - Added to `Program._exitHandler` in `program.ts:265-268`
+  - Prevents stuck hidden cursor when programs crash or Ctrl+C
+  - All 2,355 tests passing
+
+- ✅ **Keyboard callback type safety** (2025-11-09)
+  - Enhanced `KeyEvent` interface with proper TypeScript types
+  - Updated from `key: any` to `key: KeyEvent` across codebase
+  - Made `name` and `full` optional to match actual implementation
+  - Added `code` property for ANSI function key codes
+  - Modified files: `types/events.ts`, `program.ts`, `dialog.ts`, `message.ts`
+  - Full backward compatibility maintained
+
 - ✅ **Text truncation with ellipsis** (2025-11-09)
   - Added `textWrap` property with ink-style truncation modes
   - `truncateText()` utility in `text-utils.ts`
@@ -320,12 +268,10 @@ These items were completed recently:
 
 **Quick Wins (Do Soon):**
 1. Remove `var self = this` pattern (~1 hour)
-2. Auto-restore cursor on exit (~30 min)
 
 **Important (Do Eventually):**
-3. Improve keyboard callback types (~2-3 hours)
-4. useFocus hook for React (~3-4 hours)
-5. Add remaining ANSI tags (blink, hide) (~1-2 hours)
+2. useFocus hook for React (~3-4 hours)
+3. Add remaining ANSI tags (blink, hide) (~1-2 hours)
 
 **Future Enhancements (When Needed):**
 - @unblessed/charts package
@@ -333,8 +279,8 @@ These items were completed recently:
 - Additional animation types
 - Replace var with const/let
 
-**Total Immediate Work:** ~4-5 hours for items #1-2
-**Total Short-term Work:** ~10-15 hours for items #1-5
+**Total Immediate Work:** ~1 hour for item #1
+**Total Short-term Work:** ~6-8 hours for items #1-3
 
 ---
 

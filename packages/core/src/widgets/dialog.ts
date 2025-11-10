@@ -8,6 +8,7 @@
  */
 
 import type { DialogOptions } from "../types";
+import type { KeyEvent } from "../types/events.js";
 import Box from "./box.js";
 
 /**
@@ -70,14 +71,17 @@ class Dialog extends Box {
     super(dialogOptions);
 
     // Handle ESC key to close dialog when dialog or any child is focused
-    this.on("element keypress", (_el: any, _ch: any, key: any) => {
-      if (key.name === "escape" && !this.hidden) {
-        this.hide();
-        if (this.screen) {
-          this.screen.render();
+    this.on(
+      "element keypress",
+      (_el: any, _ch: string | undefined, key: KeyEvent) => {
+        if (key.name === "escape" && !this.hidden) {
+          this.hide();
+          if (this.screen) {
+            this.screen.render();
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   /**

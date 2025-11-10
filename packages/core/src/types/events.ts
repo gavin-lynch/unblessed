@@ -31,10 +31,10 @@ export interface MouseEvent {
  * Contains information about the key that was pressed including modifiers.
  */
 export interface KeyEvent {
-  /** Full key sequence (e.g., "C-c", "escape", "a") */
-  full: string;
-  /** Name of the key (e.g., "c", "escape", "return") */
-  name: string;
+  /** Full key sequence (e.g., "C-c", "escape", "a"). Added by Program class. */
+  full?: string;
+  /** Name of the key (e.g., "c", "escape", "return"). May be undefined for unrecognized keys. */
+  name?: string;
   /** Whether the Shift modifier key was held */
   shift: boolean;
   /** Whether the Control modifier key was held */
@@ -43,6 +43,8 @@ export interface KeyEvent {
   meta: boolean;
   /** Raw escape sequence received from the terminal */
   sequence: string;
+  /** ANSI function key code (e.g., "[A", "OP"). Present for function and special keys. */
+  code?: string;
   /** The character pressed (if applicable) */
   ch?: string;
 }

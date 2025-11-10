@@ -6,6 +6,7 @@
  * Modules
  */
 
+import type { KeyEvent } from "../types/events.js";
 import colors from "./colors.js";
 import { EventEmitterBase } from "./event-emitter-base.js";
 import gpmclient from "./gpmclient.js";
@@ -261,6 +262,12 @@ class Program extends EventEmitterBase {
           // if (program._originalTitle) {
           //   program.setTitle(program._originalTitle);
           // }
+
+          // Restore cursor if it was hidden to prevent stuck hidden cursor
+          if (program.cursorHidden) {
+            program.showCursor();
+          }
+
           // Ensure the buffer is flushed (it should
           // always be at this point, but who knows).
           program.flush();
@@ -528,8 +535,8 @@ class Program extends EventEmitterBase {
     // Input
     this.input.on(
       "keypress",
-      (this.input._keypressHandler = (ch: string, key: any) => {
-        key = key || { ch: ch };
+      (this.input._keypressHandler = (ch: string, key: KeyEvent) => {
+        key = key || { sequence: ch, ctrl: false, meta: false, shift: false };
 
         if (
           key.name === "undefined" &&

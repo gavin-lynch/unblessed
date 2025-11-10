@@ -101,6 +101,7 @@ class Message extends Box {
             }
           }
           if (
+            key.name &&
             Array.isArray(this.options.ignoreKeys) &&
             ~this.options.ignoreKeys.indexOf(key.name)
           ) {
