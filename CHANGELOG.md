@@ -1,3 +1,16 @@
+# [1.0.0-alpha.22](https://github.com/vdeantoni/unblessed/compare/v1.0.0-alpha.21...v1.0.0-alpha.22) (2025-12-01)
+
+
+### Bug Fixes
+
+* **react:** fix useFocus test to handle blessed auto-focus behavior ([0b00a0d](https://github.com/vdeantoni/unblessed/commit/0b00a0d0f8351f22578bc38f8d0e82795a9a20d8))
+
+
+### Features
+
+* **core:** add cursor restoration on exit and improve keyboard type safety ([d0d8cc3](https://github.com/vdeantoni/unblessed/commit/d0d8cc36a34d263368352314f76a5616ce54016f))
+* **react:** add useFocus and useScreenFocus hooks for focus management ([6ee295d](https://github.com/vdeantoni/unblessed/commit/6ee295d4dcbc26ac4262a6b7adbf3ab5cb0c4c49))
+
 # [1.0.0-alpha.21](https://github.com/vdeantoni/unblessed/compare/v1.0.0-alpha.20...v1.0.0-alpha.21) (2025-11-09)
 
 
