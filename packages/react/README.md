@@ -162,6 +162,7 @@ Text component with styling support.
 ```
 
 **Available modes:**
+
 - `wrap` - Word wrap to multiple lines (default)
 - `truncate-end` - Truncate at end with ellipsis
 - `truncate-middle` - Truncate in middle with ellipsis

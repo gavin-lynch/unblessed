@@ -19,13 +19,16 @@
 - 📦 **Modern Build** - ESM + CJS dual output, tree-shakeable
 - ⚡ **High Performance** - Optimized rendering with smart CSR and damage buffer
 - 🎨 **Rich Widgets** - 27+ widgets for building terminal UIs
+- ⚛️ **React Support** - JSX components with flexbox layout
+- 🎭 **Theme System** - Runtime theme switching with design tokens
+- 🎬 **Animations** - 7 animation types (rainbow, pulse, chase, gradient, etc.)
 - ✂️ **Text Truncation** - Ink-style truncation modes with ANSI code preservation
 
 ## 📦 Packages
 
 > **Note:** Packages are currently in alpha. Use `@alpha` tag when installing: `npm install @unblessed/node@alpha`
 
-The unblessed project is organized as a monorepo with four main packages:
+The unblessed project is organized as a monorepo with eight packages:
 
 ### [@unblessed/core](packages/core)
 
@@ -126,6 +129,52 @@ const box = blessed.box({
 screen.render();
 ```
 
+### [@unblessed/layout](packages/layout)
+
+Flexbox layout engine using Facebook's Yoga.
+
+```bash
+npm install @unblessed/layout@alpha
+```
+
+**Use when:** Building custom layouts or integrating with React.
+
+### [@unblessed/react](packages/react)
+
+React renderer with JSX components and automatic flexbox layout.
+
+```bash
+npm install @unblessed/react@alpha react
+```
+
+**Use when:** Building terminal UIs with React and JSX.
+
+**Example:**
+```tsx
+import { render, Box, Text } from '@unblessed/react';
+
+const App = () => (
+  <Box flexDirection="column" padding={1}>
+    <Text bold color="cyan">Hello from React!</Text>
+    <Box borderStyle="single" padding={1} marginTop={1}>
+      <Text>Flexbox layouts work automatically!</Text>
+    </Box>
+  </Box>
+);
+
+render(<App />);
+```
+
+### [@unblessed/vrt](packages/vrt)
+
+Visual regression testing tools for terminal UIs.
+
+```bash
+npm install @unblessed/vrt@alpha
+```
+
+**Use when:** Testing terminal UI snapshots.
+
 ## 🚀 Quick Start
 
 ### For New Projects
@@ -223,7 +272,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 
 ## 🎯 Project Status
 
-**Current Version:** `1.0.0-alpha.10`
+**Current Version:** `1.0.0-alpha.21`
 
 **🔗 Links:**
 - 📚 [Documentation](https://unblessed.dev)
@@ -235,26 +284,31 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 - Full TypeScript conversion with strict mode
 - Platform-agnostic core architecture
 - Runtime dependency injection pattern
-- 100% test coverage (1,987/1,987 tests passing)
+- 100% test coverage (2,355/2,355 tests passing)
 - Browser support via XTerm.js
 - Modern build tooling (tsup, pnpm, Turborepo)
 - Comprehensive documentation
 - **Automated releases** via semantic-release
 - **Published to npm** with provenance
 - **Documentation site** deployed to Vercel
+- **Flexbox layout engine** (@unblessed/layout)
+- **React renderer** (@unblessed/react)
+- **Theme system** with runtime switching
+- **Animation system** (7 types)
+- **Text truncation** (ink-style with ANSI preservation)
 
 ### 🚧 In Progress
 
-- @unblessed/blessed integration tests
-- Migration guide and examples
+- Additional React hooks (useInput, useFocus)
+- More widget wrappers for React
 - Performance optimization
 
 ### 📋 Roadmap
 
-- Phase 4: Performance optimization
-- Phase 5: Polish and release preparation
-- Phase 7: blessed-contrib integration
-- Phase 8: Declarative UI APIs (post-v1.0.0)
+- Additional React hooks and components
+- Performance optimization
+- blessed-contrib integration
+- Declarative UI APIs enhancements
 
 See [CLAUDE.md](CLAUDE.md) for the complete modernization roadmap.
 

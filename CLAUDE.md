@@ -13,16 +13,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 @unblessed/node      → Node.js runtime implementation
 @unblessed/browser   → Browser runtime (XTerm.js integration)
 @unblessed/blessed   → Backward-compatible wrapper
+@unblessed/layout    → Flexbox layout engine (Yoga integration)
+@unblessed/react     → React renderer with JSX support
+@unblessed/vrt       → Visual regression testing tools
+@unblessed/create    → Project scaffolding (not published)
 ```
 
 **Key Features:**
 - Full TypeScript with strict mode
 - Platform-agnostic via runtime dependency injection
-- 1,987+ tests with 98.5% coverage
+- 2,355+ tests with 98.5% coverage
 - Browser support via XTerm.js
 - 100% backward compatible with blessed
+- React renderer with flexbox layout (Yoga)
+- Text truncation with ANSI code preservation
+- Animation system with 7 types
+- Theme system with runtime switching
 
-**Current Version:** `1.0.0-alpha.10`
+**Current Version:** `1.0.0-alpha.21`
 
 **Release Status:**
 - ✅ Automated releases via semantic-release on `alpha` branch
@@ -155,7 +163,29 @@ const data = getRuntime().fs.readFileSync(path);
 - 100% backward compatible with blessed
 - Thin wrapper over @unblessed/node
 - Drop-in replacement
+- 56 type compatibility tests
 - Located in: `packages/blessed/`
+
+**@unblessed/layout** - Flexbox layout engine
+- Yoga-based flexbox layouts
+- Foundation for React integration
+- Sequential layout calculation
+- 41 tests passing
+- Located in: `packages/layout/`
+
+**@unblessed/react** - React renderer
+- JSX component API
+- Automatic flexbox layout
+- 20+ composition helpers
+- Theme system with runtime switching
+- Animation system (7 types)
+- Text truncation (ink-style)
+- Located in: `packages/react/`
+
+**@unblessed/vrt** - Visual regression testing
+- CLI tools for snapshot testing
+- Terminal UI testing utilities
+- Located in: `packages/vrt/`
 
 ### Key Architectural Decisions
 
@@ -272,9 +302,13 @@ unblessed/
 │   ├── core/         # Platform-agnostic core
 │   ├── node/         # Node.js runtime
 │   ├── browser/      # Browser runtime
-│   └── blessed/      # Compatibility layer
+│   ├── blessed/      # Compatibility layer
+│   ├── layout/       # Flexbox layout engine (Yoga)
+│   ├── react/        # React renderer
+│   ├── vrt/          # Visual regression testing
+│   └── create-unblessed/  # Project scaffolding
 ├── apps/
-│   └── docs/         # Documentation
+│   └── docs/         # Documentation (Docusaurus)
 ├── tools/
 │   └── benchmarks/   # Performance benchmarks
 └── scripts/          # Build & release scripts
@@ -426,6 +460,9 @@ feat(core)!: redesign widget API
 - `node` - @unblessed/node
 - `browser` - @unblessed/browser
 - `blessed` - @unblessed/blessed
+- `layout` - @unblessed/layout
+- `react` - @unblessed/react
+- `vrt` - @unblessed/vrt
 - `deps` - Dependencies
 - `ci` - CI/CD
 - `dx` - Developer experience
@@ -477,7 +514,7 @@ pnpm --filter benchmarks bench
 - ✅ Full TypeScript conversion with strict mode
 - ✅ Platform-agnostic core architecture
 - ✅ Runtime dependency injection pattern
-- ✅ 100% test coverage (1,987/1,987 tests)
+- ✅ 100% test coverage (2,355/2,355 tests)
 - ✅ Browser support via XTerm.js
 - ✅ Modern build tooling (tsup, pnpm, Turborepo)
 - ✅ @unblessed/blessed compatibility layer
@@ -485,12 +522,18 @@ pnpm --filter benchmarks bench
 - ✅ Documentation site deployed to Vercel
 - ✅ Sentry error tracking integration
 - ✅ npm publishing with provenance
+- ✅ Flexbox layout engine (@unblessed/layout)
+- ✅ React renderer (@unblessed/react)
+- ✅ Theme system with runtime switching
+- ✅ Animation system (7 types)
+- ✅ Text truncation (ink-style with ANSI preservation)
+- ✅ Cursor restoration on exit
 
 ### Current (Alpha Release)
-- 🚀 Version 1.0.0-alpha.10 published to npm
+- 🚀 Version 1.0.0-alpha.21 published to npm
 - 📚 Documentation site live at https://unblessed.dev
 - 🔄 CI/CD fully automated (GitHub Actions + semantic-release)
-- 📦 All packages available: core, node, browser, blessed, vrt
+- 📦 All packages available: core, node, browser, blessed, layout, react, vrt
 
 ### Roadmap
 - Performance optimization (Phase 4)
@@ -511,13 +554,18 @@ pnpm --filter benchmarks bench
 - [@unblessed/node](./packages/node/README.md)
 - [@unblessed/browser](./packages/browser/README.md)
 - [@unblessed/blessed](./packages/blessed/README.md)
+- [@unblessed/layout](./packages/layout/README.md)
+- [@unblessed/react](./packages/react/README.md)
+- [@unblessed/vrt](./packages/vrt/README.md)
 
 ### External Resources
 - [blessed](https://github.com/chjj/blessed) - Original library
 - [xterm.js](https://xtermjs.org/) - Browser terminal emulator
+- [yoga-layout](https://yogalayout.com/docs) - Flexbox layout engine
 - [tsup](https://tsup.egoist.dev/) - Library bundler
 - [Turborepo](https://turbo.build/) - Monorepo orchestration
 - [Vitest](https://vitest.dev/) - Test framework
+- [React Reconciler](https://github.com/facebook/react/tree/main/packages/react-reconciler) - React renderer API
 
 ## Important Principles
 
