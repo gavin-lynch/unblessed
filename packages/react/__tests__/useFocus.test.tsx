@@ -122,34 +122,42 @@ describe("useFocus Hook", () => {
     });
 
     it("focus() method focuses the widget", async () => {
-      let capturedFocusState: any = null;
+      let focusState1: any = null;
+      let focusState2: any = null;
 
       function TestApp() {
-        const boxRef = useRef<CoreBox>(null);
-        const focusState = useFocus(boxRef);
-        capturedFocusState = focusState;
+        const boxRef1 = useRef<CoreBox>(null);
+        const boxRef2 = useRef<CoreBox>(null);
+        focusState1 = useFocus(boxRef1, { autoFocus: true }); // Start focused
+        focusState2 = useFocus(boxRef2);
 
         return (
-          <Box ref={boxRef} tabIndex={0} width={20} height={5}>
-            <Text>Focusable Box</Text>
+          <Box flexDirection="column">
+            <Box ref={boxRef1} tabIndex={0} width={20} height={5}>
+              <Text>Box 1</Text>
+            </Box>
+            <Box ref={boxRef2} tabIndex={0} width={20} height={5}>
+              <Text>Box 2</Text>
+            </Box>
           </Box>
         );
       }
 
       const instance = render(<TestApp />, { runtime: testRuntime });
       await expectRenderSuccess(instance);
-
-      // Initially not focused
-      expect(capturedFocusState.isFocused).toBe(false);
-
-      // Call hook's focus method
-      capturedFocusState.focus();
-
-      // Wait for focus event
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Now should be focused
-      expect(capturedFocusState.isFocused).toBe(true);
+      // Box 1 should be focused initially
+      expect(focusState1.isFocused).toBe(true);
+      expect(focusState2.isFocused).toBe(false);
+
+      // Call focus() on box 2
+      focusState2.focus();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Now box 2 should be focused
+      expect(focusState1.isFocused).toBe(false);
+      expect(focusState2.isFocused).toBe(true);
 
       instance.unmount();
     });
