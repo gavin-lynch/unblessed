@@ -59,6 +59,13 @@ export type {
 export { useTheme } from "./components/ThemeProvider.js";
 export { useScreen, useWindowSize } from "./hooks/ScreenContext.js";
 export {
+  useFocus,
+  useScreenFocus,
+  type UseFocusOptions,
+  type UseFocusResult,
+  type UseScreenFocusResult,
+} from "./hooks/useFocus.js";
+export {
   useKeyboard,
   type KeyboardHandler,
   type KeyboardShortcuts,

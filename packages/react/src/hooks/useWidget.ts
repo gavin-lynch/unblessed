@@ -7,7 +7,7 @@
  */
 
 import type { Element } from "@unblessed/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, type MutableRefObject } from "react";
 
 /**
  * Hook to access the underlying unblessed widget instance.
@@ -19,6 +19,11 @@ import { useEffect, useRef, useState } from "react";
  * **IMPORTANT:** The widget is only available AFTER the first render.
  * Use the callback pattern or useEffect to wait for the widget to be available.
  *
+ * **How it works:**
+ * - Component must use forwardRef and pass the ref through
+ * - Reconciler's getPublicInstance() returns layoutNode.widget for refs
+ * - This hook wraps the ref and provides convenient callback pattern
+ *
  * @template T - Widget type (defaults to Element)
  * @param callback - Optional callback invoked when widget becomes available
  * @returns Ref object containing the widget instance
@@ -26,6 +31,10 @@ import { useEffect, useRef, useState } from "react";
  * @example
  * ```tsx
  * import { useWidget, makeAnimatable, generateRainbow, rotateColors } from '@unblessed/react';
+ *
+ * const MyBox = forwardRef((props, ref) => {
+ *   return <Box ref={ref} {...props} />;
+ * });
  *
  * function AnimatedBox() {
  *   const widgetRef = useWidget<Box>();
@@ -46,7 +55,7 @@ import { useEffect, useRef, useState } from "react";
  *     return () => stop();
  *   }, []);
  *
- *   return <Box border={1}>Animated!</Box>;
+ *   return <MyBox border={1}>Animated!</MyBox>;
  * }
  * ```
  *
@@ -57,10 +66,11 @@ import { useEffect, useRef, useState } from "react";
  *   const widgetRef = useWidget((widget) => {
  *     // Widget is guaranteed to be available here
  *     makeAnimatable(widget);
- *     widget.animateBorderColors(...);
+ *     const stop = widget.animateBorderColors(...);
+ *     return () => stop();  // Return cleanup function
  *   });
  *
- *   return <Box border={1}>Animated!</Box>;
+ *   return <MyBox ref={widgetRef} border={1}>Animated!</MyBox>;
  * }
  * ```
  *
@@ -87,28 +97,10 @@ import { useEffect, useRef, useState } from "react";
  */
 export function useWidget<T extends Element = Element>(
   callback?: (widget: T) => void | (() => void),
-): { current: T | null } {
+): MutableRefObject<T | null> {
   const widgetRef = useRef<T | null>(null);
-  const [, forceUpdate] = useState({});
 
-  useEffect(() => {
-    // Try to get widget from parent DOMNode
-    // This is a workaround since we don't have direct access to the reconciler instance
-    // The widget will be available after the first layout calculation
-
-    // Small delay to ensure layout has been calculated
-    const timer = setTimeout(() => {
-      // Try to find widget via DOM traversal (implementation detail)
-      // For now, this is a placeholder - the actual implementation
-      // will require integration with the reconciler
-
-      // Force re-render to check if widget is available
-      forceUpdate({});
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Call callback when widget becomes available
   useEffect(() => {
     if (widgetRef.current && callback) {
       const cleanup = callback(widgetRef.current);
@@ -117,17 +109,4 @@ export function useWidget<T extends Element = Element>(
   }, [widgetRef.current, callback]);
 
   return widgetRef;
-}
-
-/**
- * Internal function to set widget reference from reconciler.
- * This is called by the reconciler after creating/updating widgets.
- *
- * @internal
- */
-export function setWidgetRef<T extends Element = Element>(
-  ref: { current: T | null },
-  widget: T | null,
-): void {
-  ref.current = widget;
 }
