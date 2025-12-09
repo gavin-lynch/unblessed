@@ -1122,5 +1122,5 @@ These quirks are intentionally preserved for backward compatibility. They may be
 
 ---
 
-**Last Updated:** Phase 0, blessed v0.1.82 fork
-**For:** Modernization compatibility baseline
+**Last Updated:** December 2025
+**For:** Modernization compatibility baseline (blessed v0.1.82)

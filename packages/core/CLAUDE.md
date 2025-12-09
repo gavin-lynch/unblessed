@@ -1033,15 +1033,18 @@ If migrating from blessed:
 
 Potential areas for improvement:
 
-- [ ] Complete browser support with WebGL rendering
+- [ ] WebGL rendering for browser (performance optimization)
 - [ ] WebSocket-based PTY for browser terminal
 - [ ] Better mobile/touch support
 - [ ] Accessibility features (screen readers)
 - [ ] Better Unicode/emoji handling
-- [ ] Animation support
-- [ ] Theme system
 - [ ] Plugin architecture
 - [ ] Performance profiling tools
+
+**Completed:**
+
+- ✅ Animation system (7 types) - implemented in @unblessed/react
+- ✅ Theme system with runtime switching - implemented in @unblessed/react
 
 ## Resources
 

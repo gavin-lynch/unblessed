@@ -1008,8 +1008,8 @@ Potential improvements:
   - `styles.ts` - Flexbox property application
   - `reconciler.ts` - React reconciler with Yoga
   - `render-node-to-output.ts` - Yoga → output rendering
-- **PLAN.md** - React support implementation plan
 - **@unblessed/core** - Widget API documentation
+- **@unblessed/react** - React renderer built on this layout engine
 
 ## Quick Reference
 
@@ -1050,6 +1050,6 @@ screen.destroy();
 
 **@unblessed/layout** is the bridge between modern flexbox layouts (Yoga) and terminal rendering (unblessed). It enables declarative, automatic positioning while maintaining the principle that **Yoga is always the source of truth**.
 
-This package is the foundation for @unblessed/react and future framework integrations, completing Phase 0 (Layout Foundation) of the React support plan.
+This package is the foundation for @unblessed/react and future framework integrations (Vue, Svelte, etc.).
 
 **Key Takeaway:** Yoga and unblessed don't "overlap" - they work **sequentially**. Yoga calculates positions, unblessed renders at those positions. Simple, predictable, powerful.

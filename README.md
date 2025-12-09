@@ -268,7 +268,6 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 - [@unblessed/node](packages/node/README.md) - Node.js runtime documentation
 - [@unblessed/browser](packages/browser/README.md) - Browser runtime documentation
 - [@unblessed/blessed](packages/blessed/README.md) - Blessed compatibility guide
-- [@unblessed/blessed Guide](packages/blessed/BLESSED_GUIDE.md) - Complete blessed API reference
 
 ## 🎯 Project Status
 
