@@ -1,3 +1,10 @@
+# [1.0.0-alpha.23](https://github.com/vdeantoni/unblessed/compare/v1.0.0-alpha.22...v1.0.0-alpha.23) (2025-12-09)
+
+
+### Bug Fixes
+
+* trigger release ([ffd56de](https://github.com/vdeantoni/unblessed/commit/ffd56dec5776696464a73d8ab6a7ea4babd5e9e2))
+
 # [1.0.0-alpha.22](https://github.com/vdeantoni/unblessed/compare/v1.0.0-alpha.21...v1.0.0-alpha.22) (2025-12-01)
 
 
