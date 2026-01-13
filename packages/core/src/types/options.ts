@@ -12,7 +12,7 @@ import type {
   Position,
   PositionValue,
 } from "./common.js";
-import type { ListElementStyle, StyleListTable } from "./style.js";
+import type { ListElementStyle, StyleListTable, TreeStyle } from "./style.js";
 
 /**
  * Text wrapping mode (inspired by ink)
@@ -581,6 +581,173 @@ export interface FileManagerOptions extends ListOptions<ListElementStyle> {
    * Current working directory.
    */
   cwd?: string;
+}
+
+/**
+ * Template configuration for tree node rendering.
+ */
+export interface TreeTemplate {
+  /**
+   * Suffix to show for collapsed nodes with children (Default: ' [+]').
+   */
+  extend?: string;
+
+  /**
+   * Suffix to show for expanded nodes with children (Default: ' [-]').
+   */
+  retract?: string;
+
+  /**
+   * Whether to show tree lines (├─, └─, │). (Default: true).
+   */
+  lines?: boolean;
+
+  /**
+   * Use spaces instead of line characters for tree structure.
+   */
+  spaces?: boolean;
+
+  /**
+   * Number of spaces for indentation per level when using space mode.
+   * (Default: 2)
+   */
+  indent?: number;
+}
+
+/**
+ * A node in the tree data structure.
+ */
+export interface TreeNode {
+  /**
+   * Display name for the node. If not provided, the key will be used.
+   */
+  name?: string;
+
+  /**
+   * Icon or prefix to display before the node name.
+   * Can be any string (emoji, nerd font icon, text, etc.)
+   *
+   * @example
+   * ```typescript
+   * { name: 'README.md', icon: '󰂺' }
+   * { name: 'src', icon: '', children: {...} }
+   * { name: 'package.json', icon: '✗ ★' }  // Multiple status indicators
+   * ```
+   */
+  icon?: string;
+
+  /**
+   * Whether the node is expanded. (Default: false, or follows options.extended).
+   */
+  extended?: boolean;
+
+  /**
+   * Child nodes. Can be an object with keys as names, or a function that returns children.
+   */
+  children?:
+    | Record<string, TreeNode>
+    | ((node: TreeNode) => Record<string, TreeNode>);
+
+  /**
+   * Cached children content (populated after children function is called).
+   */
+  childrenContent?: Record<string, TreeNode>;
+
+  /**
+   * Parent node reference (set automatically during tree traversal).
+   */
+  parent?: TreeNode | null;
+
+  /**
+   * Node depth in the tree (set automatically during tree traversal).
+   */
+  depth?: number;
+
+  /**
+   * Position among siblings (set automatically during tree traversal).
+   */
+  position?: number;
+
+  /**
+   * Custom data associated with this node.
+   */
+  [key: string]: any;
+}
+
+/**
+ * A rule for automatically assigning icons to tree nodes.
+ */
+export interface TreeIconRule {
+  /**
+   * Test function or glob pattern to match nodes.
+   * - Function: receives the node and returns true if the rule applies
+   * - String: glob pattern matched against node name (e.g., '*.ts', '*.md', '.git*')
+   *
+   * @example
+   * ```typescript
+   * // Function test
+   * { test: (node) => node.name.endsWith('.ts'), icon: '' }
+   *
+   * // Glob pattern
+   * { test: '*.md', icon: '󰂺' }
+   *
+   * // Test for folders (nodes with children)
+   * { test: (node) => !!node.children, icon: '' }
+   * ```
+   */
+  test: string | ((node: TreeNode) => boolean);
+
+  /**
+   * Icon to apply when the test matches.
+   * Can be any string (emoji, nerd font icon, text, etc.)
+   */
+  icon: string;
+}
+
+export interface TreeOptions extends ListOptions<TreeStyle> {
+  /**
+   * Initial tree data to display.
+   */
+  data?: TreeNode;
+
+  /**
+   * Whether nodes are expanded by default. (Default: false).
+   */
+  extended?: boolean;
+
+  /**
+   * Keys to toggle node expansion. (Default: ['+', 'space', 'enter']).
+   */
+  keys?: boolean | string | string[];
+
+  /**
+   * Template configuration for tree node rendering.
+   */
+  template?: TreeTemplate;
+
+  /**
+   * Tree-specific style configuration.
+   * Includes styles for tree lines, indicators, and depth-based colors.
+   */
+  style?: TreeStyle;
+
+  /**
+   * Rules for automatically assigning icons to nodes.
+   * Rules are evaluated in order; first matching rule wins.
+   * Node's explicit `icon` property takes precedence over rules.
+   *
+   * @example
+   * ```typescript
+   * iconRules: [
+   *   { test: (node) => !!node.children, icon: '' },  // Folders
+   *   { test: '*.ts', icon: '' },                     // TypeScript
+   *   { test: '*.md', icon: '󰂺' },                    // Markdown
+   *   { test: '*.json', icon: '' },                   // JSON
+   *   { test: '*', icon: '' },                        // Default file
+   * ]
+   * ```
+   */
+  iconRules?: TreeIconRule[];
 }
 
 export interface ListTableOptions extends ListOptions<StyleListTable> {

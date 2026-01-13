@@ -89,6 +89,56 @@ export interface StyleListTable extends ListElementStyle {
 }
 
 /**
+ * Style for Tree widget with tree-specific styling options.
+ */
+export interface TreeStyle extends ListElementStyle {
+  /**
+   * Style for tree lines (├, └, │, ─).
+   * Use fg to set the color of the tree lines.
+   */
+  line?: Partial<Style>;
+
+  /**
+   * Style for expand/collapse indicators ([+], [-]).
+   */
+  indicator?: Partial<Style>;
+
+  /**
+   * Style for node icons (emoji, nerd fonts, etc.).
+   * Applied to the icon property of each TreeNode.
+   */
+  icon?: Partial<Style>;
+
+  /**
+   * Style for expanded (branch) nodes that have children and are open.
+   */
+  expanded?: Partial<Style>;
+
+  /**
+   * Style for collapsed nodes that have children but are closed.
+   */
+  collapsed?: Partial<Style>;
+
+  /**
+   * Style for leaf nodes (nodes without children).
+   */
+  leaf?: Partial<Style>;
+
+  /**
+   * Array of styles for different tree depths.
+   * Index 0 is for root level, 1 for first child level, etc.
+   * If a depth exceeds the array length, it cycles back.
+   */
+  depth?: Partial<Style>[];
+
+  /**
+   * Spacer character(s) between tree lines and node text.
+   * Default is '' (no spacer). Common values: ' ', '─ ', '── '.
+   */
+  spacer?: string;
+}
+
+/**
  * Style for ProgressBar widget
  */
 export interface ProgressBarStyle extends Style {
