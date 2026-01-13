@@ -57,6 +57,7 @@ export * from "./widgets/scrollabletext.js";
 export * from "./widgets/list.js";
 export * from "./widgets/listbar.js";
 export * from "./widgets/listtable.js";
+export * from "./widgets/tree.js";
 
 // Re-export form widget
 export * from "./widgets/form.js";
