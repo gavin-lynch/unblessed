@@ -116,6 +116,49 @@ export interface ElementOptions
     ScrollableOptions,
     AnimatableOptions {
   /**
+   * Tailwind-like class names for declarative styling.
+   *
+   * Supports classes for colors, text attributes, borders, padding, alignment, and layout.
+   *
+   * **Colors:**
+   * - `bg-{color}` - Background color (bg-red, bg-blue-500, bg-#ff0000, bg-[200])
+   * - `fg-{color}` or `text-{color}` - Foreground color
+   *
+   * **Text Attributes:**
+   * - `bold`, `dim`, `underline`, `blink`, `inverse`, `invisible`, `transparent`
+   * - `no-bold`, `no-dim`, etc. to disable
+   *
+   * **Border:**
+   * - `border` or `border-line` - Line border
+   * - `border-{style}` - Border style (single, double, round, bold, classic, arrow)
+   * - `border-{color}` - Border color
+   *
+   * **Padding:**
+   * - `p-{n}` - All sides, `px-{n}` - Horizontal, `py-{n}` - Vertical
+   * - `pt-{n}`, `pb-{n}`, `pl-{n}`, `pr-{n}` - Individual sides
+   *
+   * **Alignment:**
+   * - `text-left`, `text-center`, `text-right` - Horizontal
+   * - `align-top`, `align-middle`, `align-bottom` - Vertical
+   *
+   * **Size & Position:**
+   * - `w-{n}`, `h-{n}`, `w-50%`, `w-full`, `w-half`, `w-shrink`
+   * - `top-{n}`, `left-{n}`, `right-{n}`, `bottom-{n}`
+   *
+   * **Layout:**
+   * - `shrink`, `hidden`, `wrap`, `shadow`, `scrollable`
+   *
+   * @example
+   * ```typescript
+   * const box = new Box({
+   *   parent: screen,
+   *   className: 'bg-blue fg-white bold border-line border-cyan p-2 text-center'
+   * });
+   * ```
+   */
+  className?: string;
+
+  /**
    * Parse tags in content (e.g. {bold}text{/bold}).
    */
   tags?: boolean;

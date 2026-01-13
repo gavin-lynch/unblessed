@@ -10,6 +10,7 @@ import { getBorderChars } from "../lib/border-styles.js";
 import colors from "../lib/colors.js";
 import helpers from "../lib/helpers.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
+import { applyClassName } from "../lib/tailwind.js";
 import { truncateText } from "../lib/text-utils.js";
 import unicode from "../lib/unicode.js";
 import { getGlobalWrapCache } from "../lib/wrap-cache.js";
@@ -132,6 +133,12 @@ class Element extends Node {
   }
 
   constructor(options: ElementOptions = {}) {
+    // Apply className parsing first to merge class-based styles with explicit options
+    // Explicit options take precedence over className-derived options
+    if (options.className) {
+      options = applyClassName(options);
+    }
+
     super(options);
 
     this.name = options.name;
