@@ -648,10 +648,10 @@ interface MergeableOptions {
 
 /**
  * Merge parsed className options with existing widget options.
- * className properties take precedence over existing options.
+ * Explicit options take precedence over className-derived options.
  *
- * @param baseOptions - Base widget options
- * @param parsedClassName - Parsed className result
+ * @param baseOptions - Base widget options (explicit options take precedence)
+ * @param parsedClassName - Parsed className result (lower priority)
  * @returns Merged options object
  */
 export function mergeClassNameOptions<T extends MergeableOptions>(
@@ -660,55 +660,59 @@ export function mergeClassNameOptions<T extends MergeableOptions>(
 ): T {
   const merged: MergeableOptions = { ...baseOptions };
 
-  // Merge style
+  // Merge style - explicit options (merged.style) take precedence over className
   if (parsedClassName.style) {
-    merged.style = { ...merged.style, ...parsedClassName.style };
+    merged.style = { ...parsedClassName.style, ...merged.style };
   }
 
-  // Merge border
+  // Merge border - explicit options take precedence
   if (parsedClassName.border) {
-    if (typeof merged.border === "string") {
-      merged.border = { type: merged.border as "line" | "bg" };
-    }
-    merged.border = { ...merged.border, ...parsedClassName.border };
+    const explicitBorder =
+      typeof merged.border === "string"
+        ? { type: merged.border as "line" | "bg" }
+        : merged.border;
+    merged.border = { ...parsedClassName.border, ...explicitBorder };
   }
 
-  // Merge padding
+  // Merge padding - explicit options take precedence
   if (parsedClassName.padding) {
-    if (typeof merged.padding === "number") {
-      merged.padding = {
-        left: merged.padding,
-        right: merged.padding,
-        top: merged.padding,
-        bottom: merged.padding,
-      };
-    }
-    merged.padding = { ...merged.padding, ...parsedClassName.padding };
+    const explicitPadding =
+      typeof merged.padding === "number"
+        ? {
+            left: merged.padding,
+            right: merged.padding,
+            top: merged.padding,
+            bottom: merged.padding,
+          }
+        : merged.padding;
+    merged.padding = { ...parsedClassName.padding, ...explicitPadding };
   }
 
-  // Merge position values
+  // Merge position values - only apply className values if not explicitly set
   if (parsedClassName.position) {
     const pos = parsedClassName.position;
-    if (pos.top !== undefined) merged.top = pos.top;
-    if (pos.left !== undefined) merged.left = pos.left;
-    if (pos.right !== undefined) merged.right = pos.right;
-    if (pos.bottom !== undefined) merged.bottom = pos.bottom;
-    if (pos.width !== undefined) merged.width = pos.width;
-    if (pos.height !== undefined) merged.height = pos.height;
+    if (pos.top !== undefined && merged.top === undefined) merged.top = pos.top;
+    if (pos.left !== undefined && merged.left === undefined) merged.left = pos.left;
+    if (pos.right !== undefined && merged.right === undefined) merged.right = pos.right;
+    if (pos.bottom !== undefined && merged.bottom === undefined) merged.bottom = pos.bottom;
+    if (pos.width !== undefined && merged.width === undefined) merged.width = pos.width;
+    if (pos.height !== undefined && merged.height === undefined) merged.height = pos.height;
   }
 
-  // Merge simple properties
-  if (parsedClassName.align !== undefined) merged.align = parsedClassName.align;
-  if (parsedClassName.valign !== undefined)
+  // Merge simple properties - only apply className values if not explicitly set
+  if (parsedClassName.align !== undefined && merged.align === undefined)
+    merged.align = parsedClassName.align;
+  if (parsedClassName.valign !== undefined && merged.valign === undefined)
     merged.valign = parsedClassName.valign;
-  if (parsedClassName.shrink !== undefined)
+  if (parsedClassName.shrink !== undefined && merged.shrink === undefined)
     merged.shrink = parsedClassName.shrink;
-  if (parsedClassName.hidden !== undefined)
+  if (parsedClassName.hidden !== undefined && merged.hidden === undefined)
     merged.hidden = parsedClassName.hidden;
-  if (parsedClassName.wrap !== undefined) merged.wrap = parsedClassName.wrap;
-  if (parsedClassName.shadow !== undefined)
+  if (parsedClassName.wrap !== undefined && merged.wrap === undefined)
+    merged.wrap = parsedClassName.wrap;
+  if (parsedClassName.shadow !== undefined && merged.shadow === undefined)
     merged.shadow = parsedClassName.shadow;
-  if (parsedClassName.scrollable !== undefined)
+  if (parsedClassName.scrollable !== undefined && merged.scrollable === undefined)
     merged.scrollable = parsedClassName.scrollable;
 
   return merged as T;

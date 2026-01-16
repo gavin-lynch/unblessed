@@ -22,6 +22,7 @@ const sidebars: SidebarsConfig = {
         "concepts/widgets",
         "concepts/rendering",
         "concepts/events",
+        "concepts/styling",
       ],
     },
     {

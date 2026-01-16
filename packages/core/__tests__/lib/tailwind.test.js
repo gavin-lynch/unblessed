@@ -447,11 +447,12 @@ describe("tailwind", () => {
       expect(result.style).toEqual({ fg: 1, bg: 4 });
     });
 
-    it("should override conflicting style properties", () => {
+    it("should preserve explicit style properties over className", () => {
       const base = { style: { fg: 1, bg: 2 } };
       const parsed = { style: { bg: 4 } };
       const result = mergeClassNameOptions(base, parsed);
-      expect(result.style).toEqual({ fg: 1, bg: 4 });
+      // Explicit options (base) take precedence over className (parsed)
+      expect(result.style).toEqual({ fg: 1, bg: 2 });
     });
 
     it("should merge border with existing border", () => {
@@ -475,14 +476,15 @@ describe("tailwind", () => {
       expect(result.padding).toEqual({ left: 1, top: 2, right: 3 });
     });
 
-    it("should convert numeric padding to object before merging", () => {
+    it("should convert numeric padding to object and preserve explicit values", () => {
       const base = { padding: 1 };
       const parsed = { padding: { top: 5 } };
       const result = mergeClassNameOptions(base, parsed);
+      // Explicit numeric padding (expanded) takes precedence over className
       expect(result.padding).toEqual({
         left: 1,
         right: 1,
-        top: 5,
+        top: 1,
         bottom: 1,
       });
     });
@@ -497,11 +499,12 @@ describe("tailwind", () => {
       expect(result.height).toBe(10);
     });
 
-    it("should merge simple properties", () => {
+    it("should preserve explicit simple properties over className", () => {
       const base = { align: "left" };
       const parsed = { align: "center", shrink: true };
       const result = mergeClassNameOptions(base, parsed);
-      expect(result.align).toBe("center");
+      // Explicit align is preserved, shrink from className is added
+      expect(result.align).toBe("left");
       expect(result.shrink).toBe(true);
     });
 
