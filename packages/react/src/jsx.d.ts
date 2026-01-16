@@ -15,6 +15,7 @@ import type { InputProps } from "./components/Input.js";
 import type { ListProps } from "./components/List.js";
 import type { SpacerProps } from "./components/Spacer.js";
 import type { TextProps } from "./components/Text.js";
+import type { TreeProps } from "./components/Tree.js";
 
 declare module "react" {
   namespace JSX {
@@ -26,6 +27,7 @@ declare module "react" {
       textinput: InputProps & { ref?: any }; // Use 'textinput' to avoid conflict with HTML input
       spacer: SpacerProps & { ref?: any };
       list: ListProps & { ref?: any };
+      tree: TreeProps & { ref?: any };
       charcanvas: CharCanvasProps & { ref?: any };
       braillecanvas: BrailleCanvasProps & { ref?: any };
       root: any;

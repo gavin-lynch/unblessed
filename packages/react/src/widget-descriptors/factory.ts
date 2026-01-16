@@ -15,6 +15,7 @@ import { InputDescriptor } from "../components/Input.js";
 import { ListDescriptor } from "../components/List.js";
 import { SpacerDescriptor } from "../components/Spacer.js";
 import { TextDescriptor } from "../components/Text.js";
+import { TreeDescriptor } from "../components/Tree.js";
 import type { Theme } from "../themes/theme.js";
 
 /**
@@ -33,6 +34,7 @@ const descriptorRegistry = new Map<
   ["bigtext", BigTextDescriptor],
   ["spacer", SpacerDescriptor],
   ["list", ListDescriptor],
+  ["tree", TreeDescriptor],
   ["charcanvas", CharCanvasDescriptor],
   ["braillecanvas", BrailleCanvasDescriptor],
 ]);

@@ -586,7 +586,7 @@ export interface FileManagerOptions extends ListOptions<ListElementStyle> {
 /**
  * Template configuration for tree node rendering.
  */
-export interface TreeTemplate {
+export interface TreeConfig {
   /**
    * Suffix to show for collapsed nodes with children (Default: ' [+]').
    * Used when `suffixIndicator` is not set.
@@ -762,7 +762,7 @@ export interface TreeOptions extends ListOptions<TreeStyle> {
   /**
    * Template configuration for tree node rendering.
    */
-  template?: TreeTemplate;
+  config?: TreeConfig;
 
   /**
    * Tree-specific style configuration.
@@ -787,6 +787,12 @@ export interface TreeOptions extends ListOptions<TreeStyle> {
    * ```
    */
   iconRules?: TreeIconRule[];
+
+  /**
+   * Whether double-click should toggle node expansion. (Default: true when mouse is enabled).
+   * Set to false to disable the default toggle behavior and handle dblclick events manually.
+   */
+  dblclick?: boolean;
 }
 
 export interface ListTableOptions extends ListOptions<StyleListTable> {
@@ -1367,6 +1373,12 @@ export interface ScreenOptions extends NodeOptions {
    * Send focus events after mouse is enabled.
    */
   sendFocus?: boolean;
+
+  /**
+   * Time in milliseconds to detect double-clicks (Default: 400).
+   * Two clicks within this threshold at the same position will emit a 'dblclick' event.
+   */
+  dblclickTimeout?: number;
 
   /**
    * Display warnings (such as the output not being a TTY, similar to ncurses).

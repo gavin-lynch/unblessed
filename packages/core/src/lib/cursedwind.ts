@@ -495,9 +495,7 @@ const layoutClasses: Record<string, Partial<ParsedClassName>> = {
  * - `tree-depth-{n}-{color}` - Foreground color for specific depth level
  * - `tree-depth-{n}-bg-{color}` - Background color for specific depth level
  */
-function parseTreeClass(
-  cls: string,
-): {
+function parseTreeClass(cls: string): {
   key: keyof ParsedTreeStyle;
   style: Partial<Style>;
   depth?: number;

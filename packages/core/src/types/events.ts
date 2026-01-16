@@ -82,7 +82,10 @@ export type NodeScreenEventType =
   | "blur"
   /** Element was clicked (slightly smarter than mouseup) */
   | "click"
+  /** Element was double-clicked (two clicks within dblclickTimeout) */
+  | "dblclick"
   | "element click"
+  | "element dblclick"
   | "element mouseover"
   | "element mouseout"
   | "element mouseup";
@@ -99,7 +102,8 @@ export type NodeMouseEventType =
   | "mousewheel"
   | "wheeldown"
   | "wheelup"
-  | "mousemove";
+  | "mousemove"
+  | "dblclick";
 
 /**
  * Generic element event types.

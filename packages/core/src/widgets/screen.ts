@@ -132,6 +132,9 @@ class Screen extends Node {
   _listenedKeys?: boolean;
   _needsClickableSort?: boolean;
   mouseDown?: any;
+  // Double-click detection
+  private _lastClick?: { x: number; y: number; time: number; el: any };
+  private _dblclickTimeout: number = 400;
   lines: any[] = []; // Initialize to empty array
   olines: any[] = []; // Initialize to empty array
   _borderStops?: any;
@@ -197,6 +200,7 @@ class Screen extends Node {
     this.dockBorders = options.dockBorders;
 
     this.ignoreLocked = options.ignoreLocked || [];
+    this._dblclickTimeout = options.dblclickTimeout ?? 400;
 
     this._unicode = this.tput.unicode || this.tput.numbers.U8 === 1;
     this.fullUnicode = !!(this.options.fullUnicode && this._unicode);
@@ -662,7 +666,31 @@ class Screen extends Node {
           if (data.action === "mousedown") {
             this.mouseDown = el;
           } else if (data.action === "mouseup") {
-            (this.mouseDown || el).emit("click", data);
+            const clickEl = this.mouseDown || el;
+            clickEl.emit("click", data);
+
+            // Double-click detection
+            const now = Date.now();
+            if (
+              this._lastClick &&
+              this._lastClick.el === clickEl &&
+              this._lastClick.x === data.x &&
+              this._lastClick.y === data.y &&
+              now - this._lastClick.time < this._dblclickTimeout
+            ) {
+              // Double-click detected - emit on element (bubbles up as "element dblclick")
+              clickEl.emit("dblclick", data);
+              this._lastClick = undefined;
+            } else {
+              // Store for potential double-click
+              this._lastClick = {
+                x: data.x,
+                y: data.y,
+                time: now,
+                el: clickEl,
+              };
+            }
+
             this.mouseDown = null;
           } else if (data.action === "mousemove") {
             if (this.hover && el.index > this.hover.index) {

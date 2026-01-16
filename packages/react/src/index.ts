@@ -43,6 +43,7 @@ export { Input, type InputProps } from "./components/Input.js";
 export { List, type ListProps } from "./components/List.js";
 export { Spacer } from "./components/Spacer.js";
 export { Text, type TextProps } from "./components/Text.js";
+export { Tree, type TreeProps } from "./components/Tree.js";
 
 // Render function
 export { render } from "./render.js";
