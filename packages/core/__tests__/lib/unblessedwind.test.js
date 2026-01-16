@@ -8,9 +8,9 @@ import {
   parseClassName,
   terminalColors,
   textAttributes,
-} from "../../src/lib/tailwind.js";
+} from "../../src/lib/unblessedwind.js";
 
-describe("tailwind", () => {
+describe("unblessedwind", () => {
   describe("parseClassName", () => {
     describe("empty/invalid input", () => {
       it("should return empty object for empty string", () => {

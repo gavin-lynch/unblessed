@@ -10,8 +10,8 @@ import { getBorderChars } from "../lib/border-styles.js";
 import colors from "../lib/colors.js";
 import helpers from "../lib/helpers.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
-import { applyClassName } from "../lib/tailwind.js";
 import { truncateText } from "../lib/text-utils.js";
+import { applyClassName } from "../lib/unblessedwind.js";
 import unicode from "../lib/unicode.js";
 import { getGlobalWrapCache } from "../lib/wrap-cache.js";
 import {

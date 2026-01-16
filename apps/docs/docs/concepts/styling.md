@@ -11,7 +11,7 @@ Understanding how to style widgets in unblessed.
 unblessed provides two approaches to styling widgets:
 
 1. **Style object** - Traditional blessed-style object-based configuration
-2. **className** - Tailwind-inspired declarative class strings (new!)
+2. **className** - UnblessedWind declarative class strings (Tailwind-inspired, new!)
 
 Both approaches can be combined, with explicit style properties taking precedence over className values.
 
@@ -66,7 +66,7 @@ style: { fg: "#ff0000", bg: "#0000ff" }
 
 **Named colors:** `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `white`, and light variants (`light-red`, `light-blue`, etc.)
 
-## className (Tailwind-style)
+## className (UnblessedWind)
 
 The new declarative approach using space-separated class strings:
 
@@ -83,7 +83,7 @@ This is equivalent to the style object example above, but more concise and reada
 
 - **Concise** - Less nesting, easier to read
 - **Composable** - Combine classes easily
-- **Familiar** - Similar to Tailwind CSS syntax
+- **Familiar** - Tailwind-inspired syntax adapted for terminals
 - **Mixable** - Works alongside style objects
 
 ### Combining with Style Objects

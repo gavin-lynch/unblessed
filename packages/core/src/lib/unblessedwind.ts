@@ -1,5 +1,5 @@
 /**
- * tailwind.ts - Tailwind-like class name parser for terminal UI styling.
+ * unblessedwind.ts - UnblessedWind class name parser for terminal UI styling.
  *
  * Provides a declarative way to style terminal widgets using class names
  * inspired by Tailwind CSS, adapted for terminal capabilities.
@@ -130,7 +130,7 @@ const terminalColors: Record<string, number | string> = {
 
 /**
  * Shade modifiers for color intensity.
- * Maps Tailwind-like shade numbers to 256-color palette adjustments.
+ * Maps UnblessedWind shade numbers to 256-color palette adjustments.
  */
 const colorShades: Record<string, Record<number, number>> = {
   red: {
@@ -463,7 +463,7 @@ const layoutClasses: Record<string, Partial<ParsedClassName>> = {
 /**
  * Parse a className string into widget options.
  *
- * Supports Tailwind-inspired class names adapted for terminal UIs:
+ * Supports UnblessedWind class names (Tailwind-inspired, adapted for terminal UIs):
  *
  * **Colors:**
  * - `bg-{color}` - Background color (bg-red, bg-blue-500, bg-#ff0000, bg-[200])
@@ -692,11 +692,16 @@ export function mergeClassNameOptions<T extends MergeableOptions>(
   if (parsedClassName.position) {
     const pos = parsedClassName.position;
     if (pos.top !== undefined && merged.top === undefined) merged.top = pos.top;
-    if (pos.left !== undefined && merged.left === undefined) merged.left = pos.left;
-    if (pos.right !== undefined && merged.right === undefined) merged.right = pos.right;
-    if (pos.bottom !== undefined && merged.bottom === undefined) merged.bottom = pos.bottom;
-    if (pos.width !== undefined && merged.width === undefined) merged.width = pos.width;
-    if (pos.height !== undefined && merged.height === undefined) merged.height = pos.height;
+    if (pos.left !== undefined && merged.left === undefined)
+      merged.left = pos.left;
+    if (pos.right !== undefined && merged.right === undefined)
+      merged.right = pos.right;
+    if (pos.bottom !== undefined && merged.bottom === undefined)
+      merged.bottom = pos.bottom;
+    if (pos.width !== undefined && merged.width === undefined)
+      merged.width = pos.width;
+    if (pos.height !== undefined && merged.height === undefined)
+      merged.height = pos.height;
   }
 
   // Merge simple properties - only apply className values if not explicitly set
@@ -712,7 +717,10 @@ export function mergeClassNameOptions<T extends MergeableOptions>(
     merged.wrap = parsedClassName.wrap;
   if (parsedClassName.shadow !== undefined && merged.shadow === undefined)
     merged.shadow = parsedClassName.shadow;
-  if (parsedClassName.scrollable !== undefined && merged.scrollable === undefined)
+  if (
+    parsedClassName.scrollable !== undefined &&
+    merged.scrollable === undefined
+  )
     merged.scrollable = parsedClassName.scrollable;
 
   return merged as T;

@@ -25,7 +25,7 @@ export { default as colors } from "./lib/colors.js";
 export * from "./lib/events.js";
 export * from "./lib/helpers.js";
 export * from "./lib/image-renderer.js";
-export * from "./lib/tailwind.js";
+export * from "./lib/unblessedwind.js";
 export { default as unicode } from "./lib/unicode.js";
 
 // Re-export mixins

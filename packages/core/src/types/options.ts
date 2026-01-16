@@ -116,7 +116,7 @@ export interface ElementOptions
     ScrollableOptions,
     AnimatableOptions {
   /**
-   * Tailwind-like class names for declarative styling.
+   * UnblessedWind class names for declarative styling (Tailwind-inspired syntax).
    *
    * Supports classes for colors, text attributes, borders, padding, alignment, and layout.
    *
