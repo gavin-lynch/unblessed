@@ -1,0 +1,1440 @@
+diff --git a/packages/core/__tests__/lib/tailwind.test.js b/packages/core/__tests__/lib/tailwind.test.js
+new file mode 100644
+index 0000000..6544c9e
+--- /dev/null
++++ b/packages/core/__tests__/lib/tailwind.test.js
+@@ -0,0 +1,582 @@
++import { describe, expect, it } from "vitest";
++import {
++  parseClassName,
++  mergeClassNameOptions,
++  applyClassName,
++  terminalColors,
++  colorShades,
++  textAttributes,
++  alignmentClasses,
++  layoutClasses,
++} from "../../src/lib/tailwind.js";
++
++describe("tailwind", () => {
++  describe("parseClassName", () => {
++    describe("empty/invalid input", () => {
++      it("should return empty object for empty string", () => {
++        const result = parseClassName("");
++        expect(result).toEqual({});
++      });
++
++      it("should return empty object for null/undefined", () => {
++        expect(parseClassName(null)).toEqual({});
++        expect(parseClassName(undefined)).toEqual({});
++      });
++
++      it("should return empty object for non-string input", () => {
++        expect(parseClassName(123)).toEqual({});
++        expect(parseClassName({})).toEqual({});
++      });
++
++      it("should handle whitespace-only string", () => {
++        const result = parseClassName("   ");
++        expect(result).toEqual({});
++      });
++    });
++
++    describe("background colors", () => {
++      it("should parse basic bg color", () => {
++        const result = parseClassName("bg-red");
++        expect(result.style?.bg).toBe(1);
++      });
++
++      it("should parse bright/light bg color", () => {
++        const result = parseClassName("bg-light-blue");
++        expect(result.style?.bg).toBe(12);
++      });
++
++      it("should parse bg color with shade", () => {
++        const result = parseClassName("bg-blue-500");
++        expect(result.style?.bg).toBe(27);
++      });
++
++      it("should parse hex bg color", () => {
++        const result = parseClassName("bg-#ff0000");
++        expect(result.style?.bg).toBe("#ff0000");
++      });
++
++      it("should parse arbitrary value bg color", () => {
++        const result = parseClassName("bg-[200]");
++        expect(result.style?.bg).toBe(200);
++      });
++    });
++
++    describe("foreground colors", () => {
++      it("should parse fg- prefix", () => {
++        const result = parseClassName("fg-green");
++        expect(result.style?.fg).toBe(2);
++      });
++
++      it("should parse text- prefix", () => {
++        const result = parseClassName("text-cyan");
++        expect(result.style?.fg).toBe(6);
++      });
++
++      it("should parse fg color with shade", () => {
++        const result = parseClassName("fg-red-500");
++        expect(result.style?.fg).toBe(160);
++      });
++
++      it("should parse hex fg color", () => {
++        const result = parseClassName("fg-#00ff00");
++        expect(result.style?.fg).toBe("#00ff00");
++      });
++    });
++
++    describe("text attributes", () => {
++      it("should parse bold", () => {
++        const result = parseClassName("bold");
++        expect(result.style?.bold).toBe(true);
++      });
++
++      it("should parse no-bold", () => {
++        const result = parseClassName("no-bold");
++        expect(result.style?.bold).toBe(false);
++      });
++
++      it("should parse dim", () => {
++        const result = parseClassName("dim");
++        expect(result.style?.dim).toBe(true);
++      });
++
++      it("should parse underline", () => {
++        const result = parseClassName("underline");
++        expect(result.style?.underline).toBe(true);
++      });
++
++      it("should parse blink", () => {
++        const result = parseClassName("blink");
++        expect(result.style?.blink).toBe(true);
++      });
++
++      it("should parse inverse", () => {
++        const result = parseClassName("inverse");
++        expect(result.style?.inverse).toBe(true);
++      });
++
++      it("should parse invisible", () => {
++        const result = parseClassName("invisible");
++        expect(result.style?.invisible).toBe(true);
++      });
++
++      it("should parse transparent", () => {
++        const result = parseClassName("transparent");
++        expect(result.style?.transparent).toBe(true);
++      });
++
++      it("should parse multiple text attributes", () => {
++        const result = parseClassName("bold underline dim");
++        expect(result.style?.bold).toBe(true);
++        expect(result.style?.underline).toBe(true);
++        expect(result.style?.dim).toBe(true);
++      });
++    });
++
++    describe("borders", () => {
++      it("should parse border (default line)", () => {
++        const result = parseClassName("border");
++        expect(result.border?.type).toBe("line");
++      });
++
++      it("should parse border-line", () => {
++        const result = parseClassName("border-line");
++        expect(result.border?.type).toBe("line");
++      });
++
++      it("should parse border-bg", () => {
++        const result = parseClassName("border-bg");
++        expect(result.border?.type).toBe("bg");
++      });
++
++      it("should parse border style single", () => {
++        const result = parseClassName("border-single");
++        expect(result.border?.type).toBe("line");
++        expect(result.border?.style).toBe("single");
++      });
++
++      it("should parse border style double", () => {
++        const result = parseClassName("border-double");
++        expect(result.border?.style).toBe("double");
++      });
++
++      it("should parse border style round", () => {
++        const result = parseClassName("border-round");
++        expect(result.border?.style).toBe("round");
++      });
++
++      it("should parse border style bold", () => {
++        const result = parseClassName("border-bold");
++        expect(result.border?.style).toBe("bold");
++      });
++
++      it("should parse border style classic", () => {
++        const result = parseClassName("border-classic");
++        expect(result.border?.style).toBe("classic");
++      });
++
++      it("should parse border style arrow", () => {
++        const result = parseClassName("border-arrow");
++        expect(result.border?.style).toBe("arrow");
++      });
++
++      it("should parse border color", () => {
++        const result = parseClassName("border-cyan");
++        expect(result.border?.fg).toBe(6);
++      });
++
++      it("should combine border type and color", () => {
++        const result = parseClassName("border-line border-red");
++        expect(result.border?.type).toBe("line");
++        expect(result.border?.fg).toBe(1);
++      });
++    });
++
++    describe("padding", () => {
++      it("should parse p-{n} for all sides", () => {
++        const result = parseClassName("p-2");
++        expect(result.padding).toEqual({
++          left: 2,
++          right: 2,
++          top: 2,
++          bottom: 2,
++        });
++      });
++
++      it("should parse px-{n} for horizontal", () => {
++        const result = parseClassName("px-3");
++        expect(result.padding).toEqual({ left: 3, right: 3 });
++      });
++
++      it("should parse py-{n} for vertical", () => {
++        const result = parseClassName("py-1");
++        expect(result.padding).toEqual({ top: 1, bottom: 1 });
++      });
++
++      it("should parse pt-{n} for top", () => {
++        const result = parseClassName("pt-2");
++        expect(result.padding).toEqual({ top: 2 });
++      });
++
++      it("should parse pb-{n} for bottom", () => {
++        const result = parseClassName("pb-3");
++        expect(result.padding).toEqual({ bottom: 3 });
++      });
++
++      it("should parse pl-{n} for left", () => {
++        const result = parseClassName("pl-1");
++        expect(result.padding).toEqual({ left: 1 });
++      });
++
++      it("should parse pr-{n} for right", () => {
++        const result = parseClassName("pr-4");
++        expect(result.padding).toEqual({ right: 4 });
++      });
++
++      it("should merge multiple padding classes", () => {
++        const result = parseClassName("pt-1 pb-2 pl-3 pr-4");
++        expect(result.padding).toEqual({ top: 1, bottom: 2, left: 3, right: 4 });
++      });
++    });
++
++    describe("alignment", () => {
++      it("should parse text-left", () => {
++        const result = parseClassName("text-left");
++        expect(result.align).toBe("left");
++      });
++
++      it("should parse text-center", () => {
++        const result = parseClassName("text-center");
++        expect(result.align).toBe("center");
++      });
++
++      it("should parse text-right", () => {
++        const result = parseClassName("text-right");
++        expect(result.align).toBe("right");
++      });
++
++      it("should parse align-top", () => {
++        const result = parseClassName("align-top");
++        expect(result.valign).toBe("top");
++      });
++
++      it("should parse align-middle", () => {
++        const result = parseClassName("align-middle");
++        expect(result.valign).toBe("middle");
++      });
++
++      it("should parse align-bottom", () => {
++        const result = parseClassName("align-bottom");
++        expect(result.valign).toBe("bottom");
++      });
++    });
++
++    describe("size", () => {
++      it("should parse w-{n} for numeric width", () => {
++        const result = parseClassName("w-20");
++        expect(result.position?.width).toBe(20);
++      });
++
++      it("should parse w-{n}% for percentage width", () => {
++        const result = parseClassName("w-50%");
++        expect(result.position?.width).toBe("50%");
++      });
++
++      it("should parse w-full", () => {
++        const result = parseClassName("w-full");
++        expect(result.position?.width).toBe("100%");
++      });
++
++      it("should parse w-half", () => {
++        const result = parseClassName("w-half");
++        expect(result.position?.width).toBe("50%");
++      });
++
++      it("should parse w-shrink", () => {
++        const result = parseClassName("w-shrink");
++        expect(result.position?.width).toBe("shrink");
++      });
++
++      it("should parse h-{n} for numeric height", () => {
++        const result = parseClassName("h-10");
++        expect(result.position?.height).toBe(10);
++      });
++
++      it("should parse h-{n}% for percentage height", () => {
++        const result = parseClassName("h-100%");
++        expect(result.position?.height).toBe("100%");
++      });
++
++      it("should parse h-full", () => {
++        const result = parseClassName("h-full");
++        expect(result.position?.height).toBe("100%");
++      });
++    });
++
++    describe("position", () => {
++      it("should parse top-{n}", () => {
++        const result = parseClassName("top-0");
++        expect(result.position?.top).toBe(0);
++      });
++
++      it("should parse left-{n}", () => {
++        const result = parseClassName("left-10");
++        expect(result.position?.left).toBe(10);
++      });
++
++      it("should parse right-{n}", () => {
++        const result = parseClassName("right-5");
++        expect(result.position?.right).toBe(5);
++      });
++
++      it("should parse bottom-{n}", () => {
++        const result = parseClassName("bottom-2");
++        expect(result.position?.bottom).toBe(2);
++      });
++
++      it("should parse top-center", () => {
++        const result = parseClassName("top-center");
++        expect(result.position?.top).toBe("center");
++      });
++
++      it("should parse left-50%", () => {
++        const result = parseClassName("left-50%");
++        expect(result.position?.left).toBe("50%");
++      });
++    });
++
++    describe("layout", () => {
++      it("should parse shrink", () => {
++        const result = parseClassName("shrink");
++        expect(result.shrink).toBe(true);
++      });
++
++      it("should parse no-shrink", () => {
++        const result = parseClassName("no-shrink");
++        expect(result.shrink).toBe(false);
++      });
++
++      it("should parse hidden", () => {
++        const result = parseClassName("hidden");
++        expect(result.hidden).toBe(true);
++      });
++
++      it("should parse visible", () => {
++        const result = parseClassName("visible");
++        expect(result.hidden).toBe(false);
++      });
++
++      it("should parse wrap", () => {
++        const result = parseClassName("wrap");
++        expect(result.wrap).toBe(true);
++      });
++
++      it("should parse no-wrap", () => {
++        const result = parseClassName("no-wrap");
++        expect(result.wrap).toBe(false);
++      });
++
++      it("should parse shadow", () => {
++        const result = parseClassName("shadow");
++        expect(result.shadow).toBe(true);
++      });
++
++      it("should parse scrollable", () => {
++        const result = parseClassName("scrollable");
++        expect(result.scrollable).toBe(true);
++      });
++    });
++
++    describe("complex combinations", () => {
++      it("should parse multiple classes together", () => {
++        const result = parseClassName(
++          "bg-blue fg-white bold border-line border-cyan p-2 text-center"
++        );
++        expect(result.style?.bg).toBe(4);
++        expect(result.style?.fg).toBe(7);
++        expect(result.style?.bold).toBe(true);
++        expect(result.border?.type).toBe("line");
++        expect(result.border?.fg).toBe(6);
++        expect(result.padding).toEqual({
++          left: 2,
++          right: 2,
++          top: 2,
++          bottom: 2,
++        });
++        expect(result.align).toBe("center");
++      });
++
++      it("should handle case insensitivity", () => {
++        const result = parseClassName("BG-RED FG-WHITE BOLD");
++        expect(result.style?.bg).toBe(1);
++        expect(result.style?.fg).toBe(7);
++        expect(result.style?.bold).toBe(true);
++      });
++
++      it("should handle extra whitespace", () => {
++        const result = parseClassName("  bg-blue   bold   p-2  ");
++        expect(result.style?.bg).toBe(4);
++        expect(result.style?.bold).toBe(true);
++        expect(result.padding).toEqual({
++          left: 2,
++          right: 2,
++          top: 2,
++          bottom: 2,
++        });
++      });
++
++      it("should ignore unknown classes silently", () => {
++        const result = parseClassName("bg-blue unknown-class custom-thing bold");
++        expect(result.style?.bg).toBe(4);
++        expect(result.style?.bold).toBe(true);
++      });
++    });
++  });
++
++  describe("mergeClassNameOptions", () => {
++    it("should merge style with existing style", () => {
++      const base = { style: { fg: 1 } };
++      const parsed = { style: { bg: 4 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.style).toEqual({ fg: 1, bg: 4 });
++    });
++
++    it("should override conflicting style properties", () => {
++      const base = { style: { fg: 1, bg: 2 } };
++      const parsed = { style: { bg: 4 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.style).toEqual({ fg: 1, bg: 4 });
++    });
++
++    it("should merge border with existing border", () => {
++      const base = { border: { type: "line" } };
++      const parsed = { border: { fg: 6 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.border).toEqual({ type: "line", fg: 6 });
++    });
++
++    it("should convert string border to object before merging", () => {
++      const base = { border: "line" };
++      const parsed = { border: { fg: 6 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.border).toEqual({ type: "line", fg: 6 });
++    });
++
++    it("should merge padding with existing padding", () => {
++      const base = { padding: { left: 1 } };
++      const parsed = { padding: { top: 2, right: 3 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.padding).toEqual({ left: 1, top: 2, right: 3 });
++    });
++
++    it("should convert numeric padding to object before merging", () => {
++      const base = { padding: 1 };
++      const parsed = { padding: { top: 5 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.padding).toEqual({
++        left: 1,
++        right: 1,
++        top: 5,
++        bottom: 1,
++      });
++    });
++
++    it("should merge position values", () => {
++      const base = { top: 0, width: 20 };
++      const parsed = { position: { left: 10, height: 10 } };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.top).toBe(0);
++      expect(result.left).toBe(10);
++      expect(result.width).toBe(20);
++      expect(result.height).toBe(10);
++    });
++
++    it("should merge simple properties", () => {
++      const base = { align: "left" };
++      const parsed = { align: "center", shrink: true };
++      const result = mergeClassNameOptions(base, parsed);
++      expect(result.align).toBe("center");
++      expect(result.shrink).toBe(true);
++    });
++
++    it("should not modify original objects", () => {
++      const base = { style: { fg: 1 } };
++      const parsed = { style: { bg: 4 } };
++      mergeClassNameOptions(base, parsed);
++      expect(base.style).toEqual({ fg: 1 });
++      expect(parsed.style).toEqual({ bg: 4 });
++    });
++  });
++
++  describe("applyClassName", () => {
++    it("should apply className to options", () => {
++      const options = {
++        content: "Hello",
++        className: "bg-blue fg-white bold p-2",
++      };
++      const result = applyClassName(options);
++      expect(result.content).toBe("Hello");
++      expect(result.style?.bg).toBe(4);
++      expect(result.style?.fg).toBe(7);
++      expect(result.style?.bold).toBe(true);
++      expect(result.padding).toEqual({
++        left: 2,
++        right: 2,
++        top: 2,
++        bottom: 2,
++      });
++    });
++
++    it("should return options unchanged if no className", () => {
++      const options = { content: "Hello" };
++      const result = applyClassName(options);
++      expect(result).toEqual({ content: "Hello" });
++    });
++
++    it("should preserve existing options", () => {
++      const options = {
++        content: "Hello",
++        style: { fg: 1 },
++        className: "bg-blue bold",
++      };
++      const result = applyClassName(options);
++      expect(result.content).toBe("Hello");
++      expect(result.style?.fg).toBe(1);
++      expect(result.style?.bg).toBe(4);
++      expect(result.style?.bold).toBe(true);
++    });
++  });
++
++  describe("color exports", () => {
++    it("should export terminal colors", () => {
++      expect(terminalColors.black).toBe(0);
++      expect(terminalColors.red).toBe(1);
++      expect(terminalColors.white).toBe(7);
++      expect(terminalColors["light-blue"]).toBe(12);
++    });
++
++    it("should export color shades", () => {
++      expect(colorShades.red[500]).toBe(160);
++      expect(colorShades.blue[500]).toBe(27);
++      expect(colorShades.gray[500]).toBe(244);
++    });
++  });
++
++  describe("class exports", () => {
++    it("should export text attributes", () => {
++      expect(textAttributes.bold).toEqual({ bold: true });
++      expect(textAttributes["no-bold"]).toEqual({ bold: false });
++      expect(textAttributes.dim).toEqual({ dim: true });
++    });
++
++    it("should export alignment classes", () => {
++      expect(alignmentClasses["text-center"]).toEqual({ align: "center" });
++      expect(alignmentClasses["align-middle"]).toEqual({ valign: "middle" });
++    });
++
++    it("should export layout classes", () => {
++      expect(layoutClasses.shrink).toEqual({ shrink: true });
++      expect(layoutClasses.hidden).toEqual({ hidden: true });
++      expect(layoutClasses.shadow).toEqual({ shadow: true });
++    });
++  });
++});
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index 7db3539..4afe968 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -25,6 +25,7 @@ export { default as colors } from "./lib/colors.js";
+ export * from "./lib/events.js";
+ export * from "./lib/helpers.js";
+ export * from "./lib/image-renderer.js";
++export * from "./lib/tailwind.js";
+ export { default as unicode } from "./lib/unicode.js";
+ 
+ // Re-export mixins
+diff --git a/packages/core/src/lib/tailwind.ts b/packages/core/src/lib/tailwind.ts
+new file mode 100644
+index 0000000..155e3d5
+--- /dev/null
++++ b/packages/core/src/lib/tailwind.ts
+@@ -0,0 +1,755 @@
++/**
++ * tailwind.ts - Tailwind-like class name parser for terminal UI styling.
++ *
++ * Provides a declarative way to style terminal widgets using class names
++ * inspired by Tailwind CSS, adapted for terminal capabilities.
++ *
++ * @example
++ * ```typescript
++ * import { Box } from '@unblessed/core';
++ *
++ * const box = new Box({
++ *   parent: screen,
++ *   className: 'bg-blue fg-white bold border-line border-cyan p-2'
++ * });
++ * ```
++ */
++
++import type { Padding } from "../types/common.js";
++import type { Style } from "../types/style.js";
++import type { BorderStyleName } from "./border-styles.js";
++
++/**
++ * Result of parsing a className string.
++ * Contains all the style-related properties that can be applied to an element.
++ */
++export interface ParsedClassName {
++  /** Style object with colors and attributes */
++  style?: Partial<Style>;
++  /** Border configuration */
++  border?: {
++    type?: "line" | "bg";
++    style?: BorderStyleName;
++    fg?: string | number;
++    bg?: string | number;
++    ch?: string;
++  };
++  /** Padding configuration */
++  padding?: Partial<Padding>;
++  /** Text alignment */
++  align?: "left" | "center" | "right";
++  /** Vertical alignment */
++  valign?: "top" | "middle" | "bottom";
++  /** Whether to shrink to content */
++  shrink?: boolean;
++  /** Whether element is hidden */
++  hidden?: boolean;
++  /** Whether to wrap text */
++  wrap?: boolean;
++  /** Shadow effect */
++  shadow?: boolean;
++  /** Whether element is scrollable */
++  scrollable?: boolean;
++  /** Positioning values */
++  position?: {
++    top?: number | string;
++    left?: number | string;
++    right?: number | string;
++    bottom?: number | string;
++    width?: number | string;
++    height?: number | string;
++  };
++}
++
++// =============================================================================
++// Terminal Color Palette
++// =============================================================================
++
++/**
++ * Terminal color names mapped to their ANSI color codes.
++ * Supports basic 16 colors and extended named colors.
++ */
++const terminalColors: Record<string, number | string> = {
++  // Basic colors (0-7)
++  black: 0,
++  red: 1,
++  green: 2,
++  yellow: 3,
++  blue: 4,
++  magenta: 5,
++  cyan: 6,
++  white: 7,
++
++  // Bright/light colors (8-15)
++  "light-black": 8,
++  "light-red": 9,
++  "light-green": 10,
++  "light-yellow": 11,
++  "light-blue": 12,
++  "light-magenta": 13,
++  "light-cyan": 14,
++  "light-white": 15,
++
++  // Bright colors (aliases)
++  "bright-black": 8,
++  "bright-red": 9,
++  "bright-green": 10,
++  "bright-yellow": 11,
++  "bright-blue": 12,
++  "bright-magenta": 13,
++  "bright-cyan": 14,
++  "bright-white": 15,
++
++  // Additional common names
++  gray: 8,
++  grey: 8,
++  "light-gray": 7,
++  "light-grey": 7,
++
++  // Extended 256-color palette selections (commonly used)
++  orange: 208,
++  pink: 213,
++  purple: 129,
++  violet: 99,
++  indigo: 54,
++  teal: 30,
++  lime: 118,
++  amber: 214,
++  rose: 204,
++  sky: 117,
++  emerald: 42,
++  slate: 242,
++  zinc: 245,
++  stone: 249,
++  neutral: 250,
++
++  // Default/inherit
++  default: -1,
++  inherit: -1,
++};
++
++/**
++ * Shade modifiers for color intensity.
++ * Maps Tailwind-like shade numbers to 256-color palette adjustments.
++ */
++const colorShades: Record<string, Record<number, number>> = {
++  red: {
++    50: 224,
++    100: 217,
++    200: 210,
++    300: 203,
++    400: 196,
++    500: 160,
++    600: 124,
++    700: 88,
++    800: 52,
++    900: 52,
++  },
++  green: {
++    50: 194,
++    100: 157,
++    200: 120,
++    300: 84,
++    400: 48,
++    500: 34,
++    600: 28,
++    700: 22,
++    800: 22,
++    900: 22,
++  },
++  blue: {
++    50: 195,
++    100: 159,
++    200: 117,
++    300: 75,
++    400: 33,
++    500: 27,
++    600: 21,
++    700: 19,
++    800: 18,
++    900: 17,
++  },
++  yellow: {
++    50: 230,
++    100: 229,
++    200: 228,
++    300: 227,
++    400: 226,
++    500: 220,
++    600: 214,
++    700: 208,
++    800: 202,
++    900: 166,
++  },
++  cyan: {
++    50: 195,
++    100: 159,
++    200: 123,
++    300: 87,
++    400: 51,
++    500: 44,
++    600: 37,
++    700: 30,
++    800: 23,
++    900: 23,
++  },
++  magenta: {
++    50: 225,
++    100: 219,
++    200: 213,
++    300: 207,
++    400: 201,
++    500: 165,
++    600: 129,
++    700: 93,
++    800: 57,
++    900: 54,
++  },
++  gray: {
++    50: 255,
++    100: 253,
++    200: 251,
++    300: 249,
++    400: 247,
++    500: 244,
++    600: 241,
++    700: 238,
++    800: 235,
++    900: 232,
++  },
++  // Alias
++  grey: {
++    50: 255,
++    100: 253,
++    200: 251,
++    300: 249,
++    400: 247,
++    500: 244,
++    600: 241,
++    700: 238,
++    800: 235,
++    900: 232,
++  },
++};
++
++// =============================================================================
++// Style Parsers
++// =============================================================================
++
++/**
++ * Parse a color class (bg-*, fg-*, text-*).
++ * Supports: bg-red, fg-blue-500, text-#ff0000, bg-[200]
++ */
++function parseColor(
++  cls: string,
++  prefix: "bg" | "fg" | "text",
++): string | number | undefined {
++  if (!cls.startsWith(`${prefix}-`)) return undefined;
++
++  const colorPart = cls.substring(prefix.length + 1);
++
++  // Hex color: bg-#ff0000 or fg-#00ff00
++  if (colorPart.startsWith("#")) {
++    return colorPart;
++  }
++
++  // Arbitrary value: bg-[200] or fg-[44]
++  const arbitraryMatch = colorPart.match(/^\[(\d+)\]$/);
++  if (arbitraryMatch) {
++    return parseInt(arbitraryMatch[1], 10);
++  }
++
++  // Color with shade: bg-red-500
++  const shadeMatch = colorPart.match(/^([a-z]+)-(\d+)$/);
++  if (shadeMatch) {
++    const [, colorName, shade] = shadeMatch;
++    const shadeMap = colorShades[colorName];
++    if (shadeMap && shadeMap[parseInt(shade, 10)] !== undefined) {
++      return shadeMap[parseInt(shade, 10)];
++    }
++  }
++
++  // Simple color name: bg-red, fg-blue
++  if (terminalColors[colorPart] !== undefined) {
++    return terminalColors[colorPart];
++  }
++
++  return undefined;
++}
++
++/**
++ * Parse border-related classes.
++ */
++function parseBorder(cls: string): Partial<ParsedClassName["border"]> | null {
++  // Border type: border-line, border-bg
++  if (cls === "border" || cls === "border-line") {
++    return { type: "line" };
++  }
++  if (cls === "border-bg") {
++    return { type: "bg" };
++  }
++
++  // Border style: border-single, border-double, border-round, etc.
++  const styleMatch = cls.match(
++    /^border-(single|double|round|bold|singleDouble|doubleSingle|classic|arrow)$/,
++  );
++  if (styleMatch) {
++    return {
++      type: "line",
++      style: styleMatch[1] as BorderStyleName,
++    };
++  }
++
++  // Border color: border-red, border-blue-500
++  const borderColorMatch = cls.match(/^border-([a-z#\[\]0-9-]+)$/);
++  if (borderColorMatch) {
++    const colorValue = parseColor(`fg-${borderColorMatch[1]}`, "fg");
++    if (colorValue !== undefined) {
++      return { fg: colorValue };
++    }
++  }
++
++  return null;
++}
++
++/**
++ * Parse padding classes.
++ * Supports: p-2, px-1, py-2, pt-1, pb-1, pl-1, pr-1
++ */
++function parsePadding(cls: string): Partial<Padding> | null {
++  // All sides: p-2
++  const allMatch = cls.match(/^p-(\d+)$/);
++  if (allMatch) {
++    const value = parseInt(allMatch[1], 10);
++    return { left: value, right: value, top: value, bottom: value };
++  }
++
++  // Horizontal: px-2
++  const hMatch = cls.match(/^px-(\d+)$/);
++  if (hMatch) {
++    const value = parseInt(hMatch[1], 10);
++    return { left: value, right: value };
++  }
++
++  // Vertical: py-2
++  const vMatch = cls.match(/^py-(\d+)$/);
++  if (vMatch) {
++    const value = parseInt(vMatch[1], 10);
++    return { top: value, bottom: value };
++  }
++
++  // Individual sides
++  const sideMatch = cls.match(/^p([tblr])-(\d+)$/);
++  if (sideMatch) {
++    const [, side, valueStr] = sideMatch;
++    const value = parseInt(valueStr, 10);
++    const sideMap: Record<string, keyof Padding> = {
++      t: "top",
++      b: "bottom",
++      l: "left",
++      r: "right",
++    };
++    return { [sideMap[side]]: value };
++  }
++
++  return null;
++}
++
++/**
++ * Parse position/size classes.
++ * Supports: w-10, h-5, w-50%, top-0, left-10, etc.
++ */
++function parsePosition(
++  cls: string,
++): { key: string; value: number | string } | null {
++  // Width: w-10, w-50%, w-half, w-shrink
++  const widthMatch = cls.match(/^w-(.+)$/);
++  if (widthMatch) {
++    const val = widthMatch[1];
++    if (val === "full") return { key: "width", value: "100%" };
++    if (val === "half") return { key: "width", value: "50%" };
++    if (val === "shrink") return { key: "width", value: "shrink" };
++    if (val.endsWith("%")) return { key: "width", value: val };
++    const num = parseInt(val, 10);
++    if (!isNaN(num)) return { key: "width", value: num };
++  }
++
++  // Height: h-10, h-50%, h-half, h-shrink
++  const heightMatch = cls.match(/^h-(.+)$/);
++  if (heightMatch) {
++    const val = heightMatch[1];
++    if (val === "full") return { key: "height", value: "100%" };
++    if (val === "half") return { key: "height", value: "50%" };
++    if (val === "shrink") return { key: "height", value: "shrink" };
++    if (val.endsWith("%")) return { key: "height", value: val };
++    const num = parseInt(val, 10);
++    if (!isNaN(num)) return { key: "height", value: num };
++  }
++
++  // Position: top-0, left-10, right-5, bottom-2
++  const posMatch = cls.match(/^(top|left|right|bottom)-(.+)$/);
++  if (posMatch) {
++    const [, prop, val] = posMatch;
++    if (val === "center") return { key: prop, value: "center" };
++    if (val.endsWith("%")) return { key: prop, value: val };
++    const num = parseInt(val, 10);
++    if (!isNaN(num)) return { key: prop, value: num };
++  }
++
++  return null;
++}
++
++// =============================================================================
++// Text Attribute Classes
++// =============================================================================
++
++/** Text attribute classes that map to Style properties */
++const textAttributes: Record<string, Partial<Style>> = {
++  bold: { bold: true },
++  "no-bold": { bold: false },
++  dim: { dim: true },
++  "no-dim": { dim: false },
++  underline: { underline: true },
++  "no-underline": { underline: false },
++  blink: { blink: true },
++  "no-blink": { blink: false },
++  inverse: { inverse: true },
++  "no-inverse": { inverse: false },
++  invisible: { invisible: true },
++  "no-invisible": { invisible: false },
++  transparent: { transparent: true },
++  "no-transparent": { transparent: false },
++};
++
++// =============================================================================
++// Alignment Classes
++// =============================================================================
++
++const alignmentClasses: Record<
++  string,
++  { align?: "left" | "center" | "right"; valign?: "top" | "middle" | "bottom" }
++> = {
++  // Horizontal
++  "text-left": { align: "left" },
++  "text-center": { align: "center" },
++  "text-right": { align: "right" },
++  // Vertical
++  "align-top": { valign: "top" },
++  "align-middle": { valign: "middle" },
++  "align-bottom": { valign: "bottom" },
++};
++
++// =============================================================================
++// Layout/Display Classes
++// =============================================================================
++
++const layoutClasses: Record<string, Partial<ParsedClassName>> = {
++  shrink: { shrink: true },
++  "no-shrink": { shrink: false },
++  hidden: { hidden: true },
++  visible: { hidden: false },
++  wrap: { wrap: true },
++  "no-wrap": { wrap: false },
++  shadow: { shadow: true },
++  "no-shadow": { shadow: false },
++  scrollable: { scrollable: true },
++  "no-scrollable": { scrollable: false },
++};
++
++// =============================================================================
++// Main Parser
++// =============================================================================
++
++/**
++ * Parse a className string into widget options.
++ *
++ * Supports Tailwind-inspired class names adapted for terminal UIs:
++ *
++ * **Colors:**
++ * - `bg-{color}` - Background color (bg-red, bg-blue-500, bg-#ff0000, bg-[200])
++ * - `fg-{color}` or `text-{color}` - Foreground color
++ *
++ * **Text Attributes:**
++ * - `bold`, `no-bold` - Bold text
++ * - `dim`, `no-dim` - Dimmed text
++ * - `underline`, `no-underline` - Underlined text
++ * - `blink`, `no-blink` - Blinking text
++ * - `inverse`, `no-inverse` - Inverse colors
++ * - `invisible`, `no-invisible` - Hidden text
++ * - `transparent`, `no-transparent` - Transparent background
++ *
++ * **Border:**
++ * - `border` or `border-line` - Line border
++ * - `border-bg` - Background border
++ * - `border-{style}` - Border style (single, double, round, bold, classic, arrow)
++ * - `border-{color}` - Border color
++ *
++ * **Padding:**
++ * - `p-{n}` - All sides padding
++ * - `px-{n}` - Horizontal padding
++ * - `py-{n}` - Vertical padding
++ * - `pt-{n}`, `pb-{n}`, `pl-{n}`, `pr-{n}` - Individual side padding
++ *
++ * **Alignment:**
++ * - `text-left`, `text-center`, `text-right` - Horizontal alignment
++ * - `align-top`, `align-middle`, `align-bottom` - Vertical alignment
++ *
++ * **Size:**
++ * - `w-{n}`, `w-{n}%`, `w-full`, `w-half`, `w-shrink` - Width
++ * - `h-{n}`, `h-{n}%`, `h-full`, `h-half`, `h-shrink` - Height
++ *
++ * **Position:**
++ * - `top-{n}`, `left-{n}`, `right-{n}`, `bottom-{n}` - Position
++ *
++ * **Layout:**
++ * - `shrink`, `no-shrink` - Shrink to content
++ * - `hidden`, `visible` - Visibility
++ * - `wrap`, `no-wrap` - Text wrapping
++ * - `shadow`, `no-shadow` - Shadow effect
++ * - `scrollable`, `no-scrollable` - Scrollable content
++ *
++ * @param className - Space-separated class names
++ * @returns Parsed options that can be merged with widget options
++ *
++ * @example
++ * ```typescript
++ * const parsed = parseClassName('bg-blue fg-white bold border-line p-2 text-center');
++ * // => {
++ * //   style: { bg: 4, fg: 7, bold: true },
++ * //   border: { type: 'line' },
++ * //   padding: { left: 2, right: 2, top: 2, bottom: 2 },
++ * //   align: 'center'
++ * // }
++ * ```
++ */
++export function parseClassName(className: string): ParsedClassName {
++  if (!className || typeof className !== "string") {
++    return {};
++  }
++
++  const classes = className
++    .split(/\s+/)
++    .filter(Boolean)
++    .map((c) => c.toLowerCase().trim());
++
++  const result: ParsedClassName = {};
++  let hasStyle = false;
++  let hasBorder = false;
++  let hasPadding = false;
++  let hasPosition = false;
++
++  for (const cls of classes) {
++    // --- Background color ---
++    const bgColor = parseColor(cls, "bg");
++    if (bgColor !== undefined) {
++      if (!hasStyle) {
++        result.style = {};
++        hasStyle = true;
++      }
++      result.style!.bg = bgColor;
++      continue;
++    }
++
++    // --- Foreground color (fg-* or text-*) ---
++    const fgColor = parseColor(cls, "fg") ?? parseColor(cls, "text");
++    if (fgColor !== undefined) {
++      if (!hasStyle) {
++        result.style = {};
++        hasStyle = true;
++      }
++      result.style!.fg = fgColor;
++      continue;
++    }
++
++    // --- Text attributes ---
++    if (textAttributes[cls]) {
++      if (!hasStyle) {
++        result.style = {};
++        hasStyle = true;
++      }
++      Object.assign(result.style!, textAttributes[cls]);
++      continue;
++    }
++
++    // --- Border ---
++    const borderParsed = parseBorder(cls);
++    if (borderParsed) {
++      if (!hasBorder) {
++        result.border = {};
++        hasBorder = true;
++      }
++      Object.assign(result.border!, borderParsed);
++      continue;
++    }
++
++    // --- Padding ---
++    const paddingParsed = parsePadding(cls);
++    if (paddingParsed) {
++      if (!hasPadding) {
++        result.padding = {};
++        hasPadding = true;
++      }
++      Object.assign(result.padding!, paddingParsed);
++      continue;
++    }
++
++    // --- Position/Size ---
++    const positionParsed = parsePosition(cls);
++    if (positionParsed) {
++      if (!hasPosition) {
++        result.position = {};
++        hasPosition = true;
++      }
++      (result.position as any)[positionParsed.key] = positionParsed.value;
++      continue;
++    }
++
++    // --- Alignment ---
++    if (alignmentClasses[cls]) {
++      Object.assign(result, alignmentClasses[cls]);
++      continue;
++    }
++
++    // --- Layout ---
++    if (layoutClasses[cls]) {
++      Object.assign(result, layoutClasses[cls]);
++      continue;
++    }
++
++    // Unknown class - silently ignore (allows for custom classes)
++  }
++
++  return result;
++}
++
++/**
++ * Base options interface that mergeClassNameOptions expects.
++ * Matches ElementOptions structure.
++ */
++interface MergeableOptions {
++  style?: Partial<Style>;
++  border?: { type?: "line" | "bg"; [key: string]: any } | string;
++  padding?: Partial<Padding> | number;
++  top?: number | string;
++  left?: number | string;
++  right?: number | string;
++  bottom?: number | string;
++  width?: number | string;
++  height?: number | string;
++  align?: "left" | "center" | "right";
++  valign?: "top" | "middle" | "bottom";
++  shrink?: boolean;
++  hidden?: boolean;
++  wrap?: boolean;
++  shadow?: boolean;
++  scrollable?: boolean;
++  [key: string]: any;
++}
++
++/**
++ * Merge parsed className options with existing widget options.
++ * className properties take precedence over existing options.
++ *
++ * @param baseOptions - Base widget options
++ * @param parsedClassName - Parsed className result
++ * @returns Merged options object
++ */
++export function mergeClassNameOptions<T extends MergeableOptions>(
++  baseOptions: T,
++  parsedClassName: ParsedClassName,
++): T {
++  const merged: MergeableOptions = { ...baseOptions };
++
++  // Merge style
++  if (parsedClassName.style) {
++    merged.style = { ...merged.style, ...parsedClassName.style };
++  }
++
++  // Merge border
++  if (parsedClassName.border) {
++    if (typeof merged.border === "string") {
++      merged.border = { type: merged.border as "line" | "bg" };
++    }
++    merged.border = { ...merged.border, ...parsedClassName.border };
++  }
++
++  // Merge padding
++  if (parsedClassName.padding) {
++    if (typeof merged.padding === "number") {
++      merged.padding = {
++        left: merged.padding,
++        right: merged.padding,
++        top: merged.padding,
++        bottom: merged.padding,
++      };
++    }
++    merged.padding = { ...merged.padding, ...parsedClassName.padding };
++  }
++
++  // Merge position values
++  if (parsedClassName.position) {
++    const pos = parsedClassName.position;
++    if (pos.top !== undefined) merged.top = pos.top;
++    if (pos.left !== undefined) merged.left = pos.left;
++    if (pos.right !== undefined) merged.right = pos.right;
++    if (pos.bottom !== undefined) merged.bottom = pos.bottom;
++    if (pos.width !== undefined) merged.width = pos.width;
++    if (pos.height !== undefined) merged.height = pos.height;
++  }
++
++  // Merge simple properties
++  if (parsedClassName.align !== undefined) merged.align = parsedClassName.align;
++  if (parsedClassName.valign !== undefined)
++    merged.valign = parsedClassName.valign;
++  if (parsedClassName.shrink !== undefined)
++    merged.shrink = parsedClassName.shrink;
++  if (parsedClassName.hidden !== undefined)
++    merged.hidden = parsedClassName.hidden;
++  if (parsedClassName.wrap !== undefined) merged.wrap = parsedClassName.wrap;
++  if (parsedClassName.shadow !== undefined)
++    merged.shadow = parsedClassName.shadow;
++  if (parsedClassName.scrollable !== undefined)
++    merged.scrollable = parsedClassName.scrollable;
++
++  return merged as T;
++}
++
++/**
++ * Apply className to widget options.
++ * Convenience function that combines parsing and merging.
++ *
++ * @param options - Widget options object (modified in place)
++ * @returns The same options object with className applied
++ *
++ * @example
++ * ```typescript
++ * const options = {
++ *   content: 'Hello',
++ *   className: 'bg-blue fg-white bold p-2'
++ * };
++ * applyClassName(options);
++ * // options now has style, padding, etc. applied
++ * ```
++ */
++export function applyClassName<T extends { className?: string }>(
++  options: T,
++): T {
++  if (!options.className) {
++    return options;
++  }
++
++  const parsed = parseClassName(options.className);
++  return mergeClassNameOptions(options, parsed);
++}
++
++// =============================================================================
++// Exports
++// =============================================================================
++
++export {
++  terminalColors,
++  colorShades,
++  textAttributes,
++  alignmentClasses,
++  layoutClasses,
++};
+diff --git a/packages/core/src/types/options.ts b/packages/core/src/types/options.ts
+index c137ecc..986070b 100644
+--- a/packages/core/src/types/options.ts
++++ b/packages/core/src/types/options.ts
+@@ -115,6 +115,49 @@ export interface ElementOptions
+   extends NodeOptions,
+     ScrollableOptions,
+     AnimatableOptions {
++  /**
++   * Tailwind-like class names for declarative styling.
++   *
++   * Supports classes for colors, text attributes, borders, padding, alignment, and layout.
++   *
++   * **Colors:**
++   * - `bg-{color}` - Background color (bg-red, bg-blue-500, bg-#ff0000, bg-[200])
++   * - `fg-{color}` or `text-{color}` - Foreground color
++   *
++   * **Text Attributes:**
++   * - `bold`, `dim`, `underline`, `blink`, `inverse`, `invisible`, `transparent`
++   * - `no-bold`, `no-dim`, etc. to disable
++   *
++   * **Border:**
++   * - `border` or `border-line` - Line border
++   * - `border-{style}` - Border style (single, double, round, bold, classic, arrow)
++   * - `border-{color}` - Border color
++   *
++   * **Padding:**
++   * - `p-{n}` - All sides, `px-{n}` - Horizontal, `py-{n}` - Vertical
++   * - `pt-{n}`, `pb-{n}`, `pl-{n}`, `pr-{n}` - Individual sides
++   *
++   * **Alignment:**
++   * - `text-left`, `text-center`, `text-right` - Horizontal
++   * - `align-top`, `align-middle`, `align-bottom` - Vertical
++   *
++   * **Size & Position:**
++   * - `w-{n}`, `h-{n}`, `w-50%`, `w-full`, `w-half`, `w-shrink`
++   * - `top-{n}`, `left-{n}`, `right-{n}`, `bottom-{n}`
++   *
++   * **Layout:**
++   * - `shrink`, `hidden`, `wrap`, `shadow`, `scrollable`
++   *
++   * @example
++   * ```typescript
++   * const box = new Box({
++   *   parent: screen,
++   *   className: 'bg-blue fg-white bold border-line border-cyan p-2 text-center'
++   * });
++   * ```
++   */
++  className?: string;
++
+   /**
+    * Parse tags in content (e.g. {bold}text{/bold}).
+    */
+diff --git a/packages/core/src/widgets/element.ts b/packages/core/src/widgets/element.ts
+index 31fc782..deb40dd 100644
+--- a/packages/core/src/widgets/element.ts
++++ b/packages/core/src/widgets/element.ts
+@@ -10,6 +10,7 @@ import { getBorderChars } from "../lib/border-styles.js";
+ import colors from "../lib/colors.js";
+ import helpers from "../lib/helpers.js";
+ import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
++import { applyClassName } from "../lib/tailwind.js";
+ import { truncateText } from "../lib/text-utils.js";
+ import unicode from "../lib/unicode.js";
+ import { getGlobalWrapCache } from "../lib/wrap-cache.js";
+@@ -132,6 +133,12 @@ class Element extends Node {
+   }
+ 
+   constructor(options: ElementOptions = {}) {
++    // Apply className parsing first to merge class-based styles with explicit options
++    // Explicit options take precedence over className-derived options
++    if (options.className) {
++      options = applyClassName(options);
++    }
++
+     super(options);
+ 
+     this.name = options.name;

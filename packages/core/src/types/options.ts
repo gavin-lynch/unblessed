@@ -589,13 +589,40 @@ export interface FileManagerOptions extends ListOptions<ListElementStyle> {
 export interface TreeTemplate {
   /**
    * Suffix to show for collapsed nodes with children (Default: ' [+]').
+   * Used when `suffixIndicator` is not set.
    */
-  extend?: string;
+  collapse?: string;
 
   /**
    * Suffix to show for expanded nodes with children (Default: ' [-]').
+   * Used when `suffixIndicator` is not set.
    */
-  retract?: string;
+  expand?: string;
+
+  /**
+   * Prefix indicator function - shows BEFORE icon and name (left side).
+   * Used for modern/NERDTree style with triangles.
+   *
+   * @example
+   * ```typescript
+   * // NERDTree style triangles on the left
+   * prefixIndicator: (node) => node.extended ? '▾ ' : '▸ '
+   * ```
+   */
+  prefixIndicator?: (node: TreeNode) => string;
+
+  /**
+   * Suffix indicator function - shows AFTER the name (right side).
+   * Used for classic style with [+]/[-] indicators.
+   * When set, takes precedence over `collapse`/`expand`.
+   *
+   * @example
+   * ```typescript
+   * // Classic style indicators on the right
+   * suffixIndicator: (node) => node.extended ? ' [-]' : ' [+]'
+   * ```
+   */
+  suffixIndicator?: (node: TreeNode) => string;
 
   /**
    * Whether to show tree lines (├─, └─, │). (Default: true).
@@ -625,16 +652,28 @@ export interface TreeNode {
 
   /**
    * Icon or prefix to display before the node name.
-   * Can be any string (emoji, nerd font icon, text, etc.)
+   * Can be a string OR a function that receives the node and returns a string.
+   *
+   * When using a function, you can check `node.extended` to show different icons
+   * for expanded vs collapsed folders.
    *
    * @example
    * ```typescript
+   * // Static icon
    * { name: 'README.md', icon: '󰂺' }
-   * { name: 'src', icon: '', children: {...} }
-   * { name: 'package.json', icon: '✗ ★' }  // Multiple status indicators
+   *
+   * // Dynamic icon based on expanded state
+   * {
+   *   name: 'src',
+   *   icon: (node) => node.extended ? '' : '',
+   *   children: {...}
+   * }
+   *
+   * // With status indicators
+   * { name: 'package.json', icon: '✗ ★' }
    * ```
    */
-  icon?: string;
+  icon?: string | ((node: TreeNode) => string);
 
   /**
    * Whether the node is expanded. (Default: false, or follows options.extended).

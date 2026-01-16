@@ -95,8 +95,8 @@ describe("Tree", () => {
       const tree = new Tree({
         screen,
         template: {
-          extend: " (+)",
-          retract: " (-)",
+          collapse: " (+)",
+          expand: " (-)",
           lines: false,
         },
       });
@@ -292,7 +292,7 @@ describe("Tree", () => {
     it("should add extend suffix for collapsed nodes", () => {
       const tree = new Tree({
         screen,
-        template: { extend: " [+]" },
+        template: { collapse: " [+]" },
       });
       screen.append(tree);
 
@@ -315,7 +315,7 @@ describe("Tree", () => {
     it("should add retract suffix for expanded nodes", () => {
       const tree = new Tree({
         screen,
-        template: { retract: " [-]" },
+        template: { expand: " [-]" },
       });
       screen.append(tree);
 
@@ -1133,10 +1133,10 @@ describe("Tree", () => {
       });
       screen.append(tree);
 
-      // Root should have retract indicator [-]
+      // Root should have retract indicator [-] (expanded) - Classic style default
       expect(tree.ritems[0]).toContain("{yellow-fg}");
       expect(tree.ritems[0]).toContain(" [-]");
-      // Folder should have extend indicator [+]
+      // Folder should have extend indicator [+] (collapsed)
       expect(tree.ritems[1]).toContain(" [+]");
     });
 
@@ -1344,6 +1344,289 @@ describe("Tree", () => {
     });
   });
 
+  describe("icon as function", () => {
+    it("should call icon function with node when expanded", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          icon: (node) => (node.extended ? "[OPEN]" : "[CLOSED]"),
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Root is expanded, function should return [OPEN]
+      expect(tree.ritems[0]).toContain("[OPEN] root");
+    });
+
+    it("should call icon function with node when collapsed", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          icon: (node) => (node.extended ? "[OPEN]" : "[CLOSED]"),
+          extended: false,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Root is collapsed, function should return [CLOSED]
+      expect(tree.ritems[0]).toContain("[CLOSED] root");
+    });
+
+    it("should toggle icons when node state changes", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          icon: (node) => (node.extended ? "[OPEN]" : "[CLOSED]"),
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Initially expanded
+      expect(tree.ritems[0]).toContain("[OPEN] root");
+
+      // Collapse the root node
+      tree.collapse(0);
+      expect(tree.ritems[0]).toContain("[CLOSED] root");
+
+      // Expand again
+      tree.expand(0);
+      expect(tree.ritems[0]).toContain("[OPEN] root");
+    });
+
+    it("should work with nested folders using functions", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          icon: (node) => (node.extended ? "[ROOT-OPEN]" : "[ROOT-CLOSED]"),
+          extended: true,
+          children: {
+            folder: {
+              icon: (node) =>
+                node.extended ? "[FOLDER-OPEN]" : "[FOLDER-CLOSED]",
+              extended: false,
+              children: {
+                "file.txt": {},
+              },
+            },
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Root is expanded, nested folder is collapsed
+      expect(tree.ritems[0]).toContain("[ROOT-OPEN] root");
+      expect(tree.ritems[1]).toContain("[FOLDER-CLOSED] folder");
+    });
+
+    it("should work with string icons (backward compat)", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          icon: "[FOLDER]",
+          extended: true,
+          children: {
+            "file.txt": { icon: "[FILE]" },
+          },
+        },
+      });
+      screen.append(tree);
+
+      expect(tree.ritems[0]).toContain("[FOLDER] root");
+      expect(tree.ritems[1]).toContain("[FILE] file.txt");
+    });
+
+    it("should access node properties in icon function", () => {
+      const tree = new Tree({
+        screen,
+        data: {
+          name: "root",
+          customProp: "special",
+          icon: (node) =>
+            node.customProp === "special" ? "[SPECIAL]" : "[NORMAL]",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      expect(tree.ritems[0]).toContain("[SPECIAL] root");
+    });
+  });
+
+  describe("prefixIndicator and suffixIndicator", () => {
+    it("should use prefixIndicator for left-side symbols", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          prefixIndicator: (node) => (node.extended ? "[OPEN] " : "[CLOSED] "),
+          collapse: "", // Disable suffix
+          expand: "",
+        },
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Root is expanded, should show [OPEN] BEFORE the name
+      expect(tree.ritems[0]).toContain("[OPEN]");
+      expect(tree.ritems[0]).toMatch(/\[OPEN\].*root/); // prefix before name
+    });
+
+    it("should show prefixIndicator BEFORE icon and name", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          lines: false,
+          spaces: true,
+          prefixIndicator: (node) => (node.extended ? "▾ " : "▸ "),
+          collapse: "", // Disable suffix
+          expand: "",
+        },
+        data: {
+          name: "root",
+          icon: "[ICON]",
+          extended: true,
+          children: {
+            folder: {
+              icon: "[FOLDER]",
+              extended: false,
+              children: { "file.txt": {} },
+            },
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Root: prefix indicator before icon before name
+      expect(tree.ritems[0]).toMatch(/▾.*\[ICON\].*root/);
+      // Child folder: prefix indicator before icon before name
+      expect(tree.ritems[1]).toMatch(/▸.*\[FOLDER\].*folder/);
+    });
+
+    it("should toggle prefixIndicator when node state changes", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          prefixIndicator: (node) => (node.extended ? "▾ " : "▸ "),
+          collapse: "", // Disable suffix
+          expand: "",
+        },
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Initially expanded
+      expect(tree.ritems[0]).toContain("▾");
+
+      // Collapse
+      tree.collapse(0);
+      expect(tree.ritems[0]).toContain("▸");
+
+      // Expand again
+      tree.expand(0);
+      expect(tree.ritems[0]).toContain("▾");
+    });
+
+    it("should use suffixIndicator for right-side symbols (classic style)", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          collapse: " [+]",
+          expand: " [-]",
+        },
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Suffix indicator appears after name
+      expect(tree.ritems[0]).toContain("[-]");
+      expect(tree.ritems[0]).toMatch(/root.*\[-\]/); // suffix after name
+    });
+
+    it("should work with no indicators (clean style)", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          collapse: "",
+          expand: "",
+          lines: false,
+          spaces: true,
+        },
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // No indicators at all
+      expect(tree.ritems[0]).not.toContain("[");
+      expect(tree.ritems[0]).not.toContain("▾");
+      expect(tree.ritems[0]).not.toContain("▸");
+    });
+
+    it("should support both prefix and suffix indicators", () => {
+      const tree = new Tree({
+        screen,
+        template: {
+          prefixIndicator: (node) => (node.extended ? "▾ " : "▸ "),
+          suffixIndicator: (node) => (node.extended ? " (open)" : " (closed)"),
+        },
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Both prefix and suffix
+      expect(tree.ritems[0]).toContain("▾");
+      expect(tree.ritems[0]).toContain("(open)");
+      expect(tree.ritems[0]).toMatch(/▾.*root.*(open)/);
+    });
+  });
+
   describe("iconRules", () => {
     it("should apply icons based on glob pattern rules", () => {
       const tree = new Tree({
@@ -1408,9 +1691,7 @@ describe("Tree", () => {
     it("should prefer explicit node icon over rules", () => {
       const tree = new Tree({
         screen,
-        iconRules: [
-          { test: "*.ts", icon: "[TS]" },
-        ],
+        iconRules: [{ test: "*.ts", icon: "[TS]" }],
         data: {
           name: "root",
           extended: true,
@@ -1467,7 +1748,7 @@ describe("Tree", () => {
             ".gitconfig": {},
             ".bashrc": {},
             ".zshrc": {},
-            "readme": {},
+            readme: {},
           },
         },
       });
@@ -1503,6 +1784,165 @@ describe("Tree", () => {
       expect(tree.ritems[1]).toContain("[SPECIAL] special");
       expect(tree.ritems[2]).toContain("[MD] docs.md");
       expect(tree.ritems[3]).toContain("[DIR] folder");
+    });
+  });
+
+  describe("TreePresets", () => {
+    it("should import TreePresets from core", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+      expect(TreePresets).toBeDefined();
+      expect(TreePresets.Modern).toBeDefined();
+    });
+
+    it("Modern preset should have required properties", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+      const modern = TreePresets.Modern;
+
+      // Check template
+      expect(modern.template).toBeDefined();
+      expect(modern.template.lines).toBe(false);
+      expect(modern.template.spaces).toBe(true);
+      expect(modern.template.indent).toBe(2);
+      // Modern uses empty strings for collapse/expand (no suffix indicators)
+      expect(modern.template.collapse).toBe("");
+      expect(modern.template.expand).toBe("");
+      // Modern uses prefixIndicator for NERDTree-style triangles
+      expect(typeof modern.template.prefixIndicator).toBe("function");
+
+      // Check style
+      expect(modern.style).toBeDefined();
+      expect(modern.style.icon).toBeDefined();
+      expect(modern.style.selected).toBeDefined();
+
+      // Check iconRules
+      expect(modern.iconRules).toBeDefined();
+      expect(Array.isArray(modern.iconRules)).toBe(true);
+      expect(modern.iconRules.length).toBeGreaterThan(0);
+    });
+
+    it("should create tree with Modern preset using spread", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+
+      const tree = new Tree({
+        screen,
+        ...TreePresets.Modern,
+        data: {
+          extended: true,
+          children: {
+            "index.ts": {},
+            src: { children: {} },
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Should use Modern preset's template (space-based, no indicators)
+      expect(tree.ritems.length).toBeGreaterThan(0);
+
+      // Lines should use spaces, not tree characters
+      const srcLine = tree.ritems.find((item) => item.includes("src"));
+      expect(srcLine).toBeDefined();
+      // Modern preset uses spaces, so no tree line characters
+      expect(srcLine).not.toContain("├");
+      expect(srcLine).not.toContain("└");
+    });
+
+    it("should allow overriding preset options", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+
+      const tree = new Tree({
+        screen,
+        ...TreePresets.Modern,
+        template: {
+          ...TreePresets.Modern.template,
+          indent: 2, // Override indent
+        },
+        data: {
+          extended: true,
+          children: {
+            child1: {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Tree should work with overridden indent
+      expect(tree.ritems.length).toBeGreaterThan(0);
+    });
+
+    it("should export NerdIcons and UnicodeIcons", async () => {
+      const { NerdIcons, UnicodeIcons } = await import(
+        "../../src/lib/tree-presets.js"
+      );
+
+      // NerdIcons should have common icons
+      expect(NerdIcons.folder).toBeDefined();
+      expect(NerdIcons.file).toBeDefined();
+      expect(NerdIcons.typescript).toBeDefined();
+      expect(NerdIcons.javascript).toBeDefined();
+      expect(NerdIcons.markdown).toBeDefined();
+      expect(NerdIcons.git).toBeDefined();
+
+      // UnicodeIcons should have common indicators
+      expect(UnicodeIcons.collapsed).toBe("\u25b8"); // ▸
+      expect(UnicodeIcons.expanded).toBe("\u25be"); // ▾
+      expect(UnicodeIcons.modified).toBe("\u2717"); // ✗
+      expect(UnicodeIcons.staged).toBe("\u2605"); // ★
+    });
+
+    it("Classic preset should have blessed-contrib compatible properties", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+      const classic = TreePresets.Classic;
+
+      // Check template - traditional blessed-contrib style
+      expect(classic.template).toBeDefined();
+      expect(classic.template.lines).toBe(true); // Tree lines enabled
+      expect(classic.template.spaces).toBe(false); // Not space-based
+      expect(classic.template.indent).toBe(2); // 2-space indent
+      expect(classic.template.collapse).toBe(" [+]"); // Suffix when collapsed
+      expect(classic.template.expand).toBe(" [-]"); // Suffix when expanded
+
+      // Check style
+      expect(classic.style).toBeDefined();
+      expect(classic.style.line).toBeDefined(); // Tree line styling
+      expect(classic.style.indicator).toBeDefined(); // Indicator styling
+
+      // Classic has no iconRules (manual icons only)
+      expect(classic.iconRules).toEqual([]);
+    });
+
+    it("should create tree with Classic preset showing tree lines", async () => {
+      const { TreePresets } = await import("../../src/lib/tree-presets.js");
+
+      const tree = new Tree({
+        screen,
+        ...TreePresets.Classic,
+        data: {
+          name: "root",
+          extended: true,
+          children: {
+            folder1: { children: {} },
+            "file.txt": {},
+          },
+        },
+      });
+      screen.append(tree);
+
+      // Classic preset should use tree lines
+      expect(tree.ritems.length).toBeGreaterThan(0);
+
+      // Should have tree line characters
+      const hasTreeLines = tree.ritems.some(
+        (item) =>
+          item.includes("├") || item.includes("└") || item.includes("│"),
+      );
+      expect(hasTreeLines).toBe(true);
+
+      // Should have [+] or [-] indicators
+      const hasIndicators = tree.ritems.some(
+        (item) => item.includes("[+]") || item.includes("[-]"),
+      );
+      expect(hasIndicators).toBe(true);
     });
   });
 });

@@ -54,6 +54,7 @@ export * from "./widgets/scrollablebox.js";
 export * from "./widgets/scrollabletext.js";
 
 // Re-export list widgets
+export * from "./lib/tree-presets.js";
 export * from "./widgets/list.js";
 export * from "./widgets/listbar.js";
 export * from "./widgets/listtable.js";

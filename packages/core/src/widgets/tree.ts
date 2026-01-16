@@ -111,8 +111,10 @@ class Tree extends List {
    * Template configuration for rendering.
    */
   private template: {
-    extend: string;
-    retract: string;
+    collapse: string;
+    expand: string;
+    prefixIndicator?: (node: TreeNode) => string;
+    suffixIndicator?: (node: TreeNode) => string;
     lines: boolean;
     spaces: boolean;
     indent: number;
@@ -133,7 +135,11 @@ class Tree extends List {
    * Handles both static values and dynamic functions.
    */
   private resolveColor(
-    color: string | number | ((element: any) => string | number | undefined) | undefined,
+    color:
+      | string
+      | number
+      | ((element: any) => string | number | undefined)
+      | undefined,
   ): string | number | undefined {
     if (color === undefined) return undefined;
     if (typeof color === "function") {
@@ -237,12 +243,44 @@ class Tree extends List {
   }
 
   /**
+   * Get the prefix indicator for a node with children (left side, before icon).
+   * Returns empty string if prefixIndicator is not set.
+   */
+  private getPrefixIndicator(node: TreeNode): string {
+    if (this.template.prefixIndicator) {
+      return this.template.prefixIndicator(node);
+    }
+    return "";
+  }
+
+  /**
+   * Get the suffix indicator for a node with children (right side, after name).
+   * Uses suffixIndicator function if set, otherwise falls back to collapse/expand strings.
+   */
+  private getSuffixIndicator(node: TreeNode): string {
+    if (this.template.suffixIndicator) {
+      return this.template.suffixIndicator(node);
+    }
+    // Fall back to collapse/expand strings
+    return node.extended ? this.template.expand : this.template.collapse;
+  }
+
+  /**
    * Get the icon for a node, either from the node's explicit icon property
    * or by matching against iconRules.
+   *
+   * Priority order:
+   * 1. icon (explicit - string or function)
+   * 2. iconRules (pattern/function matching)
    */
   private getNodeIcon(node: TreeNode): string | undefined {
-    // Explicit icon takes precedence
-    if (node.icon) return node.icon;
+    // Explicit icon takes precedence - can be string or function
+    if (node.icon) {
+      if (typeof node.icon === "function") {
+        return node.icon(node);
+      }
+      return node.icon;
+    }
 
     // Check icon rules
     if (this.iconRules && this.iconRules.length > 0) {
@@ -307,10 +345,12 @@ class Tree extends List {
       this.toggleKeys = ["+", "space", "enter"];
     }
 
-    // Template defaults
+    // Template defaults - Classic style (blessed-contrib compatible)
     this.template = {
-      extend: options.template?.extend ?? " [+]",
-      retract: options.template?.retract ?? " [-]",
+      collapse: options.template?.collapse ?? " [+]", // Suffix when collapsed
+      expand: options.template?.expand ?? " [-]", // Suffix when expanded
+      prefixIndicator: options.template?.prefixIndicator, // Left side indicator
+      suffixIndicator: options.template?.suffixIndicator, // Right side indicator
       lines: options.template?.lines ?? true,
       spaces: options.template?.spaces ?? false,
       indent: options.template?.indent ?? 2,
@@ -458,7 +498,11 @@ class Tree extends List {
    * @param depth - The current depth level (0 = root)
    * @returns Array of formatted strings for display
    */
-  private walk(node: TreeNode, treePrefix: string, depth: number = 0): string[] {
+  private walk(
+    node: TreeNode,
+    treePrefix: string,
+    depth: number = 0,
+  ): string[] {
     const lines: string[] = [];
 
     // Get style colors
@@ -481,25 +525,34 @@ class Tree extends List {
       displayNode.extended = node.extended ?? this.defaultExtended;
       this.nodeLines[this.lineNbr++] = displayNode;
 
-      // Add suffix for root if it has children
-      let rootSuffix = "";
+      // Get indicators for root if it has children
+      let prefixIndicator = "";
+      let suffixIndicator = "";
       const rootChildren = this.getChildrenContent(node);
-      const hasChildren =
-        rootChildren && Object.keys(rootChildren).length > 0;
+      const hasChildren = rootChildren && Object.keys(rootChildren).length > 0;
 
       if (hasChildren) {
-        const suffixText = displayNode.extended
-          ? this.template.retract
-          : this.template.extend;
-        rootSuffix = this.wrapFg(suffixText, indicatorColor);
+        prefixIndicator = this.wrapFg(
+          this.getPrefixIndicator(displayNode),
+          indicatorColor,
+        );
+        suffixIndicator = this.wrapFg(
+          this.getSuffixIndicator(displayNode),
+          indicatorColor,
+        );
       }
 
       // Apply node color to root name
-      const nodeColor = this.getNodeColor(!!hasChildren, displayNode.extended, 0);
+      const nodeColor = this.getNodeColor(
+        !!hasChildren,
+        displayNode.extended,
+        0,
+      );
       const nodeIcon = this.formatIcon(node);
       const nodeName = this.wrapFg(node.name, nodeColor);
 
-      lines.push(nodeIcon + nodeName + rootSuffix);
+      // Prefix indicator before icon, suffix indicator after name
+      lines.push(prefixIndicator + nodeIcon + nodeName + suffixIndicator);
       treePrefix = " ";
       depth = 1;
     }
@@ -533,12 +586,26 @@ class Tree extends List {
         // Get children content for this child
         const childChildrenContent = this.getChildrenContent(child);
         const hasChildren =
-          !!childChildrenContent && Object.keys(childChildrenContent).length > 0;
+          !!childChildrenContent &&
+          Object.keys(childChildrenContent).length > 0;
         const isLastChild = i === numChildren - 1;
 
         // Build tree connector
         let connector: string;
-        let suffix = "";
+
+        // Get indicators for nodes with children
+        let prefixIndicator = "";
+        let suffixIndicator = "";
+        if (hasChildren) {
+          prefixIndicator = this.wrapFg(
+            this.getPrefixIndicator(child),
+            indicatorColor,
+          );
+          suffixIndicator = this.wrapFg(
+            this.getSuffixIndicator(child),
+            indicatorColor,
+          );
+        }
 
         if (this.template.spaces) {
           // In spaces mode: first level (depth=0 means children at level 1) gets full indent
@@ -558,10 +625,8 @@ class Tree extends List {
             rawConnector += "─";
           } else if (child.extended) {
             rawConnector += "┬";
-            suffix = this.wrapFg(this.template.retract, indicatorColor);
           } else {
             rawConnector += "─";
-            suffix = this.wrapFg(this.template.extend, indicatorColor);
           }
 
           // Apply line color to connector
@@ -580,28 +645,42 @@ class Tree extends List {
         // Get spacer (simple string property)
         const spacer = this.style?.spacer || "";
 
-        // Add line for this child
-        lines.push(treePrefix + connector + spacer + childIcon + childName + suffix);
+        // Build line: prefix indicator before icon, suffix indicator after name
+        lines.push(
+          treePrefix +
+            connector +
+            spacer +
+            prefixIndicator +
+            childIcon +
+            childName +
+            suffixIndicator,
+        );
         this.nodeLines[this.lineNbr++] = child as DisplayNode;
 
         // Calculate prefix for children
+        // Box drawing chars connect: │ at column X connects to ├ or └ at column X
         let childPrefix: string;
-        if (isLastChild || !this.template.lines) {
-          if (this.template.spaces) {
-            // In spaces mode: first level inherits full indent, subsequent levels add 1 space
-            if (depth === 0) {
-              // Children of root: inherit the full indent plus 1 space
-              childPrefix = " ".repeat(this.template.indent || 2) + " ";
-            } else {
-              // Deeper children: just add 1 space
-              childPrefix = treePrefix + " ";
-            }
+        const indent = this.template.indent || 2;
+
+        if (this.template.spaces) {
+          // Spaces mode (no lines)
+          if (depth === 0) {
+            childPrefix = " ".repeat(indent) + " ";
           } else {
-            const indentStr = " ".repeat(this.template.indent || 2);
-            childPrefix = treePrefix + indentStr;
+            childPrefix = treePrefix + " ";
           }
+        } else if (!this.template.lines) {
+          // No lines mode
+          childPrefix = treePrefix + " ".repeat(indent);
         } else {
-          childPrefix = treePrefix + this.wrapFg("│", lineColor);
+          // Lines mode - │ connects directly to child connectors
+          if (isLastChild) {
+            // Last child: space for alignment (no continuation line needed)
+            childPrefix = treePrefix + " ";
+          } else {
+            // Not last: │ continues down, connects to next ├ or └
+            childPrefix = treePrefix + this.wrapFg("│", lineColor);
+          }
         }
 
         // Recursively process children
