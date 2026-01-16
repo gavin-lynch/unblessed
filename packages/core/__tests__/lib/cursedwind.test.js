@@ -642,7 +642,9 @@ describe("cursedwind", () => {
       });
 
       it("should parse both expanded fg and bg colors", () => {
-        const result = parseClassName("tree-expanded-green tree-expanded-bg-blue");
+        const result = parseClassName(
+          "tree-expanded-green tree-expanded-bg-blue",
+        );
         expect(result.tree).toBeDefined();
         expect(result.tree.expanded).toEqual({ fg: 2, bg: 4 });
       });
@@ -692,7 +694,9 @@ describe("cursedwind", () => {
       });
 
       it("should parse multiple depth levels", () => {
-        const result = parseClassName("tree-depth-0-cyan tree-depth-1-magenta tree-depth-2-yellow");
+        const result = parseClassName(
+          "tree-depth-0-cyan tree-depth-1-magenta tree-depth-2-yellow",
+        );
         expect(result.tree).toBeDefined();
         expect(result.tree.depth).toHaveLength(3);
         expect(result.tree.depth[0]).toEqual({ fg: 6 });
@@ -713,7 +717,7 @@ describe("cursedwind", () => {
     describe("combined tree classes", () => {
       it("should parse multiple tree classes together", () => {
         const result = parseClassName(
-          "tree-line-cyan tree-indicator-yellow tree-expanded-green tree-collapsed-red tree-leaf-white"
+          "tree-line-cyan tree-indicator-yellow tree-expanded-green tree-collapsed-red tree-leaf-white",
         );
         expect(result.tree).toBeDefined();
         expect(result.tree.line).toEqual({ fg: 6 });
@@ -724,10 +728,17 @@ describe("cursedwind", () => {
       });
 
       it("should combine tree classes with other classes", () => {
-        const result = parseClassName("bg-black fg-white border-line tree-line-cyan p-2");
+        const result = parseClassName(
+          "bg-black fg-white border-line tree-line-cyan p-2",
+        );
         expect(result.style).toEqual({ bg: 0, fg: 7 });
         expect(result.border).toEqual({ type: "line" });
-        expect(result.padding).toEqual({ left: 2, right: 2, top: 2, bottom: 2 });
+        expect(result.padding).toEqual({
+          left: 2,
+          right: 2,
+          top: 2,
+          bottom: 2,
+        });
         expect(result.tree).toEqual({ line: { fg: 6 } });
       });
     });
@@ -756,7 +767,7 @@ describe("cursedwind", () => {
         const parsed = parseClassName("tree-line-cyan");
         const merged = mergeClassNameOptions(
           { style: { fg: "white", bg: "black" } },
-          parsed
+          parsed,
         );
 
         expect(merged.style.fg).toBe("white");

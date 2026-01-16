@@ -497,7 +497,11 @@ const layoutClasses: Record<string, Partial<ParsedClassName>> = {
  */
 function parseTreeClass(
   cls: string,
-): { key: keyof ParsedTreeStyle; style: Partial<Style>; depth?: number } | null {
+): {
+  key: keyof ParsedTreeStyle;
+  style: Partial<Style>;
+  depth?: number;
+} | null {
   // Tree line color: tree-line-cyan, tree-line-#00ff00
   const lineMatch = cls.match(/^tree-line-(.+)$/);
   if (lineMatch) {
