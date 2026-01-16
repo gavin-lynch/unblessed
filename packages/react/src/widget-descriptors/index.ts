@@ -30,3 +30,4 @@ export { InputDescriptor, type InputProps } from "../components/Input.js";
 export { ListDescriptor, type ListProps } from "../components/List.js";
 export { SpacerDescriptor, type SpacerProps } from "../components/Spacer.js";
 export { TextDescriptor, type TextProps } from "../components/Text.js";
+export { TreeDescriptor, type TreeProps } from "../components/Tree.js";

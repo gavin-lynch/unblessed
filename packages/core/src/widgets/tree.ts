@@ -74,10 +74,17 @@ interface DisplayNode extends TreeNode {
  *   console.log('Selected:', node.name);
  * });
  *
+ * // Double-click toggles expansion by default (when mouse is enabled)
+ * tree.on('dblclick', (data) => {
+ *   console.log('Double-clicked at:', data.x, data.y);
+ * });
+ *
  * screen.render();
  * ```
  *
  * @fires select - Emitted when a node is selected. Receives (node, index).
+ * @fires dblclick - Emitted when a node is double-clicked. Receives mouse data.
+ *                   By default, double-click toggles node expansion (disable with dblclick: false).
  *
  * @see {@link List} for inherited properties and methods
  * @see {@link TreeOptions} for all available configuration options
@@ -108,9 +115,9 @@ class Tree extends List {
   private defaultExtended: boolean;
 
   /**
-   * Template configuration for rendering.
+   * Config for tree rendering structure.
    */
-  private template: {
+  private config: {
     collapse: string;
     expand: string;
     prefixIndicator?: (node: TreeNode) => string;
@@ -247,8 +254,8 @@ class Tree extends List {
    * Returns empty string if prefixIndicator is not set.
    */
   private getPrefixIndicator(node: TreeNode): string {
-    if (this.template.prefixIndicator) {
-      return this.template.prefixIndicator(node);
+    if (this.config.prefixIndicator) {
+      return this.config.prefixIndicator(node);
     }
     return "";
   }
@@ -258,11 +265,11 @@ class Tree extends List {
    * Uses suffixIndicator function if set, otherwise falls back to collapse/expand strings.
    */
   private getSuffixIndicator(node: TreeNode): string {
-    if (this.template.suffixIndicator) {
-      return this.template.suffixIndicator(node);
+    if (this.config.suffixIndicator) {
+      return this.config.suffixIndicator(node);
     }
     // Fall back to collapse/expand strings
-    return node.extended ? this.template.expand : this.template.collapse;
+    return node.extended ? this.config.expand : this.config.collapse;
   }
 
   /**
@@ -345,15 +352,15 @@ class Tree extends List {
       this.toggleKeys = ["+", "space", "enter"];
     }
 
-    // Template defaults - Classic style (blessed-contrib compatible)
-    this.template = {
-      collapse: options.template?.collapse ?? " [+]", // Suffix when collapsed
-      expand: options.template?.expand ?? " [-]", // Suffix when expanded
-      prefixIndicator: options.template?.prefixIndicator, // Left side indicator
-      suffixIndicator: options.template?.suffixIndicator, // Right side indicator
-      lines: options.template?.lines ?? true,
-      spaces: options.template?.spaces ?? false,
-      indent: options.template?.indent ?? 2,
+    // Config defaults - Classic style (blessed-contrib compatible)
+    this.config = {
+      collapse: options.config?.collapse ?? " [+]", // Suffix when collapsed
+      expand: options.config?.expand ?? " [-]", // Suffix when expanded
+      prefixIndicator: options.config?.prefixIndicator, // Left side indicator
+      suffixIndicator: options.config?.suffixIndicator, // Right side indicator
+      lines: options.config?.lines ?? true,
+      spaces: options.config?.spaces ?? false,
+      indent: options.config?.indent ?? 2,
     };
 
     // Icon rules for automatic icon assignment
@@ -381,6 +388,17 @@ class Tree extends List {
       this.on("select", () => {
         // Select event from List will be emitted, we handle toggle separately
       });
+
+      // Handle double-click to toggle node expansion (default: enabled)
+      // Only toggle when double-click is on an actual item (not empty space)
+      if (options.dblclick !== false) {
+        this.on("dblclick", (_data: any, item: any, index: number) => {
+          // Only toggle if the dblclick was on an item (item and index are provided by List)
+          if (item !== undefined && index !== undefined) {
+            this.toggleSelected();
+          }
+        });
+      }
     }
   }
 
@@ -472,6 +490,71 @@ class Tree extends List {
     this.setExtendedRecursive(this.data, false);
     this.setData(this.data);
     this.screen.render();
+  }
+
+  /**
+   * Update the config at runtime.
+   * Triggers a re-render of the tree.
+   *
+   * @param config - Partial config to merge
+   * @param replace - If true, reset to defaults first then apply (for preset switching)
+   * @example
+   * tree.setConfig({ lines: false, spaces: true, indent: 4 });
+   * // Full replacement for preset switching:
+   * tree.setConfig({ ...TreePresets.Modern.config }, true);
+   */
+  setConfig(
+    config: Partial<typeof this.config>,
+    replace: boolean = false,
+  ): void {
+    if (replace) {
+      // Reset to defaults first, then apply new config
+      this.config = {
+        collapse: " [+]",
+        expand: " [-]",
+        prefixIndicator: undefined,
+        suffixIndicator: undefined,
+        lines: true,
+        spaces: false,
+        indent: 2,
+      };
+    }
+    Object.assign(this.config, config);
+    if (this.data) {
+      this.setData(this.data);
+    }
+  }
+
+  /**
+   * Update the icon rules at runtime.
+   * Triggers a re-render of the tree.
+   *
+   * @param iconRules - New icon rules array
+   * @example
+   * tree.setIconRules([
+   *   { test: '*.ts', icon: '' },
+   *   { test: '*', icon: '' },
+   * ]);
+   */
+  setIconRules(iconRules: TreeIconRule[]): void {
+    this.iconRules = iconRules;
+    if (this.data) {
+      this.setData(this.data);
+    }
+  }
+
+  /**
+   * Get the current config.
+   */
+  getConfig(): typeof this.config {
+    return { ...this.config };
+  }
+
+  /**
+   * Get the current icon rules.
+   */
+  getIconRules(): TreeIconRule[] {
+    return [...this.iconRules];
   }
 
   /**
@@ -607,11 +690,11 @@ class Tree extends List {
           );
         }
 
-        if (this.template.spaces) {
+        if (this.config.spaces) {
           // In spaces mode: first level (depth=0 means children at level 1) gets full indent
           // Nested levels get no extra connector (indentation handled by treePrefix)
-          connector = depth === 0 ? " ".repeat(this.template.indent || 2) : "";
-        } else if (!this.template.lines) {
+          connector = depth === 0 ? " ".repeat(this.config.indent || 2) : "";
+        } else if (!this.config.lines) {
           connector = this.wrapFg("|-", lineColor);
         } else {
           let rawConnector: string;
@@ -660,16 +743,16 @@ class Tree extends List {
         // Calculate prefix for children
         // Box drawing chars connect: │ at column X connects to ├ or └ at column X
         let childPrefix: string;
-        const indent = this.template.indent || 2;
+        const indent = this.config.indent || 2;
 
-        if (this.template.spaces) {
+        if (this.config.spaces) {
           // Spaces mode (no lines)
           if (depth === 0) {
             childPrefix = " ".repeat(indent) + " ";
           } else {
             childPrefix = treePrefix + " ";
           }
-        } else if (!this.template.lines) {
+        } else if (!this.config.lines) {
           // No lines mode
           childPrefix = treePrefix + " ".repeat(indent);
         } else {

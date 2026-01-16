@@ -15,18 +15,18 @@
  * ```
  */
 
-import type { TreeIconRule, TreeTemplate } from "../types/options.js";
+import type { TreeConfig, TreeIconRule } from "../types/options.js";
 import type { TreeStyle } from "../types/style.js";
 
 /**
  * A complete tree preset configuration.
- * Combines template, style, and iconRules for a cohesive look.
+ * Combines config, style, and iconRules for a cohesive look.
  */
 export interface TreePreset {
   /**
-   * Template configuration for tree rendering structure.
+   * Config for tree rendering structure.
    */
-  template: TreeTemplate;
+  config: TreeConfig;
 
   /**
    * Style configuration for colors and visual appearance.
@@ -157,7 +157,7 @@ const UnicodeIcons = {
  * ```
  */
 export const Modern: TreePreset = {
-  template: {
+  config: {
     lines: false,
     spaces: true,
     indent: 2,
@@ -316,7 +316,7 @@ export const Modern: TreePreset = {
  * ```
  */
 export const Classic: TreePreset = {
-  template: {
+  config: {
     lines: true, // Show tree lines (├─, └─, │)
     spaces: false, // Don't use space-based indentation
     indent: 2, // 2-space indent for continuation
@@ -358,9 +358,9 @@ export const Classic: TreePreset = {
  * // Override specific preset options
  * const tree = new Tree({
  *   ...TreePresets.Modern,
- *   template: {
- *     ...TreePresets.Modern.template,
- *     indent: 2,  // Override indent
+ *   config: {
+ *     ...TreePresets.Modern.config,
+ *     indent: 4,  // Override indent
  *   },
  *   parent: screen,
  *   data: myData,

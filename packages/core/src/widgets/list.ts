@@ -318,6 +318,17 @@ class List extends ScrollableBox {
         this.select(item);
         this.screen.render();
       });
+
+      // Forward double-click events from items to the list
+      item.on("dblclick", (data: any) => {
+        this.focus();
+        // Select the item first if not already selected
+        if (this.items[this.selected] !== item) {
+          this.select(item);
+        }
+        // Emit dblclick on the list with item info
+        this.emit("dblclick", data, item, this.selected);
+      });
     }
 
     this.emit("create item");
