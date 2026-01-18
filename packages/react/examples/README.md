@@ -18,6 +18,18 @@ tsx keyboard-game.tsx
 tsx text-wrap-demo.tsx
 tsx theme-demo.tsx
 tsx declarative-animations-demo.tsx
+tsx tree-demo.tsx
+
+# Run contrib widget examples
+tsx contrib-line-demo.tsx
+tsx contrib-bar-demo.tsx
+tsx contrib-gauge-demo.tsx
+tsx contrib-donut-demo.tsx
+tsx contrib-sparkline-demo.tsx
+tsx contrib-log-demo.tsx
+tsx contrib-table-demo.tsx
+tsx contrib-lcd-demo.tsx
+tsx contrib-dashboard-demo.tsx
 ```
 
 ## Examples
@@ -124,6 +136,34 @@ A simple game demonstrating keyboard event handling:
 - Dynamic message updates
 - Real-time grid rendering
 
+### contrib-*-demo.tsx - @unblessed/contrib Widget Examples
+
+Examples demonstrating the use of @unblessed/contrib widgets within React:
+
+**contrib-line-demo.tsx** - Line chart with multiple series, real-time updates, axis labels, and legend
+
+**contrib-bar-demo.tsx** - Vertical bar chart with customizable colors, labels, and real-time updates
+
+**contrib-gauge-demo.tsx** - Single value and stacked gauge widgets with progress indicators
+
+**contrib-donut-demo.tsx** - Donut/pie charts with multiple segments, custom colors, and labels
+
+**contrib-sparkline-demo.tsx** - ASCII sparklines with multiple series and auto-scrolling buffer
+
+**contrib-log-demo.tsx** - Scrolling log display with color tags and buffer management
+
+**contrib-table-demo.tsx** - Tabular data display with headers, keyboard navigation, and row selection
+
+**contrib-lcd-demo.tsx** - 16-segment LED display with multiple elements and real-time updates
+
+**contrib-dashboard-demo.tsx** - Comprehensive dashboard combining multiple contrib widgets in a single layout
+
+**Features:**
+- Integration of non-React widgets via `ContribWidgetWrapper` helper
+- Real-time data updates and animations
+- Responsive layouts with flexbox
+- Event handling and state management
+
 ## Development
 
 ## Creating New Examples
@@ -162,6 +202,37 @@ screen.render();
 - Always provide a way to exit (Ctrl+C handler)
 - Use React state hooks for interactive UIs
 - Check `screen.width` and `screen.height` for responsive layouts
+
+### Using Contrib Widgets in React
+
+Contrib widgets (from @unblessed/contrib) are not React components, but can be used via the `ContribWidgetWrapper` helper:
+
+```tsx
+import { Line } from '@unblessed/contrib';
+import { ContribWidgetWrapper } from './contrib-wrapper';
+
+function MyChart() {
+  const [data, setData] = useState(/* ... */);
+
+  return (
+    <ContribWidgetWrapper
+      createWidget={(opts) => new Line(opts)}
+      widgetOptions={{
+        label: 'Chart',
+        data: data,
+      }}
+      boxProps={{
+        width: '50%',
+        height: '50%',
+        border: 1,
+      }}
+      deps={[data]} // Recreate widget when data changes
+    />
+  );
+}
+```
+
+The wrapper manages the widget lifecycle and integrates it into React's rendering system.
 
 ## Troubleshooting
 
