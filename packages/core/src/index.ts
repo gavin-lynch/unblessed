@@ -21,6 +21,7 @@ export * from "./lib/alias.js";
 export * from "./lib/animation-utils.js";
 export * from "./lib/border-colors.js";
 export * from "./lib/border-styles.js";
+export * from "./lib/canvas/index.js";
 export { default as colors } from "./lib/colors.js";
 export * from "./lib/events.js";
 export * from "./lib/helpers.js";
@@ -34,6 +35,7 @@ export * from "./mixins/scrollable.js";
 // Re-export core widgets
 export * from "./widgets/box.js";
 export * from "./widgets/braille-canvas.js";
+export * from "./widgets/canvas.js";
 export * from "./widgets/char-canvas.js";
 export * from "./widgets/element.js";
 export * from "./widgets/line.js";

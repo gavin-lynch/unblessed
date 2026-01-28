@@ -18,6 +18,7 @@
  */
 
 import type { Runtime } from "@unblessed/core";
+import { setRuntime } from "@unblessed/core";
 import { Buffer } from "buffer";
 import * as child_process from "child_process";
 import { EventEmitter } from "events";
@@ -61,6 +62,15 @@ export class NodeRuntime implements Runtime {
     net: net,
     tty: tty,
   };
+}
+
+// Auto-initialize runtime when this module is imported
+// This allows users to simply import and use widgets without manual initialization
+// Skip auto-init in test environments to allow tests to use mock runtimes
+if (typeof process !== "undefined" && process.env.NODE_ENV !== "test") {
+  // Initialize the runtime - setRuntime is safe to call even if already set
+  // In Node.js, we always want to use NodeRuntime, so it's fine to set it
+  setRuntime(new NodeRuntime());
 }
 
 // Re-export all from @unblessed/core
