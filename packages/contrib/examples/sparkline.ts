@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Sparkline example
- * 
+ *
  * Demonstrates sparkline widget usage.
  */
 

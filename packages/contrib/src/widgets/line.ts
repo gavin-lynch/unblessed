@@ -13,7 +13,7 @@ import {
   DrawilleCanvas,
   type BoxOptions,
 } from "@unblessed/core";
-import { abbreviateNumber, toColorTag } from "../utils.js";
+import { abbreviateNumber, getColorCode, toColorTag } from "../utils.js";
 
 /**
  * Data series for line chart
@@ -166,7 +166,9 @@ export class Line extends CanvasWidget {
       let max = -Infinity;
       for (const series of seriesData as LineSeriesData[]) {
         if (series.y.length) {
-          const current = Math.max(...series.y.map((v) => parseFloat(String(v))));
+          const current = Math.max(
+            ...series.y.map((v) => parseFloat(String(v))),
+          );
           if (current > max) {
             max = current;
           }
@@ -256,7 +258,9 @@ export class Line extends CanvasWidget {
       minY: number,
     ): void => {
       const lineStyle = style || {};
-      c.strokeStyle = lineStyle.line || this.options.style!.line!;
+      // getColorCode preserves RGB arrays for truecolor, uses x256 for 256-color (blessed-contrib compatibility)
+      const lineColor = lineStyle.line || this.options.style!.line!;
+      c.strokeStyle = getColorCode(lineColor) as any;
 
       c.moveTo(0, 0);
       c.beginPath();

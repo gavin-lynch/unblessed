@@ -1,13 +1,13 @@
 #!/usr/bin/env tsx
 /**
  * Carousel example
- * 
+ *
  * Demonstrates cycling through multiple pages of widgets.
  */
 
-import { Screen } from "@unblessed/node";
-import { Grid, Line, WorldMap, Carousel } from "../src/index.js";
 import { Box } from "@unblessed/core";
+import { Screen } from "@unblessed/node";
+import { Carousel, Grid, Line, WorldMap } from "../src/index.js";
 
 function page1(screen: Screen) {
   const grid = new Grid({ rows: 4, cols: 4, screen: screen });

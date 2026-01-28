@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Line chart zoomed in example
- * 
+ *
  * Demonstrates line chart with a narrow Y-axis range (zoomed view).
  */
 

@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Sparkline Demo - @unblessed/contrib Sparkline widget example
- * 
+ *
  * Demonstrates:
  * - Multiple sparkline series
  * - Real-time data streaming
  * - ASCII sparkline characters
  * - Auto-scrolling buffer
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-sparkline-demo.tsx
  */
 
-import { Sparkline, type SparklineData } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useState } from "react";
+import { Sparkline, type SparklineData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 
@@ -75,10 +75,12 @@ function SparklineDemo() {
 
       <Box height={3} paddingTop={1}>
         <Text>
-          {data.titles.map((title, i) => {
-            const last = data.data[i][data.data[i].length - 1];
-            return `${title}: ${last.toFixed(1)}`;
-          }).join(" | ")}
+          {data.titles
+            .map((title, i) => {
+              const last = data.data[i][data.data[i].length - 1];
+              return `${title}: ${last.toFixed(1)}`;
+            })
+            .join(" | ")}
         </Text>
       </Box>
     </Box>

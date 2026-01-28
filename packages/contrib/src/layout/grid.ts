@@ -6,7 +6,7 @@
  * Based on blessed-contrib's grid.js
  */
 
-import type { Screen, BoxOptions, Element } from "@unblessed/core";
+import type { BoxOptions, Element, Screen } from "@unblessed/core";
 import { mergeRecursive } from "../utils.js";
 
 /**

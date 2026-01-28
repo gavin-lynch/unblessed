@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Log Widget Demo - @unblessed/contrib Log widget example
- * 
+ *
  * Demonstrates:
  * - Scrolling log display
  * - Auto-scroll to bottom
  * - Color tags support
  * - Buffer management
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-log-demo.tsx
  */
 
-import { Log } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useRef, useState } from "react";
+import { Log } from "../../contrib/src/index.js";
 import { Box, render, Text, useScreen } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 

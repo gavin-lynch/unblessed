@@ -6,7 +6,7 @@
  * platform-specific functionality.
  */
 
-export { setRuntime } from "./runtime-context.js";
+export { getRuntime, setRuntime } from "./runtime-context.js";
 export * from "./runtime.js";
 
 // Re-export types
@@ -22,6 +22,9 @@ export * from "./lib/animation-utils.js";
 export * from "./lib/border-colors.js";
 export * from "./lib/border-styles.js";
 export * from "./lib/canvas/index.js";
+export * from "./lib/color-capabilities.js";
+export * from "./lib/color-converter.js";
+export * from "./lib/color-types.js";
 export { default as colors } from "./lib/colors.js";
 export * from "./lib/events.js";
 export * from "./lib/helpers.js";

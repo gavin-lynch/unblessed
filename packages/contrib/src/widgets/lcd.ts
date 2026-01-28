@@ -433,6 +433,7 @@ export class LCD extends CanvasWidget {
   override type = "lcd";
   declare options: LCDOptions;
   private segment16: SixteenSegment | null = null;
+  private _pendingDisplay: string | null = null;
 
   constructor(options: LCDOptions = {}) {
     super(options, DrawilleCanvas);
@@ -449,10 +450,18 @@ export class LCD extends CanvasWidget {
 
     this.on("attach", () => {
       const display = String(this.options.display ?? 1234);
+
+      // Canvas should be ready in attach handler, but double-check
+      if (!this.ctx || !this._canvas) {
+        // Queue for later
+        this._pendingDisplay = display;
+        return;
+      }
+
       if (!this.segment16) {
         this.segment16 = new SixteenSegment(
           this.options.elements!,
-          this.ctx!,
+          this.ctx,
           this.canvasSize.width,
           this.canvasSize.height,
           0,
@@ -460,7 +469,11 @@ export class LCD extends CanvasWidget {
           this.options,
         );
       }
-      this.setDisplay(display);
+
+      // Apply pending display if there is one, otherwise use default
+      const displayToSet = this._pendingDisplay ?? display;
+      this._pendingDisplay = null;
+      this.setDisplay(displayToSet);
     });
   }
 
@@ -479,14 +492,27 @@ export class LCD extends CanvasWidget {
    * Set the display text
    */
   setDisplay(display: string | number): void {
-    if (!this.ctx) {
-      throw new Error(
-        "Canvas context does not exist. setDisplay() must be called after the widget has been added to the screen via screen.append()",
-      );
+    const displayStr = String(display);
+
+    // If canvas isn't ready yet, queue the value
+    if (!this.ctx || !this.segment16) {
+      this._pendingDisplay = displayStr;
+      return;
     }
 
     this.ctx.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
-    this.segment16?.displayText(String(display));
+    this.segment16.displayText(displayStr);
+
+    // Update content from canvas (canvas widget's render() does this, but we need it immediately)
+    if (this._canvas) {
+      const frame = this._canvas.frame();
+      this.content = frame;
+    }
+
+    // Trigger screen render to display the updated content
+    if (this.screen) {
+      this.screen.render();
+    }
   }
 
   /**

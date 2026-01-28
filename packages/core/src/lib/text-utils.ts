@@ -97,6 +97,8 @@ function findAnsiCodes(
 /**
  * Get all active ANSI codes at a given position in the text
  * Returns the codes that should be active at that position
+ *
+ * EXPORTED FOR TESTING
  */
 export function getActiveAnsiCodes(text: string, position: number): string {
   const codes = findAnsiCodes(text);
@@ -159,25 +161,21 @@ export function getActiveAnsiCodes(text: string, position: number): string {
       // Foreground color
       else if (param >= 30 && param <= 37) state.fg = param;
       else if (param === 38) {
-        // 256 color or RGB
+        // 256 color
         if (params[i + 1] === 5) {
-          state.fg = 38; // Mark as custom
+          const colorCode = params[i + 2];
+          state.fg = colorCode;
           i += 2;
-        } else if (params[i + 1] === 2) {
-          state.fg = 38; // Mark as custom
-          i += 4;
         }
       } else if (param === 39) delete state.fg;
       // Background color
       else if (param >= 40 && param <= 47) state.bg = param;
       else if (param === 48) {
-        // 256 color or RGB
+        // 256 color
         if (params[i + 1] === 5) {
-          state.bg = 48; // Mark as custom
+          const colorCode = params[i + 2];
+          state.bg = colorCode;
           i += 2;
-        } else if (params[i + 1] === 2) {
-          state.bg = 48; // Mark as custom
-          i += 4;
         }
       } else if (param === 49) delete state.bg;
     }
@@ -193,6 +191,22 @@ export function getActiveAnsiCodes(text: string, position: number): string {
   if (state.inverse) result.push("\x1b[7m");
   if (state.hidden) result.push("\x1b[8m");
   if (state.strikethrough) result.push("\x1b[9m");
+
+  // Output color codes
+  if (state.fg !== undefined) {
+    if (state.fg >= 0 && state.fg <= 7) {
+      result.push(`\x1b[3${state.fg}m`);
+    } else {
+      result.push(`\x1b[38;5;${state.fg}m`);
+    }
+  }
+  if (state.bg !== undefined) {
+    if (state.bg >= 0 && state.bg <= 7) {
+      result.push(`\x1b[4${state.bg}m`);
+    } else {
+      result.push(`\x1b[48;5;${state.bg}m`);
+    }
+  }
 
   return result.join("");
 }

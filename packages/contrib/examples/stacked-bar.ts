@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Stacked bar chart example
- * 
+ *
  * Demonstrates stacked bar chart with multiple categories.
  */
 

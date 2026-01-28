@@ -8,9 +8,9 @@
  */
 
 import {
+  AnsiTermCanvas,
   Box,
   CanvasWidget,
-  AnsiTermCanvas,
   type BoxOptions,
 } from "@unblessed/core";
 import { abbreviateNumber, toColorTag } from "../utils.js";
@@ -178,8 +178,8 @@ export class StackedBar extends CanvasWidget {
     const c = this.ctx!;
 
     // Draw category label
-    c.strokeStyle = "normal";
-    c.fillStyle = this.options.labelColor ?? "white";
+    c.strokeStyle = "normal" as any;
+    c.fillStyle = (this.options.labelColor ?? "white") as any;
     if (this.options.showText) {
       c.fillText(category, x + 1, this.canvasSize.height - BUFFER_FROM_BOTTOM);
     }
@@ -193,7 +193,8 @@ export class StackedBar extends CanvasWidget {
     );
 
     // Start painting from bottom of bar, section by section
-    let y = maxBarHeight + BUFFER_FROM_TOP;
+    // Bars should end one row above the labels, so subtract 1 from the bottom
+    let y = maxBarHeight + BUFFER_FROM_TOP - 1;
     let availableBarHeight = currentBarHeight;
 
     for (let i = 0; i < bar.length; i++) {
@@ -218,7 +219,7 @@ export class StackedBar extends CanvasWidget {
     curBarSummedValue: number,
     currentBarHeight: number,
     availableBarHeight: number,
-    bg: string | number | number[],
+    bg: any,
   ): number {
     const c = this.ctx!;
 
@@ -230,20 +231,20 @@ export class StackedBar extends CanvasWidget {
             Math.round(currentBarHeight * (data / curBarSummedValue)),
           );
 
-    c.strokeStyle = bg;
+    c.strokeStyle = bg as any;
 
     if (currStackHeight > 0) {
       const calcY = y - currStackHeight;
-      const calcHeight = Math.max(0, currStackHeight - 1);
+      const calcHeight = currStackHeight;
 
       c.fillRect(x, calcY, this.options.barWidth!, calcHeight);
 
       // Set text background to match bar color, foreground to white
       if (this.options.showText) {
         // Set background color for text (matching bar color)
-        c._canvas.fontBg = bg;
+        c._canvas.fontBg = bg as any;
         // Set foreground color for text (white by default, or user-specified)
-        c.fillStyle = this.options.barFgColor ?? "white";
+        c.fillStyle = (this.options.barFgColor ?? "white") as any;
         const str = abbreviateNumber(data);
         c.fillText(
           str,
@@ -287,7 +288,7 @@ export class StackedBar extends CanvasWidget {
     const maxChars = legendWidth - 2;
 
     for (let i = 0; i < bars.stackedCategory.length; i++) {
-      const color = toColorTag(this.options.barBgColor?.[i] ?? "blue");
+      const color = toColorTag((this.options.barBgColor?.[i] ?? "blue") as any);
       legendText +=
         "{" +
         color +

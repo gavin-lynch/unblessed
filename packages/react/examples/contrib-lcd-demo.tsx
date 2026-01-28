@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * LCD Demo - @unblessed/contrib LCD widget example
- * 
+ *
  * Demonstrates:
  * - 16-segment LED display
  * - Multiple display elements
  * - Real-time updates
  * - Custom colors
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-lcd-demo.tsx
  */
 
-import { LCD } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useRef, useState } from "react";
+import { LCD } from "../../contrib/src/index.js";
 import { Box, render, Text, useScreen } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 

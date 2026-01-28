@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Log widget example
- * 
+ *
  * Demonstrates log widget with scrolling and colored output.
  */
 

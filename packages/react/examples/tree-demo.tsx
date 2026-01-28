@@ -44,7 +44,8 @@ const modernLines = [
   "",
   "{bold}iconRules:{/}",
   ...TreePresets.Modern.iconRules.map((rule) => {
-    const pattern = typeof rule.test === "string" ? rule.test : "{gray-fg}(fn){/}";
+    const pattern =
+      typeof rule.test === "string" ? rule.test : "{gray-fg}(fn){/}";
     return `  {cyan-fg}${pattern}{/} → {yellow-fg}${rule.icon}{/}`;
   }),
 ];
@@ -147,16 +148,22 @@ type Panel = "classicTree" | "modernTree" | "classicInfo" | "modernInfo";
 function App() {
   const [focused, setFocused] = useState<Panel>("classicTree");
 
-  const panels: Panel[] = ["classicTree", "modernTree", "classicInfo", "modernInfo"];
-  
+  const panels: Panel[] = [
+    "classicTree",
+    "modernTree",
+    "classicInfo",
+    "modernInfo",
+  ];
+
   useKeyboard({
-    tab: () => setFocused((f) => {
-      const idx = panels.indexOf(f);
-      return panels[(idx + 1) % panels.length];
-    }),
+    tab: () =>
+      setFocused((f) => {
+        const idx = panels.indexOf(f);
+        return panels[(idx + 1) % panels.length];
+      }),
   });
 
-  const borderColor = (panel: Panel) => focused === panel ? "cyan" : "white";
+  const borderColor = (panel: Panel) => (focused === panel ? "cyan" : "white");
 
   return (
     <Box flexDirection="column" width="100%" height="100%">

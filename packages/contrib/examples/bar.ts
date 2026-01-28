@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Bar chart example
- * 
+ *
  * Demonstrates basic bar chart usage with server utilization data.
  */
 

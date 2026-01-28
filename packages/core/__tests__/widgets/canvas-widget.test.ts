@@ -4,13 +4,12 @@
  * Tests the blessed-contrib compatible Canvas widget.
  */
 
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
+  AnsiTermCanvas,
   CanvasWidget,
   createBrailleCanvas,
   createCharCanvas,
-  DrawilleCanvas,
-  AnsiTermCanvas,
 } from "../../src/widgets/canvas.js";
 import { Screen } from "../../src/widgets/screen.js";
 import { initTestRuntime } from "../helpers/mock.js";

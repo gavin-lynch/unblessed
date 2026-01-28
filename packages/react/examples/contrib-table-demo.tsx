@@ -1,20 +1,20 @@
 #!/usr/bin/env tsx
 /**
  * Table Demo - @unblessed/contrib Table widget example
- * 
+ *
  * Demonstrates:
  * - Tabular data display
  * - Headers and rows
  * - Keyboard navigation
  * - Row selection
  * - Scrollable content
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-table-demo.tsx
  */
 
-import { Table, type TableData } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useState } from "react";
+import { Table, type TableData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 

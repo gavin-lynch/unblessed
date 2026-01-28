@@ -172,12 +172,15 @@ export class Carousel {
 
     // Bind control keys
     if (this.options.controlKeys) {
-      this.screen.key(["right", "left", "home", "end"], (_ch: string, key: { name: string }) => {
-        if (key.name === "right") this.next();
-        if (key.name === "left") this.prev();
-        if (key.name === "home") this.home();
-        if (key.name === "end") this.end();
-      });
+      this.screen.key(
+        ["right", "left", "home", "end"],
+        (_ch: string, key: { name: string }) => {
+          if (key.name === "right") this.next();
+          if (key.name === "left") this.prev();
+          if (key.name === "home") this.home();
+          if (key.name === "end") this.end();
+        },
+      );
     }
   }
 

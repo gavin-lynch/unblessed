@@ -10,14 +10,20 @@
  * - https://github.com/madbence/node-drawille-canvas
  */
 
-export { DrawilleCanvas, getFgCode, getBgCode, COLOR_NAMES } from "./drawille.js";
-export type { CanvasColor } from "./drawille.js";
 export { AnsiTermCanvas } from "./ansi-term.js";
+export * from "./color-utils.js";
 export { Canvas2DContext } from "./context2d.js";
-export type { InnerCanvas, CanvasConstructor } from "./context2d.js";
+export type { CanvasConstructor, InnerCanvas } from "./context2d.js";
+export {
+  COLOR_NAMES,
+  DrawilleCanvas,
+  getBgCode,
+  getFgCode,
+} from "./drawille.js";
+export type { CanvasColor } from "./drawille.js";
 
-import { DrawilleCanvas } from "./drawille.js";
 import { Canvas2DContext, type CanvasConstructor } from "./context2d.js";
+import { DrawilleCanvas } from "./drawille.js";
 
 /**
  * Canvas - Terminal canvas with HTML5 Canvas-like API

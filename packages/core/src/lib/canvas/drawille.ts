@@ -10,7 +10,8 @@
  * - https://github.com/yaronn/drawille-blessed-contrib
  */
 
-import colors from "../colors.js";
+import { toAnsiCode } from "../color-converter.js";
+import type { ColorInput } from "../color-types.js";
 
 /**
  * Braille dot mapping (2×4 grid)
@@ -52,72 +53,34 @@ export const COLOR_NAMES: Record<string, number> = {
 
 /**
  * Get foreground ANSI escape code for a color
+ * Supports truecolor RGB arrays [r, g, b]
+ * Uses unified color converter for consistency
+ *
+ * @deprecated Use toAnsiCode() from color-converter.ts instead
  */
-export function getFgCode(color: string | number | number[]): string {
-  // String value (color name)
-  if (typeof color === "string" && color !== "normal") {
-    const code = COLOR_NAMES[color];
-    if (code !== undefined) {
-      return `\x1b[3${code}m`;
-    }
-    // Try to match hex color
-    const matched = colors.match(color);
-    if (matched >= 0) {
-      return `\x1b[38;5;${matched}m`;
-    }
-  }
-
-  // RGB array value
-  if (Array.isArray(color) && color.length === 3) {
-    const matched = colors.match(color);
-    return `\x1b[38;5;${matched}m`;
-  }
-
-  // Number (256-color code)
-  if (typeof color === "number") {
-    return `\x1b[38;5;${color}m`;
-  }
-
-  // Default (reset)
-  return "\x1b[39m";
+export function getFgCode(color: ColorInput): string {
+  return toAnsiCode(color, "fg");
 }
 
 /**
  * Get background ANSI escape code for a color
+ * Supports truecolor RGB arrays [r, g, b]
+ * Uses unified color converter for consistency
+ *
+ * @deprecated Use toAnsiCode() from color-converter.ts instead
  */
-export function getBgCode(color: string | number | number[]): string {
-  // String value (color name)
-  if (typeof color === "string" && color !== "normal") {
-    const code = COLOR_NAMES[color];
-    if (code !== undefined) {
-      return `\x1b[4${code}m`;
-    }
-    // Try to match hex color
-    const matched = colors.match(color);
-    if (matched >= 0) {
-      return `\x1b[48;5;${matched}m`;
-    }
-  }
-
-  // RGB array value
-  if (Array.isArray(color) && color.length === 3) {
-    const matched = colors.match(color);
-    return `\x1b[48;5;${matched}m`;
-  }
-
-  // Number (256-color code)
-  if (typeof color === "number") {
-    return `\x1b[48;5;${color}m`;
-  }
-
-  // Default (reset)
-  return "\x1b[49m";
+export function getBgCode(color: ColorInput): string {
+  return toAnsiCode(color, "bg");
 }
 
 /**
  * Color type - can be a color name, hex string, 256-color code, or RGB array
+ * Compatible with ColorInput from unified color system
  */
-export type CanvasColor = string | number | number[];
+export type CanvasColor = ColorInput;
+
+// Re-export ColorInput for convenience
+export type { ColorInput } from "../color-types.js";
 
 /**
  * DrawilleCanvas - Low-level braille pixel buffer
@@ -188,7 +151,8 @@ export class DrawilleCanvas {
     const mask = BRAILLE_MAP[Math.floor(y) % 4][Math.floor(x) % 2];
 
     this.content[coord] |= mask;
-    this.colors[coord] = getFgCode(this.color);
+    // Use unified color converter for ANSI code generation
+    this.colors[coord] = toAnsiCode(this.color, "fg");
     this.chars[coord] = null;
   }
 
@@ -247,8 +211,8 @@ export class DrawilleCanvas {
   writeText(str: string, x: number, y: number): void {
     const coord = this.getCoord(x, y);
 
-    const bg = getBgCode(this.fontBg);
-    const fg = getFgCode(this.fontFg);
+    const bg = toAnsiCode(this.fontBg, "bg");
+    const fg = toAnsiCode(this.fontFg, "fg");
 
     for (let i = 0; i < str.length; i++) {
       if (coord + i < this.chars.length) {
@@ -287,7 +251,9 @@ export class DrawilleCanvas {
         // Render braille character with color
         const colorCode = this.colors[i] || "";
         result.push(
-          colorCode + String.fromCharCode(0x2800 + this.content[i]) + "\x1b[39m",
+          colorCode +
+            String.fromCharCode(0x2800 + this.content[i]) +
+            "\x1b[39m",
         );
       }
     }

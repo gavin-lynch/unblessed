@@ -11,18 +11,27 @@ export * from "../runtime-context.js";
 
 /**
  * Get environment variable from runtime
- * Cached for performance
+ * Cached for performance, but re-checks if runtime wasn't ready initially
  * @param varName - Name of the environment variable
  * @returns Value of the environment variable or empty string if not set
  */
 const envCache = new Map<string, string>();
+const envCacheInitialized = new Map<string, boolean>();
 export function getEnvVar(varName: string): string {
-  if (envCache.has(varName)) {
-    return envCache.get(varName)!;
+  // Always try to get fresh value if runtime is available
+  // This ensures we get the correct value even if cache was set before runtime init
+  try {
+    const value = runtime.getRuntime().process.env[varName] || "";
+    // Only cache if we got a non-empty value, or if we previously had a value
+    if (value || !envCache.has(varName)) {
+      envCache.set(varName, value);
+      envCacheInitialized.set(varName, true);
+    }
+    return value;
+  } catch (e) {
+    // Runtime not initialized - return cached value if available, otherwise empty
+    return envCache.get(varName) || "";
   }
-  const value = runtime.getRuntime().process.env[varName] || "";
-  envCache.set(varName, value);
-  return value;
 }
 
 /**

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Gauge with inline data example
- * 
+ *
  * Demonstrates gauge with data provided in constructor.
  */
 

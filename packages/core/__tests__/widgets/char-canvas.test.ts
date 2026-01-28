@@ -3,6 +3,7 @@
  */
 
 import { beforeAll, describe, expect, it } from "vitest";
+import { createCell } from "../../src/widgets/cell.js";
 import { CharCanvas } from "../../src/widgets/char-canvas.js";
 import { Screen } from "../../src/widgets/screen.js";
 import { initTestRuntime } from "../helpers/mock.js";
@@ -40,7 +41,7 @@ describe("CharCanvas", () => {
     canvas.setCell(5, 5, "X", 0);
     const cell = canvas.getCell(5, 5);
 
-    expect(cell).toEqual([0, "X"]);
+    expect(cell).toEqual(createCell(0, "X", null, null));
 
     screen.destroy();
   });
@@ -73,7 +74,7 @@ describe("CharCanvas", () => {
     canvas.clear();
 
     const cell = canvas.getCell(5, 5);
-    expect(cell).toEqual([0, " "]);
+    expect(cell).toEqual(createCell(0, " ", null, null));
 
     screen.destroy();
   });
@@ -89,7 +90,7 @@ describe("CharCanvas", () => {
     canvas.clear(".", 0);
 
     const cell = canvas.getCell(5, 5);
-    expect(cell).toEqual([0, "."]);
+    expect(cell).toEqual(createCell(0, ".", null, null));
 
     screen.destroy();
   });
@@ -107,7 +108,7 @@ describe("CharCanvas", () => {
     // Check all points on the line
     for (let x = 0; x <= 10; x++) {
       const cell = canvas.getCell(x, 5);
-      expect(cell).toEqual([0, "-"]);
+      expect(cell).toEqual(createCell(0, "-", null, null));
     }
 
     screen.destroy();
@@ -125,7 +126,7 @@ describe("CharCanvas", () => {
 
     for (let y = 0; y <= 10; y++) {
       const cell = canvas.getCell(5, y);
-      expect(cell).toEqual([0, "|"]);
+      expect(cell).toEqual(createCell(0, "|", null, null));
     }
 
     screen.destroy();
@@ -142,8 +143,8 @@ describe("CharCanvas", () => {
     canvas.drawLine(0, 0, 10, 10, "*", 0);
 
     // Check endpoints
-    expect(canvas.getCell(0, 0)).toEqual([0, "*"]);
-    expect(canvas.getCell(10, 10)).toEqual([0, "*"]);
+    expect(canvas.getCell(0, 0)).toEqual(createCell(0, "*", null, null));
+    expect(canvas.getCell(10, 10)).toEqual(createCell(0, "*", null, null));
 
     screen.destroy();
   });
@@ -159,13 +160,13 @@ describe("CharCanvas", () => {
     canvas.drawRect(2, 2, 6, 4, "#", 0, false);
 
     // Check corners
-    expect(canvas.getCell(2, 2)).toEqual([0, "#"]); // Top-left
-    expect(canvas.getCell(7, 2)).toEqual([0, "#"]); // Top-right
-    expect(canvas.getCell(2, 5)).toEqual([0, "#"]); // Bottom-left
-    expect(canvas.getCell(7, 5)).toEqual([0, "#"]); // Bottom-right
+    expect(canvas.getCell(2, 2)).toEqual(createCell(0, "#", null, null)); // Top-left
+    expect(canvas.getCell(7, 2)).toEqual(createCell(0, "#", null, null)); // Top-right
+    expect(canvas.getCell(2, 5)).toEqual(createCell(0, "#", null, null)); // Bottom-left
+    expect(canvas.getCell(7, 5)).toEqual(createCell(0, "#", null, null)); // Bottom-right
 
     // Check center is empty
-    expect(canvas.getCell(4, 3)).toEqual([0, " "]);
+    expect(canvas.getCell(4, 3)).toEqual(createCell(0, " ", null, null));
 
     screen.destroy();
   });
@@ -183,7 +184,7 @@ describe("CharCanvas", () => {
     // Check all cells in rectangle are filled
     for (let y = 2; y < 6; y++) {
       for (let x = 2; x < 8; x++) {
-        expect(canvas.getCell(x, y)).toEqual([0, "#"]);
+        expect(canvas.getCell(x, y)).toEqual(createCell(0, "#", null, null));
       }
     }
 
@@ -200,11 +201,11 @@ describe("CharCanvas", () => {
 
     canvas.drawText(5, 10, "Hello", 0);
 
-    expect(canvas.getCell(5, 10)).toEqual([0, "H"]);
-    expect(canvas.getCell(6, 10)).toEqual([0, "e"]);
-    expect(canvas.getCell(7, 10)).toEqual([0, "l"]);
-    expect(canvas.getCell(8, 10)).toEqual([0, "l"]);
-    expect(canvas.getCell(9, 10)).toEqual([0, "o"]);
+    expect(canvas.getCell(5, 10)).toEqual(createCell(0, "H", null, null));
+    expect(canvas.getCell(6, 10)).toEqual(createCell(0, "e", null, null));
+    expect(canvas.getCell(7, 10)).toEqual(createCell(0, "l", null, null));
+    expect(canvas.getCell(8, 10)).toEqual(createCell(0, "l", null, null));
+    expect(canvas.getCell(9, 10)).toEqual(createCell(0, "o", null, null));
 
     screen.destroy();
   });
@@ -231,7 +232,7 @@ describe("CharCanvas", () => {
 
     // Check that the cell was set correctly
     const cell = canvas.getCell(3, 2);
-    expect(cell).toEqual([0, "X"]);
+    expect(cell).toEqual(createCell(0, "X", null, null));
 
     screen.destroy();
   });

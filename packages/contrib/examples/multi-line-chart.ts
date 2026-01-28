@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Multi-line chart example
- * 
+ *
  * Demonstrates line chart with multiple data series.
  */
 

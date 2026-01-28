@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
  * Markdown example
- * 
+ *
  * Demonstrates markdown rendering with terminal formatting.
  * Requires: marked, marked-terminal, chalk (peer dependencies)
  */
 
 import { Screen } from "@unblessed/node";
-import { Markdown } from "../src/widgets/markdown.js";
 import chalk from "chalk";
+import { Markdown } from "../src/widgets/markdown.js";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env tsx
 /**
  * Gauge list example
- * 
+ *
  * Demonstrates multiple stacked gauges in a list.
  */
 
 import { Screen } from "@unblessed/node";
-import { Grid, GaugeList } from "../src/index.js";
+import { GaugeList, Grid } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Gauge Demo - @unblessed/contrib Gauge widget example
- * 
+ *
  * Demonstrates:
  * - Single value gauge
  * - Stacked gauge with multiple segments
  * - Real-time updates
  * - Color customization
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-gauge-demo.tsx
  */
 
-import { Gauge, type GaugeStackItem } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useState } from "react";
+import { Gauge, type GaugeStackItem } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 
@@ -102,7 +102,9 @@ function GaugeDemo() {
         </Box>
         <Box height={2} justifyContent="center">
           <Text>
-            {stackData.map((s, i) => `${i + 1}: ${s.percent.toFixed(1)}%`).join(" | ")}
+            {stackData
+              .map((s, i) => `${i + 1}: ${s.percent.toFixed(1)}%`)
+              .join(" | ")}
           </Text>
         </Box>
       </Box>

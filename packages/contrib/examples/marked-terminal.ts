@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Marked-terminal example
- * 
+ *
  * Demonstrates markdown rendering with checkbox support.
  */
 

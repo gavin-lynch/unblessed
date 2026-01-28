@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Map with inline markers example
- * 
+ *
  * Demonstrates world map with markers provided in constructor.
  */
 

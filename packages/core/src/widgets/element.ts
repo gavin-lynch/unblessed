@@ -32,6 +32,7 @@ import type {
   TextWrapMode,
   TrackConfig,
 } from "../types";
+import { createCell, type Cell } from "./cell.js";
 import Node from "./node.js";
 
 const nextTick = getNextTick();
@@ -2372,6 +2373,9 @@ class Element extends Node {
     let ci = (this._clines.ci && this._clines.ci[coords.base]) || 0;
     let dattr: number;
     let c: any;
+    // Track truecolor state (RGB arrays or null)
+    let truecolorBg: [number, number, number] | null = null;
+    let truecolorFg: [number, number, number] | null = null;
     let visible: number;
     let i: number = 0;
     const bch = this.ch;
@@ -2449,8 +2453,13 @@ class Element extends Node {
           if (!lines[y]) break;
           for (x = Math.max(xi, 0); x < xl; x++) {
             if (!lines[y][x]) break;
-            lines[y][x][0] = colors.blend(attr, lines[y][x][0]);
-            // lines[y][x][1] = bch;
+            const cell = lines[y][x] as Cell;
+            lines[y][x] = createCell(
+              colors.blend(attr, cell[0]),
+              cell[1],
+              cell[2],
+              cell[3],
+            );
             lines[y].dirty = true;
           }
         }
@@ -2499,16 +2508,151 @@ class Element extends Node {
           }
         }
 
-        ch = content![ci++] || bch;
+        // Safety check: ensure we don't go past content length
+        if (ci >= content!.length) {
+          ch = bch;
+        } else {
+          ch = content![ci++] || bch;
+        }
 
         // if (!content[ci] && !coords._contentEnd) {
         //   coords._contentEnd = { x: x - xi, y: y - yi };
         // }
 
-        // Handle escape codes.
-        while (ch === "\x1b") {
-          if ((c = /^\x1b\[[\d;]*m/.exec(content!.substring(ci - 1)))) {
-            ci += c[0].length - 1;
+        // Handle escape codes (including truecolor).
+        // We use a loop to handle multiple consecutive escape codes (e.g., truecolor + syntax highlighting)
+        while (ch === "\x1b" && ci - 1 < content!.length) {
+          if (process.env.DEBUG_ELEMENT) {
+            console.log(
+              `[DEBUG ELEMENT] Line ${y}, Col ${x}, ci=${ci - 1}: Processing escape sequence`,
+            );
+          }
+
+          // Check for truecolor codes first (48;2;r;g;b or 38;2;r;g;b)
+          // Truecolor codes cannot be represented in attributes, so we track them separately
+          const substr = content!.substring(ci - 1);
+          const truecolorBgMatch = /^\x1b\[48;2;(\d+);(\d+);(\d+)m/.exec(
+            substr,
+          );
+          const truecolorFgMatch = /^\x1b\[38;2;(\d+);(\d+);(\d+)m/.exec(
+            substr,
+          );
+          const truecolorResetMatch = /^\x1b\[(?:49|39|0)m/.exec(substr);
+
+          if (truecolorBgMatch) {
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Matched truecolor BG: ${truecolorBgMatch[0]} at ci=${ci - 1}`,
+              );
+            }
+            // Truecolor background - store RGB values
+            truecolorBg = [
+              parseInt(truecolorBgMatch[1], 10),
+              parseInt(truecolorBgMatch[2], 10),
+              parseInt(truecolorBgMatch[3], 10),
+            ];
+            // Advance past the truecolor code (ci-1 is the start of the code)
+            const oldCi = ci;
+            ci = ci - 1 + truecolorBgMatch[0].length;
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorBgMatch[0].length})`,
+              );
+            }
+            // Update ch to the character at the new position to check for more ANSI codes
+            if (ci < content!.length) {
+              ch = content![ci] || bch;
+            } else {
+              ch = bch;
+              break;
+            }
+            // Continue in while loop to process next escape sequence if present
+            continue;
+          } else if (truecolorFgMatch) {
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Matched truecolor FG: ${truecolorFgMatch[0]} at ci=${ci - 1}`,
+              );
+            }
+            // Truecolor foreground - store RGB values
+            truecolorFg = [
+              parseInt(truecolorFgMatch[1], 10),
+              parseInt(truecolorFgMatch[2], 10),
+              parseInt(truecolorFgMatch[3], 10),
+            ];
+            // Advance past the truecolor code (ci-1 is the start of the code)
+            const oldCi = ci;
+            ci = ci - 1 + truecolorFgMatch[0].length;
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorFgMatch[0].length})`,
+              );
+            }
+            // Update ch to the character at the new position to check for more ANSI codes
+            if (ci < content!.length) {
+              ch = content![ci] || bch;
+            } else {
+              ch = bch;
+              break;
+            }
+            // Continue in while loop to process next escape sequence if present
+            continue;
+          } else if (truecolorResetMatch) {
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Matched truecolor reset: ${truecolorResetMatch[0]} at ci=${ci - 1}`,
+              );
+            }
+            // Reset truecolor (49 = default bg, 39 = default fg, 0 = all)
+            if (
+              truecolorResetMatch[0].includes("49") ||
+              truecolorResetMatch[0] === "\x1b[0m"
+            ) {
+              truecolorBg = null;
+            }
+            if (
+              truecolorResetMatch[0].includes("39") ||
+              truecolorResetMatch[0] === "\x1b[0m"
+            ) {
+              truecolorFg = null;
+            }
+            // Advance past the reset code (ci-1 is the start of the code)
+            const oldCi = ci;
+            ci = ci - 1 + truecolorResetMatch[0].length;
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorResetMatch[0].length})`,
+              );
+            }
+            // Update ch to the character at the new position to check for more ANSI codes
+            if (ci < content!.length) {
+              ch = content![ci] || bch;
+              // Continue in while loop to process next escape sequence if present
+              continue;
+            } else {
+              // End of content - use blank character
+              if (process.env.DEBUG_ELEMENT) {
+                console.log(`[DEBUG ELEMENT] End of content, using blank char`);
+              }
+              ch = bch;
+              break;
+            }
+          }
+
+          // Handle standard ANSI codes
+          if ((c = /^\x1b\[[\d;]*m/.exec(substr))) {
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Matched standard ANSI: ${c[0]} at ci=${ci - 1}`,
+              );
+            }
+            const oldCi = ci;
+            ci = ci - 1 + c[0].length;
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${c[0].length})`,
+              );
+            }
             attr = this.screen.attrCode(c[0], attr, dattr);
             // Ignore foreground changes for selected items.
             if (
@@ -2519,11 +2663,31 @@ class Element extends Node {
             ) {
               attr = (attr & ~(0x1ff << 9)) | (dattr & (0x1ff << 9));
             }
+            // Get next character and increment ci
             ch = content![ci] || bch;
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] Next char at ci=${ci}: ${JSON.stringify(ch)} (0x${ch.charCodeAt(0).toString(16)})`,
+              );
+            }
             ci++;
           } else {
+            if (process.env.DEBUG_ELEMENT) {
+              console.log(
+                `[DEBUG ELEMENT] No match for escape sequence at ci=${ci - 1}, breaking`,
+              );
+              console.log(
+                `[DEBUG ELEMENT] Substring: ${JSON.stringify(substr.substring(0, 20))}`,
+              );
+            }
             break;
           }
+        }
+
+        if (process.env.DEBUG_ELEMENT && y < 5 && x < 50) {
+          console.log(
+            `[DEBUG ELEMENT] Line ${y}, Col ${x}: Final ch=${JSON.stringify(ch)} (0x${ch.charCodeAt(0).toString(16)}), truecolorBg=${truecolorBg ? `[${truecolorBg.join(",")}]` : "null"}, truecolorFg=${truecolorFg ? `[${truecolorFg.join(",")}]` : "null"}`,
+          );
         }
 
         // Handle newlines.
@@ -2543,13 +2707,23 @@ class Element extends Node {
             cell = lines[y][x];
             if (!cell) break;
             if (this.style.transparent) {
-              lines[y][x][0] = colors.blend(attr, lines[y][x][0]);
-              if (content![ci]) lines[y][x][1] = ch;
+              const baseCell = cell as Cell;
+              lines[y][x] = createCell(
+                colors.blend(attr, baseCell[0]),
+                content![ci] ? ch : baseCell[1],
+                truecolorBg,
+                truecolorFg,
+              );
               lines[y].dirty = true;
             } else {
-              if (attr !== cell[0] || ch !== cell[1]) {
-                lines[y][x][0] = attr;
-                lines[y][x][1] = ch;
+              const baseCell = cell as Cell;
+              if (
+                attr !== baseCell[0] ||
+                ch !== baseCell[1] ||
+                baseCell[2] !== truecolorBg ||
+                baseCell[3] !== truecolorFg
+              ) {
+                lines[y][x] = createCell(attr, ch, truecolorBg, truecolorFg);
                 lines[y].dirty = true;
               }
             }
@@ -2584,14 +2758,23 @@ class Element extends Node {
 
         if (this._noFill) continue;
 
+        const baseCell = cell as Cell;
         if (this.style.transparent) {
-          lines[y][x][0] = colors.blend(attr, lines[y][x][0]);
-          if (content![ci]) lines[y][x][1] = ch;
+          lines[y][x] = createCell(
+            colors.blend(attr, baseCell[0]),
+            content![ci] ? ch : baseCell[1],
+            truecolorBg,
+            truecolorFg,
+          );
           lines[y].dirty = true;
         } else {
-          if (attr !== cell[0] || ch !== cell[1]) {
-            lines[y][x][0] = attr;
-            lines[y][x][1] = ch;
+          if (
+            attr !== baseCell[0] ||
+            ch !== baseCell[1] ||
+            baseCell[2] !== truecolorBg ||
+            baseCell[3] !== truecolorFg
+          ) {
+            lines[y][x] = createCell(attr, ch, truecolorBg, truecolorFg);
             lines[y].dirty = true;
           }
         }
@@ -2633,9 +2816,9 @@ class Element extends Node {
           this.style.scrollbar?.fg || this.style.fg,
           this.style.scrollbar?.bg || this.style.bg,
         );
-        if (attr !== cell[0] || ch !== cell[1]) {
-          lines[y][x][0] = attr;
-          lines[y][x][1] = ch;
+        const baseCell = cell as Cell;
+        if (attr !== baseCell[0] || ch !== baseCell[1]) {
+          lines[y][x] = createCell(attr, ch, baseCell[2], baseCell[3]);
           lines[y].dirty = true;
         }
       }
@@ -2794,18 +2977,17 @@ class Element extends Node {
         } else if (this.border.type === "bg") {
           ch = this.border.ch || " ";
         }
+        const baseCell = cell as Cell;
         if (!this.border.top && x !== xi && x !== xl - 1) {
           ch = " ";
-          if (dattr !== cell[0] || ch !== cell[1]) {
-            lines[y][x][0] = dattr;
-            lines[y][x][1] = ch;
+          if (dattr !== baseCell[0] || ch !== baseCell[1]) {
+            lines[y][x] = createCell(dattr, ch, baseCell[2], baseCell[3]);
             lines[y].dirty = true;
             continue;
           }
         }
-        if (currentAttr !== cell[0] || ch !== cell[1]) {
-          lines[y][x][0] = currentAttr;
-          lines[y][x][1] = ch;
+        if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+          lines[y][x] = createCell(currentAttr, ch, baseCell[2], baseCell[3]);
           lines[y].dirty = true;
         }
       }
@@ -2825,17 +3007,27 @@ class Element extends Node {
             } else if (this.border.type === "bg") {
               ch = this.border.ch || " ";
             }
+            const baseCell = cell as Cell;
             if (!coords.noright)
-              if (currentAttr !== cell[0] || ch !== cell[1]) {
-                lines[y][xl - 1][0] = currentAttr;
-                lines[y][xl - 1][1] = ch;
+              if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+                lines[y][xl - 1] = createCell(
+                  currentAttr,
+                  ch,
+                  baseCell[2],
+                  baseCell[3],
+                );
                 lines[y].dirty = true;
               }
           } else {
+            const baseCell = cell as Cell;
             ch = " ";
-            if (dattr !== cell[0] || ch !== cell[1]) {
-              lines[y][xl - 1][0] = dattr;
-              lines[y][xl - 1][1] = ch;
+            if (dattr !== baseCell[0] || ch !== baseCell[1]) {
+              lines[y][xl - 1] = createCell(
+                dattr,
+                ch,
+                baseCell[2],
+                baseCell[3],
+              );
               lines[y].dirty = true;
             }
           }
@@ -2896,18 +3088,17 @@ class Element extends Node {
         } else if (this.border.type === "bg") {
           ch = this.border.ch || " ";
         }
+        const baseCell = cell as Cell;
         if (!this.border.bottom && x !== xi && x !== xl - 1) {
           ch = " ";
-          if (dattr !== cell[0] || ch !== cell[1]) {
-            lines[y][x][0] = dattr;
-            lines[y][x][1] = ch;
+          if (dattr !== baseCell[0] || ch !== baseCell[1]) {
+            lines[y][x] = createCell(dattr, ch, baseCell[2], baseCell[3]);
             lines[y].dirty = true;
           }
           continue;
         }
-        if (currentAttr !== cell[0] || ch !== cell[1]) {
-          lines[y][x][0] = currentAttr;
-          lines[y][x][1] = ch;
+        if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+          lines[y][x] = createCell(currentAttr, ch, baseCell[2], baseCell[3]);
           lines[y].dirty = true;
         }
       }
@@ -2927,17 +3118,22 @@ class Element extends Node {
             } else if (this.border.type === "bg") {
               ch = this.border.ch || " ";
             }
+            const baseCell = cell as Cell;
             if (!coords.noleft)
-              if (currentAttr !== cell[0] || ch !== cell[1]) {
-                lines[y][xi][0] = currentAttr;
-                lines[y][xi][1] = ch;
+              if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+                lines[y][xi] = createCell(
+                  currentAttr,
+                  ch,
+                  baseCell[2],
+                  baseCell[3],
+                );
                 lines[y].dirty = true;
               }
           } else {
+            const baseCell = cell as Cell;
             ch = " ";
-            if (dattr !== cell[0] || ch !== cell[1]) {
-              lines[y][xi][0] = dattr;
-              lines[y][xi][1] = ch;
+            if (dattr !== baseCell[0] || ch !== baseCell[1]) {
+              lines[y][xi] = createCell(dattr, ch, baseCell[2], baseCell[3]);
               lines[y].dirty = true;
             }
           }

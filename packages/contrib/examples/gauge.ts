@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Gauge example
- * 
+ *
  * Demonstrates basic gauge widget usage.
  */
 

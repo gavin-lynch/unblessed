@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Line chart starting above zero example
- * 
+ *
  * Demonstrates line chart with Y-axis starting above zero.
  */
 

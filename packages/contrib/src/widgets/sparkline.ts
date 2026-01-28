@@ -39,7 +39,7 @@ const SPARKLINE_CHARS = "▁▂▃▄▅▆▇█";
 
 /**
  * Generate a sparkline string from data
- * 
+ *
  * Matches the algorithm from the sparkline npm package:
  * https://github.com/shiwano/sparkline
  */
@@ -49,7 +49,7 @@ function generateSparkline(data: number[], maxWidth?: number): string {
   const values = maxWidth ? data.slice(0, maxWidth) : data;
   const min = Math.min(...values);
   const max = Math.max(...values);
-  
+
   // Use bit-shifting for precision (matches sparkline package)
   // f = ((max - min) << 8) / (ticks.length - 1)
   const f = Math.floor(((max - min) << 8) / (SPARKLINE_CHARS.length - 1)) || 1;

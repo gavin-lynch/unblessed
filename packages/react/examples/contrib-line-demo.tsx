@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Line Chart Demo - @unblessed/contrib Line widget example
- * 
+ *
  * Demonstrates:
  * - Line chart with multiple series
  * - Real-time data updates
  * - Axis labels and legend
  * - Color customization
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-line-demo.tsx
  */
 
-import { Line, type LineSeriesData } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useRef, useState } from "react";
+import { Line, type LineSeriesData } from "../../contrib/src/index.js";
 import { Box, render, Text, useScreen } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 
@@ -52,16 +52,22 @@ function LineChartDemo() {
 
   // Update widget data when it changes (after attachment)
   useEffect(() => {
-    if (data.length === 0 || !isAttachedRef.current || !lineWidgetRef.current || !screen) return;
-    
+    if (
+      data.length === 0 ||
+      !isAttachedRef.current ||
+      !lineWidgetRef.current ||
+      !screen
+    )
+      return;
+
     const widget = lineWidgetRef.current;
-    
+
     // Ensure canvas exists before setting data
     if (!(widget as any)._canvas || !widget.ctx) {
       // Canvas not ready yet - wait for it
       return;
     }
-    
+
     widget.setData(data);
     // Render the widget to convert canvas to content, then render screen
     if (typeof widget.render === "function") {
@@ -131,7 +137,9 @@ function LineChartDemo() {
 
       <Box height={3} paddingTop={1}>
         <Text>
-          {data.map((s) => `${s.title}: ${s.y[s.y.length - 1].toFixed(1)}%`).join(" | ")}
+          {data
+            .map((s) => `${s.title}: ${s.y[s.y.length - 1].toFixed(1)}%`)
+            .join(" | ")}
         </Text>
       </Box>
     </Box>

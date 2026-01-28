@@ -7,11 +7,7 @@
  * Based on blessed-contrib's bar.js
  */
 
-import {
-  CanvasWidget,
-  AnsiTermCanvas,
-  type BoxOptions,
-} from "@unblessed/core";
+import { AnsiTermCanvas, CanvasWidget, type BoxOptions } from "@unblessed/core";
 
 /**
  * Bar chart data
@@ -127,10 +123,12 @@ export class Bar extends CanvasWidget {
     for (let i = 0; i < barData.data.length; i++) {
       const h = Math.round(barY * (barData.data[i] / max));
 
-      const barColor = this.options.barBgColor ?? "blue";
-      
+      const barColor = (this.options.barBgColor ?? "blue") as any;
+
       if (barData.data[i] > 0) {
+        // Set strokeStyle which sets the canvas color for fillRect
         c.strokeStyle = barColor;
+        // Fill the rectangle - fillRect uses _canvas.set() which uses getBgCode(this.color)
         c.fillRect(x, barY - h + 1, this.options.barWidth!, h);
       } else {
         c.strokeStyle = "normal";
@@ -141,7 +139,7 @@ export class Bar extends CanvasWidget {
         // Set background color for text (matching bar color)
         c._canvas.fontBg = barColor;
         // Set foreground color for text (white)
-        c.fillStyle = this.options.barFgColor ?? "white";
+        c.fillStyle = (this.options.barFgColor ?? "white") as any;
         c.fillText(
           barData.data[i].toString(),
           x + 1,
@@ -152,7 +150,7 @@ export class Bar extends CanvasWidget {
       c.strokeStyle = "normal";
       // Reset background to normal for labels
       c._canvas.fontBg = "normal";
-      c.fillStyle = this.options.labelColor ?? "white";
+      c.fillStyle = (this.options.labelColor ?? "white") as any;
       if (this.options.showText) {
         c.fillText(barData.titles[i], x + 1, this.canvasSize.height - 3);
       }

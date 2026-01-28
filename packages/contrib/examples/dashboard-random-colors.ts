@@ -1,32 +1,28 @@
 #!/usr/bin/env tsx
 /**
  * Dashboard with random colors example
- * 
+ *
  * Demonstrates a full dashboard with multiple widgets using random colors.
  */
 
 import { Screen } from "@unblessed/node";
 import {
-  Grid,
+  Bar,
   Donut,
   Gauge,
-  Sparkline,
-  Bar,
-  Table,
+  Grid,
   LCD,
   Line,
-  WorldMap,
   Log,
+  Sparkline,
+  Table,
+  WorldMap,
 } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });
 
 function randomColor(): [number, number, number] {
-  return [
-    Math.random() * 255,
-    Math.random() * 255,
-    Math.random() * 255,
-  ];
+  return [Math.random() * 255, Math.random() * 255, Math.random() * 255];
 }
 
 const grid = new Grid({ rows: 12, cols: 12, screen: screen });
@@ -183,12 +179,12 @@ setInterval(() => {
 }, 500);
 
 const spark1 = [
-  1, 2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1,
-  2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
+  1, 2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1, 2,
+  5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
 ];
 const spark2 = [
-  4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1,
-  2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
+  4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1, 2,
+  5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
 ];
 
 function refreshSpark() {
@@ -298,8 +294,8 @@ const transactionsData1 = {
     "04:30",
   ],
   y: [
-    0, 5, 5, 10, 10, 15, 20, 30, 25, 30, 30, 20, 20, 30, 30, 20, 15, 15, 19,
-    25, 30, 25, 25, 20, 25, 30, 35, 35, 30, 30,
+    0, 5, 5, 10, 10, 15, 20, 30, 25, 30, 30, 20, 20, 30, 30, 20, 15, 15, 19, 25,
+    30, 25, 25, 20, 25, 30, 35, 35, 30, 30,
   ],
 };
 

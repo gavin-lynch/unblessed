@@ -1,11 +1,11 @@
 #!/usr/bin/env tsx
 /**
  * Grid layout example
- * 
+ *
  * Demonstrates grid-based layout for arranging widgets.
  */
 
-import { Screen, Box } from "@unblessed/node";
+import { Box, Screen } from "@unblessed/node";
 import { Grid } from "../src/layout/grid.js";
 import { WorldMap } from "../src/widgets/map.js";
 

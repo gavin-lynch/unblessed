@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Table example
- * 
+ *
  * Demonstrates table widget with interactive selection.
  */
 

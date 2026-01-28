@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Map example
- * 
+ *
  * Demonstrates world map with markers.
  */
 
