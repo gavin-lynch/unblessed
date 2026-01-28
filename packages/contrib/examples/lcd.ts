@@ -26,6 +26,8 @@ const lcd = new LCD({
   parent: screen,
 });
 
+screen.append(lcd);
+
 setInterval(() => {
   const colors = ["green", "magenta", "cyan", "red", "blue"];
   const text = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];

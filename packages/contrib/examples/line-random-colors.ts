@@ -3,6 +3,10 @@
  * Line chart with random colors example
  * 
  * Demonstrates line chart with random RGB colors.
+ * 
+ * Modern terminals with truecolor support will display these colors
+ * with full 24-bit accuracy. Older terminals will use 256-color mode
+ * with x256 conversion for blessed-contrib compatibility.
  */
 
 import { Screen } from "@unblessed/node";

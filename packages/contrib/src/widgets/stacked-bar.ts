@@ -238,14 +238,20 @@ export class StackedBar extends CanvasWidget {
 
       c.fillRect(x, calcY, this.options.barWidth!, calcHeight);
 
-      c.fillStyle = this.options.barFgColor ?? "white";
+      // Set text background to match bar color, foreground to white
       if (this.options.showText) {
+        // Set background color for text (matching bar color)
+        c._canvas.fontBg = bg;
+        // Set foreground color for text (white by default, or user-specified)
+        c.fillStyle = this.options.barFgColor ?? "white";
         const str = abbreviateNumber(data);
         c.fillText(
           str,
           Math.floor(x + this.options.barWidth! / 2 + str.length / 2),
           calcY + Math.round(calcHeight / 2),
         );
+        // Reset background after text
+        c._canvas.fontBg = "normal";
       }
     }
 

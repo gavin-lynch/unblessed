@@ -13,7 +13,7 @@ const screen = new Screen({ smartCSR: true });
 
 const markdown = new Markdown({
   markdown: "# Hello \n blessed-contrib renders markdown using `marked-terminal` ",
-  style: { firstHeading: "chalk.green.italic" },
+  markdownStyle: { firstHeading: "chalk.green.italic" },
   parent: screen,
 });
 

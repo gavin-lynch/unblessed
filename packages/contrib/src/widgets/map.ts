@@ -112,13 +112,72 @@ export class WorldMap extends CanvasWidget {
   declare options: MapOptions;
   private innerMap: any = null;
   private _markers: MapMarker[] = [];
+  private _initPromise: Promise<void> | null = null;
 
   constructor(options: MapOptions = {}) {
     super(options, DrawilleCanvas);
     this.options = options;
 
+    // Initialize markers from options immediately
+    if (options.markers) {
+      this._markers = [...options.markers];
+    }
+
+    // Wait for canvas to be ready before initializing
+    const initWhenReady = () => {
+      // Check if canvas is ready
+      if (this.ctx && this._canvas) {
+        // Fire and forget - don't block on async init
+        // Add timeout to prevent infinite hangs
+        const timeout = setTimeout(() => {
+          this._drawSimplifiedMap();
+        }, 3000);
+
+        this._initMap()
+          .then(() => {
+            clearTimeout(timeout);
+          })
+          .catch(() => {
+            clearTimeout(timeout);
+            // If init fails, fall back to simplified map
+            this._drawSimplifiedMap();
+          });
+        return true; // Canvas ready, initialization started
+      }
+      return false; // Canvas not ready
+    };
+
     this.on("attach", () => {
-      this._initMap();
+      // Try to initialize immediately (canvas might be ready)
+      if (initWhenReady()) {
+        return; // Canvas was ready, initialization started
+      }
+
+      // Canvas not ready yet - poll for it or wait for resize
+      // Use a combination of polling and event listening
+      let checkCount = 0;
+      const maxChecks = 50; // Check up to 5 seconds (50 * 100ms)
+      
+      const checkInterval = setInterval(() => {
+        checkCount++;
+        if (this.ctx && this._canvas) {
+          clearInterval(checkInterval);
+          initWhenReady();
+        } else if (checkCount >= maxChecks) {
+          clearInterval(checkInterval);
+          this._drawSimplifiedMap();
+        }
+      }, 100);
+
+      // Also listen for resize events as a backup
+      const resizeHandler = () => {
+        if (this.ctx && this._canvas) {
+          clearInterval(checkInterval);
+          this.off("resize", resizeHandler);
+          initWhenReady();
+        }
+      };
+      this.on("resize", resizeHandler);
     });
   }
 
@@ -130,71 +189,149 @@ export class WorldMap extends CanvasWidget {
   }
 
   private async _initMap(): Promise<void> {
-    // Try to load map-canvas
-    if (!MapCanvas) {
-      MapCanvas = await loadMapCanvas();
+    // Prevent multiple concurrent initializations
+    if (this._initPromise) {
+      return this._initPromise;
     }
 
-    if (!MapCanvas) {
-      // map-canvas not available, draw simplified map
-      this._drawSimplifiedMap();
-      return;
-    }
+    this._initPromise = (async () => {
+      try {
+        if (!this.ctx || !this._canvas) {
+          this._drawSimplifiedMap();
+          return;
+        }
+        
+        // Validate canvas dimensions before proceeding
+        const canvasWidth = this.ctx._canvas.width;
+        const canvasHeight = this.ctx._canvas.height;
+        
+        if (canvasWidth <= 0 || canvasHeight <= 0) {
+          this._drawSimplifiedMap();
+          return;
+        }
 
-    if (!this.ctx) return;
+        // Try to load map-canvas with timeout
+        if (!MapCanvas) {
+          const loadPromise = loadMapCanvas();
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("map-canvas import timeout")), 1000)
+          );
+          
+          try {
+            MapCanvas = await Promise.race([loadPromise, timeoutPromise]);
+          } catch {
+            MapCanvas = null;
+          }
+        }
 
-    const style = this.options.style || {};
+        if (!MapCanvas) {
+          this._drawSimplifiedMap();
+          return;
+        }
 
-    const opts = {
-      excludeAntartica:
-        this.options.excludeAntarctica !== undefined
-          ? this.options.excludeAntarctica
-          : true,
-      disableBackground:
-        this.options.disableBackground !== undefined
-          ? this.options.disableBackground
-          : true,
-      disableMapBackground:
-        this.options.disableMapBackground !== undefined
-          ? this.options.disableMapBackground
-          : true,
-      disableGraticule:
-        this.options.disableGraticule !== undefined
-          ? this.options.disableGraticule
-          : true,
-      disableFill:
-        this.options.disableFill !== undefined ? this.options.disableFill : true,
-      width: this.ctx._canvas.width,
-      height: this.ctx._canvas.height,
-      shapeColor: style.shapeColor || "green",
-      startLon: this.options.startLon,
-      endLon: this.options.endLon,
-      startLat: this.options.startLat,
-      endLat: this.options.endLat,
-      region: this.options.region,
-      labelSpace: this.options.labelSpace ?? 5,
-    };
+        const style = this.options.style || {};
+        
+        const opts = {
+          excludeAntartica:
+            this.options.excludeAntarctica !== undefined
+              ? this.options.excludeAntarctica
+              : true,
+          disableBackground:
+            this.options.disableBackground !== undefined
+              ? this.options.disableBackground
+              : true,
+          disableMapBackground:
+            this.options.disableMapBackground !== undefined
+              ? this.options.disableMapBackground
+              : true,
+          disableGraticule:
+            this.options.disableGraticule !== undefined
+              ? this.options.disableGraticule
+              : true,
+          disableFill:
+            this.options.disableFill !== undefined ? this.options.disableFill : true,
+          width: canvasWidth,
+          height: canvasHeight,
+          shapeColor: style.shapeColor || "green",
+          startLon: this.options.startLon,
+          endLon: this.options.endLon,
+          startLat: this.options.startLat,
+          endLat: this.options.endLat,
+          region: this.options.region,
+          labelSpace: this.options.labelSpace ?? 5,
+        };
 
-    this.ctx.strokeStyle = style.stroke || "green";
-    this.ctx.fillStyle = style.fill || "green";
+        this.ctx.strokeStyle = style.stroke || "green";
+        this.ctx.fillStyle = style.fill || "green";
 
-    // Create inner map using map-canvas
-    this.innerMap = new MapCanvas(opts, this._canvas);
-    this.innerMap.draw();
+        // Create inner map using map-canvas
+        // IMPORTANT: Pass this.ctx._canvas (the raw drawille canvas), not this._canvas (our wrapper)
+        try {
+          // Clear canvas before drawing
+          if (this.ctx) {
+            this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+          }
+          
+          this.innerMap = new MapCanvas(opts, this.ctx._canvas);
 
-    // Add initial markers
-    if (this.options.markers) {
-      for (const marker of this.options.markers) {
-        this.addMarker(marker);
+          // Try calling draw() - if it blocks, we'll timeout and use simplified map
+          if (this.innerMap && typeof this.innerMap.draw === "function") {
+            // Call draw() - it's synchronous, so if it blocks we can't interrupt it
+            // But we'll try it and see if it works
+            try {
+              this.innerMap.draw();
+              
+              // Add markers after draw()
+              for (const marker of this._markers) {
+                if (this.innerMap && typeof this.innerMap.addMarker === "function") {
+                  this.innerMap.addMarker(marker);
+                }
+              }
+              
+              // Update canvas content after drawing
+              // IMPORTANT: Get frame from the raw canvas that map-canvas drew on
+              // map-canvas draws directly on this.ctx._canvas, so we need to get the frame from there
+              if (this.ctx && this.ctx._canvas) {
+                const frame = this.ctx._canvas.frame();
+                this.content = frame;
+                if (this.screen) {
+                  this.screen.render();
+                }
+              }
+              // Don't fall back to simplified map - map-canvas should have drawn
+            } catch (err) {
+              // If draw() throws, fall back to simplified map
+              this.innerMap = null;
+              this._drawSimplifiedMap();
+            }
+          } else {
+            // No draw() method, use simplified map
+            this.innerMap = null;
+            this._drawSimplifiedMap();
+          }
+        } catch (err) {
+          // If map-canvas fails, fall back to simplified map
+          this.innerMap = null;
+          this._drawSimplifiedMap();
+        }
+      } catch (err) {
+        // Any error - fall back to simplified map
+        this._drawSimplifiedMap();
+      } finally {
+        this._initPromise = null;
       }
-    }
+    })();
+
+    return this._initPromise;
   }
 
   /**
    * Draw a simplified map when map-canvas is not available
    */
   private _drawSimplifiedMap(): void {
-    if (!this.ctx) return;
+    if (!this.ctx) {
+      return;
+    }
 
     const c = this.ctx;
     const w = this.canvasSize.width;
@@ -243,8 +380,14 @@ export class WorldMap extends CanvasWidget {
       this._drawSimpleMarker(marker);
     }
 
-    // Add text indicating simplified mode
-    c.fillText("Map (simplified mode)", 4, h - 4);
+    // Update canvas content after drawing
+    if (this._canvas) {
+      const frame = this._canvas.frame();
+      this.content = frame;
+      if (this.screen) {
+        this.screen.render();
+      }
+    }
   }
 
   /**
@@ -276,10 +419,23 @@ export class WorldMap extends CanvasWidget {
    * Add a marker to the map
    */
   addMarker(marker: MapMarker): void {
+    // Avoid duplicates
+    const exists = this._markers.some(
+      (m) => m.lon === marker.lon && m.lat === marker.lat
+    );
+    if (exists) return;
+
     this._markers.push(marker);
 
-    if (this.innerMap) {
-      this.innerMap.addMarker(marker);
+    if (this.innerMap && typeof this.innerMap.addMarker === "function") {
+      try {
+        this.innerMap.addMarker(marker);
+      } catch (err) {
+        // If addMarker fails, just draw it manually
+        if (this.ctx) {
+          this._drawSimpleMarker(marker);
+        }
+      }
     } else if (this.ctx) {
       this._drawSimpleMarker(marker);
     }

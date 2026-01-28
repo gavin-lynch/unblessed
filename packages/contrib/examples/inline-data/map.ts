@@ -12,6 +12,8 @@ const screen = new Screen({ smartCSR: true });
 
 const map = new WorldMap({
   label: "World Map",
+  width: "100%",
+  height: "100%",
   markers: [
     { lon: "-79.0000", lat: "37.5000", color: "red", char: "X" },
     { lon: "79.0000", lat: "37.5000", color: "blue", char: "O" },

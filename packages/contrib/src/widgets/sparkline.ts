@@ -34,10 +34,14 @@ export interface SparklineOptions extends BoxOptions {
 }
 
 // Sparkline characters (using Unicode blocks)
-const SPARKLINE_CHARS = " ▁▂▃▄▅▆▇█";
+// NOTE: No space character - matches sparkline npm package exactly
+const SPARKLINE_CHARS = "▁▂▃▄▅▆▇█";
 
 /**
  * Generate a sparkline string from data
+ * 
+ * Matches the algorithm from the sparkline npm package:
+ * https://github.com/shiwano/sparkline
  */
 function generateSparkline(data: number[], maxWidth?: number): string {
   if (data.length === 0) return "";
@@ -45,16 +49,22 @@ function generateSparkline(data: number[], maxWidth?: number): string {
   const values = maxWidth ? data.slice(0, maxWidth) : data;
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const range = max - min || 1;
+  
+  // Use bit-shifting for precision (matches sparkline package)
+  // f = ((max - min) << 8) / (ticks.length - 1)
+  const f = Math.floor(((max - min) << 8) / (SPARKLINE_CHARS.length - 1)) || 1;
 
   return values
     .map((v) => {
-      const normalized = (v - min) / range;
-      const index = Math.min(
-        Math.floor(normalized * (SPARKLINE_CHARS.length - 1)),
+      // Use same bit-shifting algorithm as sparkline package
+      // index = ((v - min) << 8) / f
+      const index = Math.floor(((v - min) << 8) / f);
+      // Clamp to valid range
+      const clampedIndex = Math.min(
+        Math.max(0, index),
         SPARKLINE_CHARS.length - 1,
       );
-      return SPARKLINE_CHARS[index];
+      return SPARKLINE_CHARS[clampedIndex];
     })
     .join("");
 }

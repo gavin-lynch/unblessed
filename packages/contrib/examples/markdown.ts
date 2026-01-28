@@ -2,29 +2,36 @@
 /**
  * Markdown example
  * 
- * Demonstrates markdown rendering in terminal.
- * Requires optional peer dependencies: marked, marked-terminal, chalk
+ * Demonstrates markdown rendering with terminal formatting.
+ * Requires: marked, marked-terminal, chalk (peer dependencies)
  */
 
 import { Screen } from "@unblessed/node";
-import { Markdown } from "../src/index.js";
+import { Markdown } from "../src/widgets/markdown.js";
+import chalk from "chalk";
 
 const screen = new Screen({ smartCSR: true });
 
 const markdown = new Markdown({
   parent: screen,
+  width: "100%",
+  height: "100%",
+  label: "Markdown Example",
 });
 
 screen.append(markdown);
 
-// Set markdown options (requires chalk)
-markdown.setMarkdown(
-  "# Hello \n This is **markdown** printed in the `terminal` 11",
-);
+// Set custom styles (blessed-contrib compatibility)
+markdown.setOptions({ firstHeading: chalk.red.italic });
 
-screen.render();
+// Set markdown content
+markdown.setMarkdown(
+  "# Hello \n This is **markdown** printed in the `terminal`",
+);
 
 screen.key(["escape", "q", "C-c"], () => {
   screen.destroy();
   process.exit(0);
 });
+
+screen.render();
