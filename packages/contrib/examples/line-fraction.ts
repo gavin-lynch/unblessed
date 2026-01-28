@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Line chart with fractional numbers example
- * 
+ *
  * Demonstrates line chart with fractional Y-axis labels.
  */
 

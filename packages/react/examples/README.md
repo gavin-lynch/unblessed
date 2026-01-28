@@ -136,7 +136,7 @@ A simple game demonstrating keyboard event handling:
 - Dynamic message updates
 - Real-time grid rendering
 
-### contrib-*-demo.tsx - @unblessed/contrib Widget Examples
+### contrib-\*-demo.tsx - @unblessed/contrib Widget Examples
 
 Examples demonstrating the use of @unblessed/contrib widgets within React:
 
@@ -159,6 +159,7 @@ Examples demonstrating the use of @unblessed/contrib widgets within React:
 **contrib-dashboard-demo.tsx** - Comprehensive dashboard combining multiple contrib widgets in a single layout
 
 **Features:**
+
 - Integration of non-React widgets via `ContribWidgetWrapper` helper
 - Real-time data updates and animations
 - Responsive layouts with flexbox
@@ -208,8 +209,8 @@ screen.render();
 Contrib widgets (from @unblessed/contrib) are not React components, but can be used via the `ContribWidgetWrapper` helper:
 
 ```tsx
-import { Line } from '@unblessed/contrib';
-import { ContribWidgetWrapper } from './contrib-wrapper';
+import { Line } from "@unblessed/contrib";
+import { ContribWidgetWrapper } from "./contrib-wrapper";
 
 function MyChart() {
   const [data, setData] = useState(/* ... */);
@@ -218,12 +219,12 @@ function MyChart() {
     <ContribWidgetWrapper
       createWidget={(opts) => new Line(opts)}
       widgetOptions={{
-        label: 'Chart',
+        label: "Chart",
         data: data,
       }}
       boxProps={{
-        width: '50%',
-        height: '50%',
+        width: "50%",
+        height: "50%",
         border: 1,
       }}
       deps={[data]} // Recreate widget when data changes

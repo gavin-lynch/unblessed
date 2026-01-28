@@ -1,12 +1,12 @@
 #!/usr/bin/env tsx
 /**
  * Gauge stack example
- * 
+ *
  * Demonstrates a single gauge with stacked percentages.
  */
 
 import { Screen } from "@unblessed/node";
-import { Grid, Gauge } from "../src/index.js";
+import { Gauge, Grid } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Donut Chart Demo - @unblessed/contrib Donut widget example
- * 
+ *
  * Demonstrates:
  * - Multiple donut charts
  * - Custom colors per segment
  * - Labels and percentages
  * - Real-time updates
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-donut-demo.tsx
  */
 
-import { Donut, type DonutData } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useState } from "react";
+import { Donut, type DonutData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 

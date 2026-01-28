@@ -7,31 +7,10 @@
  * Based on blessed-contrib's map.js
  */
 
-import {
-  CanvasWidget,
-  DrawilleCanvas,
-  type BoxOptions,
-} from "@unblessed/core";
-
-// Dynamic import for optional map-canvas dependency (use any to avoid type errors)
-let MapCanvas: any = null;
-
-// Helper to dynamically import a module by name
-async function tryImport(moduleName: string): Promise<any> {
-  try {
-    // Using Function constructor to avoid static analysis
-    const importFn = new Function("m", "return import(m)");
-    return await importFn(moduleName);
-  } catch {
-    return null;
-  }
-}
-
-// Helper to safely load map-canvas
-async function loadMapCanvas(): Promise<any> {
-  const mod = await tryImport("map-canvas");
-  return mod ? mod.default || mod : null;
-}
+import { CanvasWidget, DrawilleCanvas, type BoxOptions } from "@unblessed/core";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - map-canvas doesn't have type definitions
+import MapCanvas from "map-canvas";
 
 /**
  * Map marker definition
@@ -157,7 +136,7 @@ export class WorldMap extends CanvasWidget {
       // Use a combination of polling and event listening
       let checkCount = 0;
       const maxChecks = 50; // Check up to 5 seconds (50 * 100ms)
-      
+
       const checkInterval = setInterval(() => {
         checkCount++;
         if (this.ctx && this._canvas) {
@@ -200,37 +179,20 @@ export class WorldMap extends CanvasWidget {
           this._drawSimplifiedMap();
           return;
         }
-        
+
         // Validate canvas dimensions before proceeding
         const canvasWidth = this.ctx._canvas.width;
         const canvasHeight = this.ctx._canvas.height;
-        
+
         if (canvasWidth <= 0 || canvasHeight <= 0) {
           this._drawSimplifiedMap();
           return;
         }
 
-        // Try to load map-canvas with timeout
-        if (!MapCanvas) {
-          const loadPromise = loadMapCanvas();
-          const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("map-canvas import timeout")), 1000)
-          );
-          
-          try {
-            MapCanvas = await Promise.race([loadPromise, timeoutPromise]);
-          } catch {
-            MapCanvas = null;
-          }
-        }
-
-        if (!MapCanvas) {
-          this._drawSimplifiedMap();
-          return;
-        }
+        // MapCanvas is now a normal import, no need to check
 
         const style = this.options.style || {};
-        
+
         const opts = {
           excludeAntartica:
             this.options.excludeAntarctica !== undefined
@@ -249,7 +211,9 @@ export class WorldMap extends CanvasWidget {
               ? this.options.disableGraticule
               : true,
           disableFill:
-            this.options.disableFill !== undefined ? this.options.disableFill : true,
+            this.options.disableFill !== undefined
+              ? this.options.disableFill
+              : true,
           width: canvasWidth,
           height: canvasHeight,
           shapeColor: style.shapeColor || "green",
@@ -271,7 +235,7 @@ export class WorldMap extends CanvasWidget {
           if (this.ctx) {
             this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
           }
-          
+
           this.innerMap = new MapCanvas(opts, this.ctx._canvas);
 
           // Try calling draw() - if it blocks, we'll timeout and use simplified map
@@ -280,14 +244,17 @@ export class WorldMap extends CanvasWidget {
             // But we'll try it and see if it works
             try {
               this.innerMap.draw();
-              
+
               // Add markers after draw()
               for (const marker of this._markers) {
-                if (this.innerMap && typeof this.innerMap.addMarker === "function") {
+                if (
+                  this.innerMap &&
+                  typeof this.innerMap.addMarker === "function"
+                ) {
                   this.innerMap.addMarker(marker);
                 }
               }
-              
+
               // Update canvas content after drawing
               // IMPORTANT: Get frame from the raw canvas that map-canvas drew on
               // map-canvas draws directly on this.ctx._canvas, so we need to get the frame from there
@@ -421,7 +388,7 @@ export class WorldMap extends CanvasWidget {
   addMarker(marker: MapMarker): void {
     // Avoid duplicates
     const exists = this._markers.some(
-      (m) => m.lon === marker.lon && m.lat === marker.lat
+      (m) => m.lon === marker.lon && m.lat === marker.lat,
     );
     if (exists) return;
 

@@ -4,6 +4,7 @@
  * Uses the same runtime initialization as @unblessed/core tests
  */
 
+import { setRuntime } from "@unblessed/core";
 import { Buffer } from "buffer";
 import { EventEmitter } from "events";
 import fs from "fs";
@@ -11,11 +12,10 @@ import path, { dirname } from "path";
 import process from "process";
 import { Readable, Writable } from "stream";
 import { StringDecoder } from "string_decoder";
+import * as url from "url";
 import { fileURLToPath } from "url";
 import * as util from "util";
-import * as url from "url";
 import { beforeAll, vi } from "vitest";
-import { setRuntime } from "@unblessed/core";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

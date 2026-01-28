@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Bar chart with inline data example
- * 
+ *
  * Demonstrates bar chart with data provided in constructor.
  */
 

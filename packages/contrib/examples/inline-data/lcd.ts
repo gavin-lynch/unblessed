@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * LCD with inline data example
- * 
+ *
  * Demonstrates LCD display with data provided in constructor.
  */
 

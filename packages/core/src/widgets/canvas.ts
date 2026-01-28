@@ -10,16 +10,16 @@
  * https://github.com/yaronn/blessed-contrib/blob/master/lib/widget/canvas.js
  */
 
-import type { BoxOptions } from "../types/index.js";
-import { Box } from "./box.js";
 import {
+  AnsiTermCanvas,
   Canvas,
   Canvas2DContext,
   DrawilleCanvas,
-  AnsiTermCanvas,
   type CanvasConstructor,
 } from "../lib/canvas/index.js";
 import { stripAnsi } from "../lib/text-utils.js";
+import type { BoxOptions } from "../types/index.js";
+import { Box } from "./box.js";
 
 /**
  * Canvas widget options
@@ -98,7 +98,7 @@ export class CanvasWidget extends Box {
     // This ensures content is truncated rather than wrapped
     super({
       ...options,
-      textWrap: options.textWrap ?? 'truncate-end',
+      textWrap: options.textWrap ?? "truncate-end",
     });
     this.canvasType = canvasType;
 
@@ -109,13 +109,13 @@ export class CanvasWidget extends Box {
         // These will return 0 if parent doesn't have dimensions yet
         const width = this.width;
         const height = this.height;
-        
+
         if (width <= 0 || height <= 0) {
           // Dimensions not ready yet - parent might not have dimensions
           // This can happen if the widget is attached before layout is calculated
           return false;
         }
-        
+
         this.calcSize();
 
         // Ensure canvas size is valid
@@ -132,11 +132,12 @@ export class CanvasWidget extends Box {
 
         // Set initial data if provided
         // Use this.options.data in case options object was updated
-        const dataToSet = (this.options as CanvasWidgetOptions).data || options.data;
+        const dataToSet =
+          (this.options as CanvasWidgetOptions).data || options.data;
         if (dataToSet) {
           this.setData(dataToSet);
         }
-        
+
         // Update content from canvas immediately after creation
         // This ensures content is available when render() is called
         if (this._canvas) {
@@ -144,19 +145,19 @@ export class CanvasWidget extends Box {
           this.content = frame;
           // Don't parse yet - that will happen in render() when position is calculated
         }
-        
+
         return true;
       };
 
       // Try immediately
       const created = initCanvas();
-      
+
       // If canvas was created, trigger screen render
       // The screen's render cycle will call render() on all widgets
       if (created && this.screen) {
         this.screen.render();
       }
-      
+
       // If canvas wasn't created (dimensions not ready), listen for resize
       if (!created) {
         const resizeHandler = () => {
@@ -181,7 +182,8 @@ export class CanvasWidget extends Box {
                 this.ctx = this._canvas.getContext();
                 // Re-render if we have data
                 // Use this.options.data in case options object was updated
-                const dataToSet = (this.options as CanvasWidgetOptions).data || options.data;
+                const dataToSet =
+                  (this.options as CanvasWidgetOptions).data || options.data;
                 if (dataToSet) {
                   this.setData(dataToSet);
                 }
@@ -212,13 +214,13 @@ export class CanvasWidget extends Box {
     // This ensures the canvas content fits within the widget's visible area
     const availableWidth = this.width - this.iwidth;
     const availableHeight = this.height - this.iheight;
-    
+
     // For braille canvas: each character cell is 2x4 pixels
     // Each braille character takes 1 character cell
     // Be conservative: subtract 1 to ensure we never overflow the border
     // This accounts for any rounding issues or ANSI code width calculations
     const maxBrailleChars = Math.max(1, Math.floor(availableWidth) - 1);
-    
+
     // Calculate pixel dimensions: each braille char = 2 pixels wide, 4 pixels tall
     // Ensure dimensions are multiples of 2 (width) and 4 (height) for valid braille
     const rawWidth = maxBrailleChars * 2;
@@ -262,53 +264,53 @@ export class CanvasWidget extends Box {
     if (this._canvas) {
       // Get the latest frame from canvas (in case it was redrawn)
       let frame = this._canvas.frame();
-      
+
       // CRITICAL: Truncate each line to fit within available width to prevent border overflow
       // The available width is the widget width minus borders/padding
       // We need to be very conservative here - subtract 2 to ensure we never overflow
-      const availableWidth = Math.max(1, (this.width - this.iwidth) - 2);
-      
+      const availableWidth = Math.max(1, this.width - this.iwidth - 2);
+
       if (availableWidth > 0) {
         // Split frame into lines and truncate each line to fit available width
         // This prevents content from overflowing and overwriting the border
-        const lines = frame.split('\n');
-        const truncatedLines = lines.map(line => {
+        const lines = frame.split("\n");
+        const truncatedLines = lines.map((line) => {
           // Count visible characters (strip ANSI codes to get actual width)
           const visibleChars = stripAnsi(line).length;
-          
+
           if (visibleChars <= availableWidth) {
             return line;
           }
-          
+
           // Truncate line to available width while preserving ANSI codes
           // We need to be careful: ANSI codes don't count toward width
-          let result = '';
+          let result = "";
           let visibleCount = 0;
           let i = 0;
-          
+
           while (i < line.length && visibleCount < availableWidth) {
-            if (line[i] === '\x1b' && line[i + 1] === '[') {
+            if (line[i] === "\x1b" && line[i + 1] === "[") {
               // ANSI escape sequence - copy it entirely
-              const end = line.indexOf('m', i);
+              const end = line.indexOf("m", i);
               if (end !== -1) {
                 result += line.substring(i, end + 1);
                 i = end + 1;
                 continue;
               }
             }
-            
+
             // Regular character - count it
             result += line[i];
             visibleCount++;
             i++;
           }
-          
+
           return result;
         });
-        
-        frame = truncatedLines.join('\n');
+
+        frame = truncatedLines.join("\n");
       }
-      
+
       // Set content using setContent - parseContent will handle truncation
       // Since we set textWrap to 'truncate-end', _wrapContent will truncate each line
       this.setContent(frame, true, false);

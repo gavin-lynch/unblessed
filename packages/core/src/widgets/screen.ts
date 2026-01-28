@@ -19,6 +19,7 @@ import type {
   ScreenOptions,
 } from "../types";
 import Box from "./box.js";
+import { createCell, type Cell } from "./cell.js";
 import Element from "./element.js";
 import Log from "./log.js";
 import Node from "./node.js";
@@ -896,7 +897,7 @@ class Screen extends Node {
     for (y = 0; y < this.rows; y++) {
       this.lines[y] = [];
       for (x = 0; x < this.cols; x++) {
-        this.lines[y][x] = [this.dattr, " "];
+        this.lines[y][x] = createCell(this.dattr, " ", null, null);
       }
       this.lines[y].dirty = !!dirty;
     }
@@ -905,7 +906,7 @@ class Screen extends Node {
     for (y = 0; y < this.rows; y++) {
       this.olines[y] = [];
       for (x = 0; x < this.cols; x++) {
-        this.olines[y][x] = [this.dattr, " "];
+        this.olines[y][x] = createCell(this.dattr, " ", null, null);
       }
     }
 
@@ -1383,7 +1384,13 @@ class Screen extends Node {
       for (x = 0; x < this.width; x++) {
         ch = lines[y][x][1];
         if (angles[ch]) {
-          lines[y][x][1] = this._getAngle(lines, x, y);
+          const cell = lines[y][x] as Cell;
+          lines[y][x] = createCell(
+            cell[0],
+            this._getAngle(lines, x, y),
+            cell[2],
+            cell[3],
+          );
           lines[y].dirty = true;
         }
       }
@@ -1627,6 +1634,61 @@ class Screen extends Node {
         o[x][0] = data;
         o[x][1] = ch;
 
+        // All cells are normalized to 4 elements: [attr, ch, truecolorBg, truecolorFg]
+        const cell = line[x] as Cell;
+        const truecolorBg = cell[2];
+        const truecolorFg = cell[3];
+        const prevCell = x > 0 ? (line[x - 1] as Cell) : null;
+        const prevTruecolorBg = prevCell ? prevCell[2] : null;
+        const prevTruecolorFg = prevCell ? prevCell[3] : null;
+
+        // Check if we have actual truecolor values (not null)
+        const hasTruecolorBg = truecolorBg !== null;
+        const hasTruecolorFg = truecolorFg !== null;
+        const hasPrevTruecolorBg = prevTruecolorBg !== null;
+        const hasPrevTruecolorFg = prevTruecolorFg !== null;
+
+        // Output truecolor codes if they changed or at line start
+        if (
+          x === 0 ||
+          hasTruecolorBg !== hasPrevTruecolorBg ||
+          hasTruecolorFg !== hasPrevTruecolorFg ||
+          (hasTruecolorBg &&
+            hasPrevTruecolorBg &&
+            truecolorBg !== null &&
+            prevTruecolorBg !== null &&
+            (truecolorBg[0] !== prevTruecolorBg[0] ||
+              truecolorBg[1] !== prevTruecolorBg[1] ||
+              truecolorBg[2] !== prevTruecolorBg[2])) ||
+          (hasTruecolorFg &&
+            hasPrevTruecolorFg &&
+            truecolorFg !== null &&
+            prevTruecolorFg !== null &&
+            (truecolorFg[0] !== prevTruecolorFg[0] ||
+              truecolorFg[1] !== prevTruecolorFg[1] ||
+              truecolorFg[2] !== prevTruecolorFg[2]))
+        ) {
+          // Reset attributes first if we had truecolor before
+          if (x > 0 && (hasPrevTruecolorBg || hasPrevTruecolorFg)) {
+            out += "\x1b[m";
+            attr = this.dattr;
+          }
+
+          // Output truecolor codes
+          if (hasTruecolorBg && truecolorBg !== null) {
+            out += `\x1b[48;2;${truecolorBg[0]};${truecolorBg[1]};${truecolorBg[2]}m`;
+          }
+          if (hasTruecolorFg && truecolorFg !== null) {
+            out += `\x1b[38;2;${truecolorFg[0]};${truecolorFg[1]};${truecolorFg[2]}m`;
+          }
+        }
+
+        // If we have truecolor, skip normal attribute handling but still output the character
+        if (hasTruecolorBg || hasTruecolorFg) {
+          out += ch;
+          continue;
+        }
+
         if (data !== attr) {
           if (attr !== this.dattr) {
             out += "\x1b[m";
@@ -1790,8 +1852,19 @@ class Screen extends Node {
         attr = data;
       }
 
-      if (attr !== this.dattr) {
+      // Reset attributes and truecolor at the end of each line
+      // This prevents backgrounds from leaking to the next line
+      const lastTruecolorBg =
+        line.length > 0 ? line[line.length - 1][2] : undefined;
+      const lastTruecolorFg =
+        line.length > 0 ? line[line.length - 1][3] : undefined;
+      if (
+        attr !== this.dattr ||
+        lastTruecolorBg !== undefined ||
+        lastTruecolorFg !== undefined
+      ) {
         out += "\x1b[m";
+        attr = this.dattr;
       }
 
       if (out) {
@@ -1907,33 +1980,28 @@ class Screen extends Node {
           bg = def & 0x1ff;
           break;
         default: // color
+          // Handle 256-color: 48;5;n or 38;5;n
           if (c === 48 && +codeArray[i + 1] === 5) {
             i += 2;
             bg = +codeArray[i];
-            break;
-          } else if (c === 48 && +codeArray[i + 1] === 2) {
-            i += 2;
-            bg = colors.match(
-              +codeArray[i],
-              +codeArray[i + 1],
-              +codeArray[i + 2],
-            );
-            if (bg === -1) bg = def & 0x1ff;
-            i += 2;
             break;
           } else if (c === 38 && +codeArray[i + 1] === 5) {
             i += 2;
             fg = +codeArray[i];
             break;
+          }
+          // Handle truecolor: 48;2;r;g;b or 38;2;r;g;b
+          // For truecolor, we can't pack into the attribute integer,
+          // so we need to preserve the ANSI code as-is in the content
+          // This is handled by NOT processing it here - the code stays in content
+          if (c === 48 && +codeArray[i + 1] === 2) {
+            // Truecolor background - skip processing, let it pass through
+            // The code will remain in the content string
+            i += 4; // Skip 48, 2, r, g, b
+            break;
           } else if (c === 38 && +codeArray[i + 1] === 2) {
-            i += 2;
-            fg = colors.match(
-              +codeArray[i],
-              +codeArray[i + 1],
-              +codeArray[i + 2],
-            );
-            if (fg === -1) fg = (def >> 9) & 0x1ff;
-            i += 2;
+            // Truecolor foreground - skip processing, let it pass through
+            i += 4; // Skip 38, 2, r, g, b
             break;
           }
           if (c >= 40 && c <= 47) {
@@ -2305,7 +2373,7 @@ class Screen extends Node {
     override?: boolean,
   ): void {
     const lines = this.lines;
-    let cell: any;
+    let cell: Cell;
     let xx: number;
 
     if (xi < 0) xi = 0;
@@ -2314,11 +2382,10 @@ class Screen extends Node {
     for (; yi < yl; yi++) {
       if (!lines[yi]) break;
       for (xx = xi; xx < xl; xx++) {
-        cell = lines[yi][xx];
+        cell = lines[yi][xx] as Cell;
         if (!cell) break;
         if (override || attr !== cell[0] || ch !== cell[1]) {
-          lines[yi][xx][0] = attr;
-          lines[yi][xx][1] = ch;
+          lines[yi][xx] = createCell(attr, ch, cell[2], cell[3]);
           lines[yi].dirty = true;
         }
       }

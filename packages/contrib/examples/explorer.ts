@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
  * File explorer example
- * 
+ *
  * Demonstrates filesystem tree navigation with file info display.
  */
 
-import { Screen } from "@unblessed/node";
-import { Grid, Table } from "../src/index.js";
 import { Tree } from "@unblessed/core";
+import { Screen } from "@unblessed/node";
 import fs from "fs";
+import { Grid, Table } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -51,7 +51,11 @@ const explorer: any = {
               children: self.children,
             };
           } else {
-            result[child] = { name: child, getPath: self.getPath, extended: false };
+            result[child] = {
+              name: child,
+              getPath: self.getPath,
+              extended: false,
+            };
           }
         }
       } else {
@@ -73,7 +77,9 @@ tree.on("select", (node: any) => {
   try {
     const stats = fs.lstatSync(actualPath);
     data = data.concat(
-      JSON.stringify(stats, null, 2).split("\n").map((e) => [e]),
+      JSON.stringify(stats, null, 2)
+        .split("\n")
+        .map((e) => [e]),
     );
     table.setData({ headers: ["Info"], data: data });
   } catch (e: any) {

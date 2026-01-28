@@ -1,13 +1,13 @@
 #!/usr/bin/env tsx
 /**
  * Grid no border example
- * 
+ *
  * Demonstrates grid layout without borders.
  */
 
+import { Box } from "@unblessed/core";
 import { Screen } from "@unblessed/node";
 import { Grid, WorldMap } from "../src/index.js";
-import { Box } from "@unblessed/core";
 
 const screen = new Screen({ smartCSR: true });
 

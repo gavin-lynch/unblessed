@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Donut chart with inline data example
- * 
+ *
  * Demonstrates donut chart with data provided in constructor.
  */
 

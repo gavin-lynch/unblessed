@@ -1,16 +1,18 @@
 #!/usr/bin/env tsx
 /**
  * Dashboard Demo - @unblessed/contrib widgets combined
- * 
+ *
  * Demonstrates:
  * - Multiple contrib widgets in a dashboard layout
  * - Line chart, bar chart, gauge, donut, sparkline, log
  * - Real-time updates across all widgets
  * - Responsive layout with flexbox
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-dashboard-demo.tsx
  */
 
+import { NodeRuntime } from "@unblessed/node";
+import { useEffect, useRef, useState } from "react";
 import {
   Bar,
   Donut,
@@ -24,8 +26,6 @@ import {
   type LineSeriesData,
   type SparklineData,
 } from "../../contrib/src/index.js";
-import { NodeRuntime } from "@unblessed/node";
-import { useEffect, useRef, useState } from "react";
 import { Box, render, Text, useScreen } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 
@@ -114,8 +114,10 @@ function DashboardDemo() {
 
       // Add log message
       if (logRef.current && screen) {
-        const level = frame % 3 === 0 ? "ERROR" : frame % 2 === 0 ? "WARN" : "INFO";
-        const color = level === "ERROR" ? "red" : level === "WARN" ? "yellow" : "green";
+        const level =
+          frame % 3 === 0 ? "ERROR" : frame % 2 === 0 ? "WARN" : "INFO";
+        const color =
+          level === "ERROR" ? "red" : level === "WARN" ? "yellow" : "green";
         logRef.current.log(
           `{${color}-fg}[${new Date().toLocaleTimeString()}] ${level}: Update #${frame + 1}{/${color}-fg}`,
         );

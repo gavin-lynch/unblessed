@@ -1,19 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * Bar Chart Demo - @unblessed/contrib Bar widget example
- * 
+ *
  * Demonstrates:
  * - Vertical bar chart
  * - Customizable bar colors
  * - Labels and values
  * - Real-time updates
- * 
+ *
  * Run with: tsx packages/react/examples/contrib-bar-demo.tsx
  */
 
-import { Bar, type BarData } from "../../contrib/src/index.js";
 import { NodeRuntime } from "@unblessed/node";
 import { useEffect, useState } from "react";
+import { Bar, type BarData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";
 import { ContribWidgetWrapper } from "./contrib-wrapper.js";
 

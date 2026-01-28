@@ -62,7 +62,15 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@unblessed/core": "workspace:*"
+    "@unblessed/core": "workspace:*",
+    "chalk": "^5.0.0",
+    "cli-highlight": "^2.1.11",
+    "diff": "^8.0.0",
+    "map-canvas": "^0.1.5",
+    "marked": "^15.0.0",
+    "marked-terminal": "^7.0.0",
+    "picture-tuber": "^1.0.2",
+    "x256": "^0.0.2"
   },
   "devDependencies": {
     "@unblessed/node": "workspace:*",
@@ -70,13 +78,7 @@
     "@vitest/ui": "^3.2.4",
     "tsx": "^4.20.6"
   },
-  "peerDependencies": {
-    "chalk": "^5.0.0",
-    "map-canvas": "^0.1.5",
-    "marked": "^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0",
-    "marked-terminal": "^7.0.0",
-    "picture-tuber": "^1.0.2"
-  },
+  "peerDependencies": {},
   "engines": {
     "node": ">= 22.0.0"
   }

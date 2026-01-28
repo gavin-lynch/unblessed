@@ -5,11 +5,12 @@
  * Perfect for Matrix rain, falling text, ASCII art animations, etc.
  *
  * Resolution: 1:1 (one character per cell)
- * Storage: Array of [attr, char] pairs
+ * Storage: Normalized cells [attr, ch, truecolorBg, truecolorFg]
  */
 
 import type { BoxOptions } from "../types/index.js";
 import { Box } from "./box.js";
+import { createCell, type Cell } from "./cell.js";
 
 /**
  * CharCanvas options
@@ -54,7 +55,7 @@ export interface CharCanvasOptions extends BoxOptions {
  */
 export class CharCanvas extends Box {
   override type = "charcanvas";
-  private buffer: Array<Array<[number, string]>>;
+  private buffer: Array<Array<Cell>>;
   private canvasWidth: number;
   private canvasHeight: number;
 
@@ -86,14 +87,13 @@ export class CharCanvas extends Box {
     this.canvasWidth = Math.max(1, canvasWidth);
     this.canvasHeight = Math.max(1, canvasHeight);
 
-    // Initialize buffer: [attr, char]
-    // Note: Using .map() to create unique array instances for each cell
+    // Initialize buffer: normalized cells [attr, ch, truecolorBg, truecolorFg]
     this.buffer = Array(this.canvasHeight)
       .fill(null)
       .map(() =>
         Array(this.canvasWidth)
           .fill(null)
-          .map(() => [0, " "]),
+          .map(() => createCell(0, " ", null, null)),
       );
   }
 
@@ -104,31 +104,42 @@ export class CharCanvas extends Box {
    * @param y - Y coordinate (row)
    * @param char - Character to display
    * @param attr - Terminal attribute code
+   * @param truecolorBg - Optional truecolor background [r, g, b]
+   * @param truecolorFg - Optional truecolor foreground [r, g, b]
    *
    * @example
    * ```ts
    * canvas.setCell(10, 5, 'X', 0);
+   * canvas.setCell(10, 5, 'X', 0, [40, 60, 40], null); // With truecolor bg
    * ```
    */
-  setCell(x: number, y: number, char: string, attr: number): void {
+  setCell(
+    x: number,
+    y: number,
+    char: string,
+    attr: number,
+    truecolorBg: [number, number, number] | null = null,
+    truecolorFg: [number, number, number] | null = null,
+  ): void {
     if (x >= 0 && x < this.canvasWidth && y >= 0 && y < this.canvasHeight) {
-      this.buffer[y][x] = [attr, char];
+      this.buffer[y][x] = createCell(attr, char, truecolorBg, truecolorFg);
     }
   }
 
   /**
-   * Get a character at specific position
+   * Get a cell at specific position
    *
    * @param x - X coordinate (column)
    * @param y - Y coordinate (row)
-   * @returns [attr, char] tuple or null if out of bounds
+   * @returns Normalized cell [attr, ch, truecolorBg, truecolorFg] or null if out of bounds
    *
    * @example
    * ```ts
-   * const [attr, char] = canvas.getCell(10, 5);
+   * const cell = canvas.getCell(10, 5);
+   * const [attr, char, bg, fg] = cell;
    * ```
    */
-  getCell(x: number, y: number): [number, string] | null {
+  getCell(x: number, y: number): Cell | null {
     if (x >= 0 && x < this.canvasWidth && y >= 0 && y < this.canvasHeight) {
       return this.buffer[y][x];
     }
@@ -147,10 +158,15 @@ export class CharCanvas extends Box {
    * canvas.clear('.', 0); // Fill with dots
    * ```
    */
-  clear(char: string = " ", attr: number = 0): void {
+  clear(
+    char: string = " ",
+    attr: number = 0,
+    truecolorBg: [number, number, number] | null = null,
+    truecolorFg: [number, number, number] | null = null,
+  ): void {
     for (let y = 0; y < this.canvasHeight; y++) {
       for (let x = 0; x < this.canvasWidth; x++) {
-        this.buffer[y][x] = [attr, char];
+        this.buffer[y][x] = createCell(attr, char, truecolorBg, truecolorFg);
       }
     }
   }
@@ -307,7 +323,7 @@ export class CharCanvas extends Box {
     // Get default attribute from style (for cells with attr === 0)
     const defaultAttr = this.sattr(this.style);
 
-    // Write buffer to screen lines
+    // Write buffer to screen lines (using normalized cells)
     for (
       let y = 0;
       y < this.canvasHeight && yi + y < this.screen.lines.length;
@@ -315,10 +331,10 @@ export class CharCanvas extends Box {
     ) {
       const line = this.screen.lines[yi + y];
       for (let x = 0; x < this.canvasWidth && xi + x < line.length; x++) {
-        const [attr, char] = this.buffer[y][x];
+        const cell = this.buffer[y][x] as Cell;
         // Use element's style when attr is 0, otherwise use provided attr
-        line[xi + x][0] = attr === 0 ? defaultAttr : attr;
-        line[xi + x][1] = char;
+        const finalAttr = cell[0] === 0 ? defaultAttr : cell[0];
+        line[xi + x] = createCell(finalAttr, cell[1], cell[2], cell[3]);
       }
       line.dirty = true;
     }

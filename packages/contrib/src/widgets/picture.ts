@@ -7,27 +7,10 @@
  * Based on blessed-contrib's picture.js
  */
 
-import { Box, type BoxOptions } from "@unblessed/core";
-
-// Dynamic import for optional picture-tuber dependency (use any to avoid type errors)
-let pictureTube: any = null;
-
-// Helper to dynamically import a module by name
-async function tryImport(moduleName: string): Promise<any> {
-  try {
-    // Using Function constructor to avoid static analysis
-    const importFn = new Function("m", "return import(m)");
-    return await importFn(moduleName);
-  } catch {
-    return null;
-  }
-}
-
-// Helper to safely load picture-tuber
-async function loadPictureTube(): Promise<any> {
-  const mod = await tryImport("picture-tuber");
-  return mod ? mod.default || mod : null;
-}
+import { Box, type BoxOptions, getRuntime } from "@unblessed/core";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - picture-tuber doesn't have type definitions
+import pictureTube from "picture-tuber";
 
 /**
  * Picture options
@@ -94,15 +77,7 @@ export class Picture extends Box {
     const cols = options.cols ?? this.options.cols ?? 50;
 
     try {
-      // Try to load picture-tuber
-      if (!pictureTube) {
-        pictureTube = await loadPictureTube();
-      }
-
-      if (!pictureTube) {
-        throw new Error("picture-tuber not available");
-      }
-
+      // pictureTube is now a normal import
       const tube = pictureTube({ cols });
 
       // Create a promise to collect the output
@@ -123,19 +98,11 @@ export class Picture extends Box {
 
         // Feed the image data
         if (options.file) {
-          // Try to dynamically import fs and create read stream
-          tryImport("fs").then((fs) => {
-            if (fs && fs.createReadStream) {
-              const stream = fs.createReadStream(options.file);
-              stream.pipe(tube);
-            } else if (fs && fs.readFileSync) {
-              const fileData = fs.readFileSync(options.file);
-              tube.write(fileData);
-              tube.end();
-            } else {
-              reject(new Error("File system not available"));
-            }
-          }).catch(reject);
+          const runtime = getRuntime();
+          // Read file and pipe to tube
+          const fileData = runtime.fs.readFileSync(options.file);
+          tube.write(fileData);
+          tube.end();
         } else if (options.base64) {
           const buf = Buffer.from(options.base64, "base64");
           tube.write(buf);
@@ -153,7 +120,9 @@ export class Picture extends Box {
       }
     } catch {
       // picture-tuber not available or error loading image
-      this._imageContent = this._createPlaceholder(options.file || "(base64 image)");
+      this._imageContent = this._createPlaceholder(
+        options.file || "(base64 image)",
+      );
       this.setContent(this._imageContent);
 
       if (options.onReady) {
@@ -188,7 +157,8 @@ export class Picture extends Box {
     if (innerWidth >= text.length) {
       const padding = Math.floor((innerWidth - text.length) / 2);
       const rightPad = Math.max(0, innerWidth - padding - text.length);
-      content += "│" + " ".repeat(padding) + text + " ".repeat(rightPad) + "│\n";
+      content +=
+        "│" + " ".repeat(padding) + text + " ".repeat(rightPad) + "│\n";
     } else {
       content += "│" + text.slice(0, innerWidth) + "│\n";
     }
@@ -199,8 +169,16 @@ export class Picture extends Box {
       filename = filename.slice(0, innerWidth - 3) + "...";
     }
     const filePadding = Math.floor((innerWidth - filename.length) / 2);
-    const fileRightPad = Math.max(0, innerWidth - filePadding - filename.length);
-    content += "│" + " ".repeat(filePadding) + filename + " ".repeat(fileRightPad) + "│\n";
+    const fileRightPad = Math.max(
+      0,
+      innerWidth - filePadding - filename.length,
+    );
+    content +=
+      "│" +
+      " ".repeat(filePadding) +
+      filename +
+      " ".repeat(fileRightPad) +
+      "│\n";
 
     for (let i = 0; i < emptyRows; i++) {
       content += "│" + " ".repeat(innerWidth) + "│\n";

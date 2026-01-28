@@ -9,8 +9,8 @@
  * - https://github.com/yaronn/drawille-canvas-blessed-contrib
  */
 
-import { DrawilleCanvas, type CanvasColor } from "./drawille.js";
 import { AnsiTermCanvas } from "./ansi-term.js";
+import { DrawilleCanvas, type CanvasColor } from "./drawille.js";
 
 /**
  * Bresenham's line algorithm
@@ -433,23 +433,24 @@ export class Canvas2DContext {
     const b = Array.from(bresenham(pa[0], pa[1], pc[0], pc[1]));
     const c = Array.from(bresenham(pa[0], pa[1], pb[0], pb[1]));
 
-    // Combine and sort by Y, then X
-    const points = [...a, ...b, ...c].sort((a, b) => {
-      if (a.y === b.y) return a.x - b.x;
-      return a.y - b.y;
-    });
+    // Combine all edge points
+    const points = [...a, ...b, ...c];
 
-    // Fill scanlines
-    for (let i = 0; i < points.length - 1; i++) {
-      const cur = points[i];
-      const nex = points[i + 1];
+    // Group points by Y coordinate
+    const scanlines = new Map<number, number[]>();
+    for (const point of points) {
+      if (!scanlines.has(point.y)) {
+        scanlines.set(point.y, []);
+      }
+      scanlines.get(point.y)!.push(point.x);
+    }
 
-      if (cur.y === nex.y) {
-        for (let j = cur.x; j <= nex.x; j++) {
-          fn(j, cur.y);
-        }
-      } else {
-        fn(cur.x, cur.y);
+    // Fill each scanline from min X to max X
+    for (const [y, xs] of scanlines.entries()) {
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      for (let x = minX; x <= maxX; x++) {
+        fn(x, y);
       }
     }
   }
@@ -513,12 +514,7 @@ export class Canvas2DContext {
   /**
    * Draw a quadratic curve (stub)
    */
-  quadraticCurveTo(
-    _cpx: number,
-    _cpy: number,
-    _x: number,
-    _y: number,
-  ): void {
+  quadraticCurveTo(_cpx: number, _cpy: number, _x: number, _y: number): void {
     // TODO: Implement quadratic curves
   }
 
@@ -584,12 +580,7 @@ export class Canvas2DContext {
   createImageData(_width: number, _height?: number): unknown {
     return {};
   }
-  getImageData(
-    _sx: number,
-    _sy: number,
-    _sw: number,
-    _sh: number,
-  ): unknown {
+  getImageData(_sx: number, _sy: number, _sw: number, _sh: number): unknown {
     return {};
   }
   putImageData(

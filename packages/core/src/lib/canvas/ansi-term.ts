@@ -8,7 +8,8 @@
  * - https://github.com/yaronn/ansi-term
  */
 
-import { getBgCode, getFgCode, type CanvasColor } from "./drawille.js";
+import { toAnsiCode } from "../color-converter.js";
+import { type CanvasColor } from "./drawille.js";
 
 /**
  * AnsiTermCanvas - Character-level canvas
@@ -56,8 +57,10 @@ export class AnsiTermCanvas {
     }
 
     const coord = this.getCoord(x, y);
-    const color = getBgCode(this.color);
-    this.content[coord] = color + " \x1b[49m";
+    const color = toAnsiCode(this.color, "bg");
+    // Set background color on space character - don't reset immediately
+    // The reset will happen naturally when rendering or when color changes
+    this.content[coord] = color + " ";
   }
 
   /**
@@ -102,23 +105,30 @@ export class AnsiTermCanvas {
    * Write text at the given position
    */
   writeText(str: string, x: number, y: number): void {
+    if (str.length === 0) return;
+
     const coord = this.getCoord(x, y);
 
-    const bg = getBgCode(this.fontBg);
-    const fg = getFgCode(this.fontFg);
+    const bg = toAnsiCode(this.fontBg, "bg");
+    const fg = toAnsiCode(this.fontFg, "fg");
+    const hasColors = bg !== "" || fg !== "";
+    const reset = hasColors ? "\x1b[39m\x1b[49m" : "";
 
+    // Apply color codes at the start, write all characters, reset at the end
     for (let i = 0; i < str.length; i++) {
       if (coord + i < this.content.length) {
-        this.content[coord + i] = str[i];
+        const char = str[i];
+        if (i === 0) {
+          // First character: apply color codes
+          this.content[coord + i] = fg + bg + char;
+        } else if (i === str.length - 1 && hasColors) {
+          // Last character: write char and reset (only if we had colors)
+          this.content[coord + i] = char + reset;
+        } else {
+          // Middle characters: just the character
+          this.content[coord + i] = char;
+        }
       }
-    }
-
-    // Apply colors
-    if (coord < this.content.length) {
-      this.content[coord] = fg + bg + (this.content[coord] || " ");
-    }
-    if (coord + str.length - 1 < this.content.length) {
-      this.content[coord + str.length - 1] += "\x1b[39m\x1b[49m";
     }
   }
 
@@ -127,20 +137,43 @@ export class AnsiTermCanvas {
    */
   frame(delimiter: string = "\n"): string {
     const result: string[] = [];
+    const resetAll = "\x1b[39m\x1b[49m"; // Reset foreground and background
 
     for (let i = 0, j = 0; i < this.content.length; i++, j++) {
       if (j === this.width) {
+        // End of line - always reset colors to prevent leaking to next line
+        result.push(resetAll);
         result.push(delimiter);
         j = 0;
+        continue;
       }
 
-      if (this.content[i] === null) {
+      const cell = this.content[i];
+      const prevCell = j > 0 ? this.content[i - 1] : null;
+      
+      // Check if previous cell had color codes
+      const prevHadColors = prevCell !== null && prevCell.includes("\x1b[");
+      
+      if (cell === null) {
+        // Empty cell - reset if previous cell had colors
+        if (prevHadColors) {
+          result.push(resetAll);
+        }
         result.push(" ");
       } else {
-        result.push(this.content[i]!);
+        // Check if this cell has color codes
+        const cellHasColors = cell.includes("\x1b[");
+        
+        // Reset when transitioning from colored to non-colored
+        if (prevHadColors && !cellHasColors) {
+          result.push(resetAll);
+        }
+        result.push(cell);
       }
     }
 
+    // Reset at the very end
+    result.push(resetAll);
     result.push(delimiter);
     return result.join("");
   }

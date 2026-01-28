@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Line chart with abbreviated numbers example
- * 
+ *
  * Demonstrates line chart with number abbreviation (1k, 1m, etc.).
  */
 

@@ -28,55 +28,61 @@
 
 // Utilities
 export * from "./utils.js";
+// Note: color-utils exports are already re-exported via utils.js wrappers
 
 // Layout
-export { Grid, type GridOptions, type WidgetConstructor } from "./layout/grid.js";
+export {
+  Grid,
+  type GridOptions,
+  type WidgetConstructor,
+} from "./layout/grid.js";
 
 // Widgets
-export { Line, type LineOptions, type LineSeriesData } from "./widgets/line.js";
-export { Bar, type BarOptions, type BarData } from "./widgets/bar.js";
-export {
-  StackedBar,
-  type StackedBarOptions,
-  type StackedBarData,
-} from "./widgets/stacked-bar.js";
-export {
-  Gauge,
-  type GaugeOptions,
-  type GaugeStackItem,
-} from "./widgets/gauge.js";
-export { Donut, type DonutOptions, type DonutData } from "./widgets/donut.js";
-export { Log, type LogOptions } from "./widgets/log.js";
-export {
-  Sparkline,
-  type SparklineOptions,
-  type SparklineData,
-} from "./widgets/sparkline.js";
-export { LCD, type LCDOptions } from "./widgets/lcd.js";
-export {
-  GaugeList,
-  type GaugeListOptions,
-  type GaugeListItem,
-  type GaugeListStackItem,
-} from "./widgets/gauge-list.js";
-export { Table, type TableOptions, type TableData } from "./widgets/table.js";
 export {
   Carousel,
   type CarouselOptions,
   type CarouselPage,
 } from "./layout/carousel.js";
+export { Bar, type BarData, type BarOptions } from "./widgets/bar.js";
+export { Donut, type DonutData, type DonutOptions } from "./widgets/donut.js";
+export {
+  GaugeList,
+  type GaugeListItem,
+  type GaugeListOptions,
+  type GaugeListStackItem,
+} from "./widgets/gauge-list.js";
+export {
+  Gauge,
+  type GaugeOptions,
+  type GaugeStackItem,
+} from "./widgets/gauge.js";
+export { LCD, type LCDOptions } from "./widgets/lcd.js";
+export { Line, type LineOptions, type LineSeriesData } from "./widgets/line.js";
+export { Log, type LogOptions } from "./widgets/log.js";
+export {
+  Sparkline,
+  type SparklineData,
+  type SparklineOptions,
+} from "./widgets/sparkline.js";
+export {
+  StackedBar,
+  type StackedBarData,
+  type StackedBarOptions,
+} from "./widgets/stacked-bar.js";
+export { Table, type TableData, type TableOptions } from "./widgets/table.js";
 
 // Widgets with optional dependencies
+export { Diff, type DiffOptions } from "./widgets/diff.js";
+export {
+  WorldMap as Map,
+  WorldMap,
+  type MapMarker,
+  type MapOptions,
+} from "./widgets/map.js";
 export {
   Markdown,
+  type HighlightTheme,
   type MarkdownOptions,
   type MarkdownStyle,
 } from "./widgets/markdown.js";
-export {
-  WorldMap,
-  WorldMap as Map,
-  type MapOptions,
-  type MapMarker,
-} from "./widgets/map.js";
 export { Picture, type PictureOptions } from "./widgets/picture.js";
-

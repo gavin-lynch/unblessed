@@ -33,73 +33,75 @@ Without these dependencies, widgets will display simplified/fallback content.
 ## Quick Start
 
 ```typescript
-import { Screen } from '@unblessed/node';
-import { Grid, Line, Bar, Gauge, Donut, Log } from '@unblessed/contrib';
+import { Screen } from "@unblessed/node";
+import { Grid, Line, Bar, Gauge, Donut, Log } from "@unblessed/contrib";
 
 const screen = new Screen({
   smartCSR: true,
-  title: 'Dashboard'
+  title: "Dashboard",
 });
 
 // Create a grid layout (12x12 cells)
 const grid = new Grid({
   screen: screen,
   rows: 12,
-  cols: 12
+  cols: 12,
 });
 
 // Add a line chart (top-left, 6x6)
 const line = grid.set(0, 0, 6, 6, (opts) => new Line(opts), {
-  label: 'Network Traffic',
+  label: "Network Traffic",
   showLegend: true,
   data: [
     {
-      title: 'Download',
-      x: ['t1', 't2', 't3', 't4', 't5'],
+      title: "Download",
+      x: ["t1", "t2", "t3", "t4", "t5"],
       y: [5, 15, 7, 12, 20],
-      style: { line: 'yellow' }
+      style: { line: "yellow" },
     },
     {
-      title: 'Upload',
-      x: ['t1', 't2', 't3', 't4', 't5'],
+      title: "Upload",
+      x: ["t1", "t2", "t3", "t4", "t5"],
       y: [2, 8, 4, 6, 10],
-      style: { line: 'blue' }
-    }
-  ]
+      style: { line: "blue" },
+    },
+  ],
 });
 
 // Add a bar chart (top-right, 6x6)
 const bar = grid.set(0, 6, 6, 6, (opts) => new Bar(opts), {
-  label: 'Server Load',
+  label: "Server Load",
   barWidth: 4,
   barSpacing: 6,
   maxHeight: 100,
   data: {
-    titles: ['S1', 'S2', 'S3', 'S4'],
-    data: [45, 78, 32, 91]
-  }
+    titles: ["S1", "S2", "S3", "S4"],
+    data: [45, 78, 32, 91],
+  },
 });
 
 // Add a gauge (bottom-left, 3x6)
 const gauge = grid.set(6, 0, 3, 6, (opts) => new Gauge(opts), {
-  label: 'Memory',
-  stroke: 'green',
-  percent: 65
+  label: "Memory",
+  stroke: "green",
+  percent: 65,
 });
 
 // Add a log (bottom, 3x12)
 const log = grid.set(9, 0, 3, 12, (opts) => new Log(opts), {
-  label: 'Server Log',
+  label: "Server Log",
   tags: true,
-  bufferLength: 30
+  bufferLength: 30,
 });
 
 // Update data periodically
 setInterval(() => {
-  log.log('{green-fg}' + new Date().toISOString() + '{/green-fg} Server running');
+  log.log(
+    "{green-fg}" + new Date().toISOString() + "{/green-fg} Server running",
+  );
 }, 1000);
 
-screen.key(['escape', 'q', 'C-c'], () => process.exit(0));
+screen.key(["escape", "q", "C-c"], () => process.exit(0));
 screen.render();
 ```
 
@@ -137,19 +139,19 @@ line.setData([{ title: 'Indoor', x: [...], y: [...] }]);
 Displays vertical bar charts.
 
 ```typescript
-import { Bar } from '@unblessed/contrib';
+import { Bar } from "@unblessed/contrib";
 
 const bar = new Bar({
   parent: screen,
-  width: '50%',
+  width: "50%",
   height: 10,
-  label: 'Sales',
+  label: "Sales",
   barWidth: 4,
   barSpacing: 6,
   data: {
-    titles: ['Q1', 'Q2', 'Q3', 'Q4'],
-    data: [150, 200, 180, 220]
-  }
+    titles: ["Q1", "Q2", "Q3", "Q4"],
+    data: [150, 200, 180, 220],
+  },
 });
 ```
 
@@ -158,23 +160,23 @@ const bar = new Bar({
 Displays stacked bar charts with multiple data series.
 
 ```typescript
-import { StackedBar } from '@unblessed/contrib';
+import { StackedBar } from "@unblessed/contrib";
 
 const stackedBar = new StackedBar({
   parent: screen,
-  width: '60%',
+  width: "60%",
   height: 12,
-  label: 'Resource Usage',
-  barBgColor: ['green', 'yellow', 'red'],
+  label: "Resource Usage",
+  barBgColor: ["green", "yellow", "red"],
   data: {
-    barCategory: ['Server 1', 'Server 2', 'Server 3'],
-    stackedCategory: ['CPU', 'Memory', 'Disk'],
+    barCategory: ["Server 1", "Server 2", "Server 3"],
+    stackedCategory: ["CPU", "Memory", "Disk"],
     data: [
       [20, 30, 10],
       [40, 20, 15],
-      [25, 35, 20]
-    ]
-  }
+      [25, 35, 20],
+    ],
+  },
 });
 ```
 
@@ -183,15 +185,15 @@ const stackedBar = new StackedBar({
 Displays a horizontal progress bar.
 
 ```typescript
-import { Gauge } from '@unblessed/contrib';
+import { Gauge } from "@unblessed/contrib";
 
 const gauge = new Gauge({
   parent: screen,
-  width: '50%',
+  width: "50%",
   height: 5,
-  label: 'Progress',
-  stroke: 'green',
-  percent: 75
+  label: "Progress",
+  stroke: "green",
+  percent: 75,
 });
 
 // Update percentage
@@ -199,9 +201,9 @@ gauge.setPercent(80);
 
 // Or use stacked values
 gauge.setStack([
-  { percent: 30, stroke: 'green' },
-  { percent: 50, stroke: 'yellow' },
-  { percent: 20, stroke: 'red' }
+  { percent: 30, stroke: "green" },
+  { percent: 50, stroke: "yellow" },
+  { percent: 20, stroke: "red" },
 ]);
 ```
 
@@ -210,20 +212,20 @@ gauge.setStack([
 Displays multiple gauges in a vertical list.
 
 ```typescript
-import { GaugeList } from '@unblessed/contrib';
+import { GaugeList } from "@unblessed/contrib";
 
 const gaugeList = new GaugeList({
   parent: screen,
-  width: '50%',
+  width: "50%",
   height: 10,
-  label: 'System Resources',
+  label: "System Resources",
   gaugeHeight: 2,
   gaugeSpacing: 1,
   gauges: [
-    { stack: [{ percent: 65, stroke: 'green' }] },
-    { stack: [{ percent: 45, stroke: 'blue' }] },
-    { stack: [{ percent: 80, stroke: 'red' }] }
-  ]
+    { stack: [{ percent: 65, stroke: "green" }] },
+    { stack: [{ percent: 45, stroke: "blue" }] },
+    { stack: [{ percent: 80, stroke: "red" }] },
+  ],
 });
 ```
 
@@ -232,20 +234,20 @@ const gaugeList = new GaugeList({
 Displays donut/pie charts.
 
 ```typescript
-import { Donut } from '@unblessed/contrib';
+import { Donut } from "@unblessed/contrib";
 
 const donut = new Donut({
   parent: screen,
   width: 30,
   height: 15,
-  label: 'Disk Usage',
+  label: "Disk Usage",
   radius: 14,
   arcWidth: 4,
   data: [
-    { label: 'SSD', percent: 75, color: 'green' },
-    { label: 'HDD', percent: 45, color: 'blue' },
-    { label: 'NAS', percent: 90, color: 'red' }
-  ]
+    { label: "SSD", percent: 75, color: "green" },
+    { label: "HDD", percent: 45, color: "blue" },
+    { label: "NAS", percent: 90, color: "red" },
+  ],
 });
 ```
 
@@ -254,19 +256,19 @@ const donut = new Donut({
 Displays characters using 16-segment LED-style display.
 
 ```typescript
-import { LCD } from '@unblessed/contrib';
+import { LCD } from "@unblessed/contrib";
 
 const lcd = new LCD({
   parent: screen,
   width: 30,
   height: 12,
-  label: 'Counter',
+  label: "Counter",
   elements: 5,
-  color: 'green'
+  color: "green",
 });
 
-lcd.setDisplay('12345');
-lcd.setDisplay('HELLO');
+lcd.setDisplay("12345");
+lcd.setDisplay("HELLO");
 ```
 
 ### Sparkline
@@ -274,23 +276,23 @@ lcd.setDisplay('HELLO');
 Displays simple ASCII sparkline charts.
 
 ```typescript
-import { Sparkline } from '@unblessed/contrib';
+import { Sparkline } from "@unblessed/contrib";
 
 const sparkline = new Sparkline({
   parent: screen,
-  width: '50%',
+  width: "50%",
   height: 8,
-  label: 'Metrics',
+  label: "Metrics",
   tags: true,
-  border: { type: 'line' }
+  border: { type: "line" },
 });
 
 sparkline.setData(
-  ['Traffic', 'Errors'],
+  ["Traffic", "Errors"],
   [
     [10, 20, 30, 25, 35, 40, 30, 45],
-    [5, 15, 10, 8, 12, 9, 7, 11]
-  ]
+    [5, 15, 10, 8, 12, 9, 7, 11],
+  ],
 );
 ```
 
@@ -299,24 +301,24 @@ sparkline.setData(
 Displays tabular data with headers and selectable rows.
 
 ```typescript
-import { Table } from '@unblessed/contrib';
+import { Table } from "@unblessed/contrib";
 
 const table = new Table({
   parent: screen,
-  width: '60%',
-  height: '50%',
-  label: 'Processes',
+  width: "60%",
+  height: "50%",
+  label: "Processes",
   columnWidth: [20, 10, 10],
   columnSpacing: 2,
   keys: true,
   data: {
-    headers: ['Name', 'PID', 'CPU'],
+    headers: ["Name", "PID", "CPU"],
     data: [
-      ['node', '1234', '12%'],
-      ['nginx', '5678', '5%'],
-      ['postgres', '9012', '8%']
-    ]
-  }
+      ["node", "1234", "12%"],
+      ["nginx", "5678", "5%"],
+      ["postgres", "9012", "8%"],
+    ],
+  },
 });
 ```
 
@@ -325,20 +327,20 @@ const table = new Table({
 Displays scrolling log messages.
 
 ```typescript
-import { Log } from '@unblessed/contrib';
+import { Log } from "@unblessed/contrib";
 
 const log = new Log({
   parent: screen,
-  width: '100%',
+  width: "100%",
   height: 10,
-  label: 'Application Log',
+  label: "Application Log",
   tags: true,
-  bufferLength: 50
+  bufferLength: 50,
 });
 
-log.log('Server started');
-log.log('{green-fg}OK{/green-fg} Connected');
-log.log('{red-fg}ERROR{/red-fg} Connection failed');
+log.log("Server started");
+log.log("{green-fg}OK{/green-fg} Connected");
+log.log("{red-fg}ERROR{/red-fg} Connection failed");
 ```
 
 ### Markdown
@@ -347,13 +349,13 @@ Renders markdown content with terminal formatting.
 Requires optional peer dependencies: `marked`, `marked-terminal`, `chalk`.
 
 ```typescript
-import { Markdown } from '@unblessed/contrib';
+import { Markdown } from "@unblessed/contrib";
 
 const markdown = new Markdown({
   parent: screen,
-  width: '80%',
-  height: '80%',
-  label: 'README',
+  width: "80%",
+  height: "80%",
+  label: "README",
   markdown: `
 # Hello World
 
@@ -365,11 +367,11 @@ This is **bold** and *italic* text.
 \`\`\`js
 console.log('code block');
 \`\`\`
-  `
+  `,
 });
 
 // Update content
-markdown.setMarkdown('# New Content\n\nUpdated markdown.');
+markdown.setMarkdown("# New Content\n\nUpdated markdown.");
 ```
 
 ### WorldMap
@@ -378,22 +380,22 @@ Displays a world map with markers.
 Requires optional peer dependency: `map-canvas` for detailed rendering.
 
 ```typescript
-import { WorldMap } from '@unblessed/contrib';
+import { WorldMap } from "@unblessed/contrib";
 
 const map = new WorldMap({
   parent: screen,
-  width: '80%',
-  height: '80%',
-  label: 'Server Locations',
+  width: "80%",
+  height: "80%",
+  label: "Server Locations",
   markers: [
-    { lon: '-122.4', lat: '37.8', color: 'red', char: 'X' },   // San Francisco
-    { lon: '-73.9', lat: '40.7', color: 'blue', char: 'O' },   // New York
-    { lon: '0.1', lat: '51.5', color: 'green', char: '*' }     // London
-  ]
+    { lon: "-122.4", lat: "37.8", color: "red", char: "X" }, // San Francisco
+    { lon: "-73.9", lat: "40.7", color: "blue", char: "O" }, // New York
+    { lon: "0.1", lat: "51.5", color: "green", char: "*" }, // London
+  ],
 });
 
 // Add markers dynamically
-map.addMarker({ lon: '139.7', lat: '35.7', color: 'yellow', char: '+' }); // Tokyo
+map.addMarker({ lon: "139.7", lat: "35.7", color: "yellow", char: "+" }); // Tokyo
 map.clearMarkers();
 ```
 
@@ -403,22 +405,22 @@ Displays images in the terminal using ANSI colors.
 Requires optional peer dependency: `picture-tuber`.
 
 ```typescript
-import { Picture } from '@unblessed/contrib';
+import { Picture } from "@unblessed/contrib";
 
 const picture = new Picture({
   parent: screen,
-  width: '50%',
-  height: '50%',
-  file: './logo.png',
+  width: "50%",
+  height: "50%",
+  file: "./logo.png",
   cols: 40,
-  onReady: () => screen.render()
+  onReady: () => screen.render(),
 });
 
 // Or use base64-encoded image
 const picture2 = new Picture({
   parent: screen,
-  base64: '...base64 encoded image data...',
-  cols: 30
+  base64: "...base64 encoded image data...",
+  cols: 30,
 });
 ```
 

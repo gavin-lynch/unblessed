@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Table with colored content example
- * 
+ *
  * Demonstrates table with colored cell content.
  */
 

@@ -74,6 +74,7 @@ tsx packages/contrib/examples/dashboard.ts    # Full dashboard (most comprehensi
 ## Interactive Controls
 
 Most examples support:
+
 - **`q`** - Quit
 - **`C-c`** - Quit (Ctrl+C)
 - **`escape`** - Quit
@@ -81,6 +82,7 @@ Most examples support:
 ### LCD Example Special Keys
 
 The `lcd.ts` example has additional controls:
+
 - **`g`** - Increase width
 - **`h`** - Decrease width
 - **`t`** - Increase interval
@@ -91,6 +93,7 @@ The `lcd.ts` example has additional controls:
 ### Table Example
 
 The `table.ts` example supports:
+
 - Arrow keys for navigation
 - `vi` mode navigation (if enabled)
 
@@ -99,6 +102,7 @@ The `table.ts` example supports:
 ### Error: Cannot find module '@unblessed/node'
 
 This usually means:
+
 1. Packages aren't built - run `pnpm build` from project root
 2. Using Bun - Bun may not resolve workspace dependencies correctly. Use `tsx` or `pnpm exec` instead:
 
@@ -132,6 +136,7 @@ This shouldn't happen with the examples, but if you see this error, make sure yo
 ### Terminal Display Issues
 
 If the display looks corrupted:
+
 1. Make sure your terminal supports 256 colors
 2. Try resizing your terminal window
 3. Some examples may need a minimum terminal size (80x24 recommended)
@@ -157,6 +162,7 @@ Shows a simple bar chart with two bars labeled "bar1" and "bar2" with values 5 a
 ### Dashboard Example
 
 Shows a comprehensive dashboard with:
+
 - Line charts (transactions, errors)
 - Bar chart (server utilization)
 - Gauges (storage, deployment progress)

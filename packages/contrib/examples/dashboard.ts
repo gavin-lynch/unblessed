@@ -1,22 +1,22 @@
 #!/usr/bin/env tsx
 /**
  * Dashboard example
- * 
+ *
  * Comprehensive dashboard demonstrating multiple widgets in a grid layout.
  * Shows line charts, bar charts, gauges, donut, sparkline, table, log, LCD, and map.
  */
 
 import { Screen } from "@unblessed/node";
 import { Grid } from "../src/layout/grid.js";
-import { Line } from "../src/widgets/line.js";
 import { Bar } from "../src/widgets/bar.js";
-import { Gauge } from "../src/widgets/gauge.js";
 import { Donut } from "../src/widgets/donut.js";
+import { Gauge } from "../src/widgets/gauge.js";
+import { LCD } from "../src/widgets/lcd.js";
+import { Line } from "../src/widgets/line.js";
+import { Log } from "../src/widgets/log.js";
+import { WorldMap } from "../src/widgets/map.js";
 import { Sparkline } from "../src/widgets/sparkline.js";
 import { Table } from "../src/widgets/table.js";
-import { Log } from "../src/widgets/log.js";
-import { LCD } from "../src/widgets/lcd.js";
-import { WorldMap } from "../src/widgets/map.js";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -209,12 +209,12 @@ setInterval(() => {
 
 // Set spark dummy data
 let spark1 = [
-  1, 2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1,
-  2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
+  1, 2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1, 2,
+  5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
 ];
 let spark2 = [
-  4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1,
-  2, 5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
+  4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 4, 4, 5, 4, 1, 5, 1, 2, 5, 2, 1, 5, 1, 2,
+  5, 2, 1, 5, 1, 2, 5, 2, 1, 5,
 ];
 
 function refreshSpark() {
@@ -327,8 +327,8 @@ const transactionsData1 = {
     "04:30",
   ],
   y: [
-    0, 5, 5, 10, 10, 15, 20, 30, 25, 30, 30, 20, 20, 30, 30, 20, 15, 15, 19,
-    25, 30, 25, 25, 20, 25, 30, 35, 35, 30, 30,
+    0, 5, 5, 10, 10, 15, 20, 30, 25, 30, 30, 20, 20, 30, 30, 20, 15, 15, 19, 25,
+    30, 25, 25, 20, 25, 30, 35, 35, 30, 30,
   ],
 };
 
@@ -338,7 +338,7 @@ const errorsData = {
   y: [30, 50, 70, 40, 50, 20],
 };
 
-function setLineData(mockData: typeof transactionsData[], line: Line) {
+function setLineData(mockData: (typeof transactionsData)[], line: Line) {
   for (let i = 0; i < mockData.length; i++) {
     const last = mockData[i].y[mockData[i].y.length - 1];
     mockData[i].y.shift();

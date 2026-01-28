@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Donut chart example
- * 
+ *
  * Demonstrates donut chart with animated updates.
  */
 

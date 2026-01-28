@@ -2,24 +2,24 @@
  * Tests for @unblessed/contrib widgets
  */
 
-import { describe, expect, it, beforeAll } from "vitest";
 import { Screen } from "@unblessed/core";
+import { describe, expect, it } from "vitest";
 import {
-  Line,
   Bar,
-  StackedBar,
-  Gauge,
-  Donut,
-  Log,
-  Sparkline,
-  LCD,
-  GaugeList,
-  Table,
-  Grid,
   Carousel,
+  Donut,
+  Gauge,
+  GaugeList,
+  Grid,
+  LCD,
+  Line,
+  Log,
   Markdown,
-  WorldMap,
   Picture,
+  Sparkline,
+  StackedBar,
+  Table,
+  WorldMap,
 } from "../src/index.js";
 
 describe("Line Chart", () => {
@@ -74,7 +74,12 @@ describe("Line Chart", () => {
 
     line.setData([
       { title: "CPU", x: ["t1", "t2"], y: [10, 20], style: { line: "red" } },
-      { title: "Memory", x: ["t1", "t2"], y: [30, 40], style: { line: "blue" } },
+      {
+        title: "Memory",
+        x: ["t1", "t2"],
+        y: [30, 40],
+        style: { line: "blue" },
+      },
     ]);
 
     screen.destroy();
@@ -322,10 +327,13 @@ describe("Sparkline", () => {
       height: 12,
     });
 
-    sparkline.setData(["Traffic", "Errors"], [
-      [10, 20, 30, 40, 50],
-      [5, 15, 10, 20, 25],
-    ]);
+    sparkline.setData(
+      ["Traffic", "Errors"],
+      [
+        [10, 20, 30, 40, 50],
+        [5, 15, 10, 20, 25],
+      ],
+    );
 
     // Content should include sparkline characters
     const content = sparkline.getContent();
@@ -468,10 +476,7 @@ describe("Table", () => {
 describe("Carousel", () => {
   it("should create a Carousel", () => {
     const screen = new Screen({ width: 80, height: 24 });
-    const pages = [
-      (_s: any) => {},
-      (_s: any) => {},
-    ];
+    const pages = [(_s: any) => {}, (_s: any) => {}];
     const carousel = new Carousel(pages, { screen });
 
     expect(carousel).toBeDefined();
@@ -482,11 +487,7 @@ describe("Carousel", () => {
 
   it("should navigate pages", () => {
     const screen = new Screen({ width: 80, height: 24 });
-    const pages = [
-      (_s: any) => {},
-      (_s: any) => {},
-      (_s: any) => {},
-    ];
+    const pages = [(_s: any) => {}, (_s: any) => {}, (_s: any) => {}];
     const carousel = new Carousel(pages, { screen });
 
     carousel.start();
@@ -512,10 +513,7 @@ describe("Carousel", () => {
 
   it("should stop at ends without rotate", () => {
     const screen = new Screen({ width: 80, height: 24 });
-    const pages = [
-      (_s: any) => {},
-      (_s: any) => {},
-    ];
+    const pages = [(_s: any) => {}, (_s: any) => {}];
     const carousel = new Carousel(pages, { screen, rotate: false });
 
     carousel.start();
@@ -531,10 +529,7 @@ describe("Carousel", () => {
 
   it("should rotate when enabled", () => {
     const screen = new Screen({ width: 80, height: 24 });
-    const pages = [
-      (_s: any) => {},
-      (_s: any) => {},
-    ];
+    const pages = [(_s: any) => {}, (_s: any) => {}];
     const carousel = new Carousel(pages, { screen, rotate: true });
 
     carousel.start();
@@ -644,8 +639,8 @@ describe("Markdown", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const markdown = new Markdown({
       parent: screen,
-      width: '80%',
-      height: '80%',
+      width: "80%",
+      height: "80%",
     });
 
     expect(markdown.type).toBe("markdown");
@@ -656,8 +651,8 @@ describe("Markdown", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const markdown = new Markdown({
       parent: screen,
-      width: '80%',
-      height: '80%',
+      width: "80%",
+      height: "80%",
     });
 
     // Should not throw even without marked dependency
@@ -671,8 +666,8 @@ describe("WorldMap", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const map = new WorldMap({
       parent: screen,
-      width: '80%',
-      height: '80%',
+      width: "80%",
+      height: "80%",
     });
 
     expect(map.type).toBe("map");
@@ -683,15 +678,15 @@ describe("WorldMap", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const map = new WorldMap({
       parent: screen,
-      width: '80%',
-      height: '80%',
+      width: "80%",
+      height: "80%",
     });
 
     screen.append(map);
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     // Should not throw even without map-canvas dependency
-    map.addMarker({ lon: '-122.4', lat: '37.8', color: 'red', char: 'X' });
+    map.addMarker({ lon: "-122.4", lat: "37.8", color: "red", char: "X" });
     map.clearMarkers();
     screen.destroy();
   });
@@ -702,8 +697,8 @@ describe("Picture", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const picture = new Picture({
       parent: screen,
-      width: '50%',
-      height: '50%',
+      width: "50%",
+      height: "50%",
       cols: 30,
     });
 
@@ -715,12 +710,12 @@ describe("Picture", () => {
     const screen = new Screen({ width: 80, height: 24 });
     const picture = new Picture({
       parent: screen,
-      width: '50%',
-      height: '50%',
+      width: "50%",
+      height: "50%",
     });
 
     // Should not throw even with invalid base64 and no picture-tuber
-    await picture.setImage({ base64: 'invalid' });
+    await picture.setImage({ base64: "invalid" });
     screen.destroy();
   });
 });

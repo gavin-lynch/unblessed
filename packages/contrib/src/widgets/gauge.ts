@@ -7,11 +7,7 @@
  * Based on blessed-contrib's gauge.js
  */
 
-import {
-  CanvasWidget,
-  AnsiTermCanvas,
-  type BoxOptions,
-} from "@unblessed/core";
+import { AnsiTermCanvas, CanvasWidget, type BoxOptions } from "@unblessed/core";
 
 /**
  * Stack item for stacked gauge

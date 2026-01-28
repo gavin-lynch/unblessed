@@ -1,10 +1,10 @@
 #!/usr/bin/env tsx
 /**
  * Picture example
- * 
+ *
  * Demonstrates image display in terminal.
  * Requires optional peer dependency: picture-tuber
- * 
+ *
  * Note: The image file path should be relative to where the script is run.
  */
 

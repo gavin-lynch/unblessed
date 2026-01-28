@@ -6,13 +6,13 @@
 
 import { beforeAll, describe, expect, it } from "vitest";
 import {
+  AnsiTermCanvas,
   Canvas,
   Canvas2DContext,
-  DrawilleCanvas,
-  AnsiTermCanvas,
-  getFgCode,
-  getBgCode,
   COLOR_NAMES,
+  DrawilleCanvas,
+  getBgCode,
+  getFgCode,
 } from "../../src/lib/canvas/index.js";
 import { initTestRuntime } from "../helpers/mock.js";
 

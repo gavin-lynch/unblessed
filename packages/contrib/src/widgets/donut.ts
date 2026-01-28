@@ -7,11 +7,7 @@
  * Based on blessed-contrib's donut.js
  */
 
-import {
-  CanvasWidget,
-  DrawilleCanvas,
-  type BoxOptions,
-} from "@unblessed/core";
+import { CanvasWidget, DrawilleCanvas, type BoxOptions } from "@unblessed/core";
 
 /**
  * Donut chart data item
@@ -135,8 +131,8 @@ export class Donut extends CanvasWidget {
     c.save();
     c.translate(0, -this.options.yPadding!);
 
-    c.strokeStyle = this.options.stroke!;
-    c.fillStyle = this.options.fill!;
+    c.strokeStyle = this.options.stroke! as any;
+    c.fillStyle = this.options.fill! as any;
 
     c.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
 
@@ -157,7 +153,7 @@ export class Donut extends CanvasWidget {
     ): void => {
       let s = 0;
       const points = 370;
-      c.strokeStyle = color;
+      c.strokeStyle = color as any;
 
       while (s < r) {
         if (s < r - width) {
@@ -208,14 +204,18 @@ export class Donut extends CanvasWidget {
         : parseFloat(String(percent * 100)).toFixed(0) + "%";
       c.fillText(
         ptext,
-        cxx - Math.round(parseFloat(String(c.measureText(ptext).width)) / 2) + 3,
+        cxx -
+          Math.round(parseFloat(String(c.measureText(ptext).width)) / 2) +
+          3,
         mid,
       );
 
       // Draw label
       c.fillText(
         label,
-        cxx - Math.round(parseFloat(String(c.measureText(label).width)) / 2) + 3,
+        cxx -
+          Math.round(parseFloat(String(c.measureText(label).width)) / 2) +
+          3,
         mid + r + 5,
       );
     };
@@ -237,7 +237,16 @@ export class Donut extends CanvasWidget {
       const color = stat.color ?? "green";
       const cxx = left;
 
-      drawDonut(label, percent, radius, arcWidth, cxx, middle, color, percentAltNumber);
+      drawDonut(
+        label,
+        percent,
+        radius,
+        arcWidth,
+        cxx,
+        middle,
+        color,
+        percentAltNumber,
+      );
     };
 
     // Draw all donuts

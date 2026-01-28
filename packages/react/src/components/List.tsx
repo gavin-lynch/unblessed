@@ -74,8 +74,13 @@ export class ListDescriptor extends BoxDescriptor<ListProps> {
     // Build focusable options using helper function
     Object.assign(options, buildFocusableOptions(this.props, 0));
 
-    // Items
-    options.items = this.props.items || [];
+    // IMPORTANT:
+    // Do NOT set `options.items` here.
+    //
+    // `WidgetDescriptor.updateWidget()` deep-merges `widgetOptions` into the live widget.
+    // For core `List`, `widget.items` is an internal array of *item elements* (Box instances).
+    // If we merge `options.items: string[]`, it overwrites `widget.items` with strings and
+    // subsequent calls to `list.setItems()` will crash (strings don't have setContent()).
 
     // label
     options.label = this.props.label;
@@ -153,7 +158,7 @@ export class ListDescriptor extends BoxDescriptor<ListProps> {
   }
 
   override createWidget(layout: ComputedLayout, screen: Screen): ListWidget {
-    return new ListWidget({
+    const widget = new ListWidget({
       screen,
       ...COMMON_WIDGET_OPTIONS,
       top: layout.top,
@@ -162,6 +167,10 @@ export class ListDescriptor extends BoxDescriptor<ListProps> {
       height: layout.height,
       ...this.widgetOptions,
     });
+
+    // Set items via the widget API (never via merge into `widget.items`).
+    widget.setItems(this.props.items || []);
+    return widget;
   }
 
   override updateWidget(widget: ListWidget, layout: ComputedLayout): void {
@@ -169,7 +178,7 @@ export class ListDescriptor extends BoxDescriptor<ListProps> {
     super.updateWidget(widget, layout);
 
     // List-specific: Update items array
-    const newItems = this.widgetOptions.items || [];
+    const newItems = this.props.items || [];
     widget.setItems(newItems);
   }
 }

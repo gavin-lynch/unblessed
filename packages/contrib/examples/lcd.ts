@@ -1,9 +1,9 @@
 #!/usr/bin/env tsx
 /**
  * LCD display example
- * 
+ *
  * Demonstrates LCD widget with interactive controls.
- * 
+ *
  * LCD Options:
  * - segmentWidth: how wide are the segments in % (default: 0.06)
  * - segmentInterval: spacing between segments in % (default: 0.11)
