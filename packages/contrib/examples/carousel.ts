@@ -23,18 +23,18 @@ function page1(screen: Screen) {
     label: "Stocks",
   });
 
-  const map = grid.set(1, 2, 2, 2, (opts) => new WorldMap(opts), {
+  const _map = grid.set(1, 2, 2, 2, (opts) => new WorldMap(opts), {
     label: "Servers Location",
   });
 
-  const box = new Box({
+  const _box = new Box({
     content:
       "click right-left arrows or wait 3 seconds for the next layout in the carousel",
     top: "80%",
     left: "10%",
     parent: screen,
   });
-  screen.append(box);
+  screen.append(_box);
 
   const lineData = {
     x: ["t1", "t2", "t3", "t4"],

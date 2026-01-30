@@ -12,11 +12,11 @@ const screen = new Screen({ smartCSR: true });
 
 const grid = new Grid({ rows: 12, cols: 12, screen: screen });
 
-const map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {
+const _map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {
   label: "World Map",
 });
 
-const lcd = grid.set(4, 4, 4, 4, (opts) => new LCD(opts), {
+const _lcd = grid.set(4, 4, 4, 4, (opts) => new LCD(opts), {
   label: "LCD Test",
   segmentWidth: 0.06,
   segmentInterval: 0.11,

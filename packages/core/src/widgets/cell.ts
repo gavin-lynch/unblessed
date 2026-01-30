@@ -13,6 +13,8 @@ export type Cell = [
   truecolorFg: [number, number, number] | null,
 ];
 
+export type Truecolor = [number, number, number];
+
 /**
  * Create a normalized cell with consistent 4-element structure.
  * @param attr - Packed attribute integer
@@ -28,4 +30,13 @@ export function createCell(
   truecolorFg: [number, number, number] | null = null,
 ): Cell {
   return [attr, ch, truecolorBg, truecolorFg];
+}
+
+export function sameTruecolor(
+  a: Truecolor | null,
+  b: Truecolor | null,
+): boolean {
+  if (a === b) return true;
+  if (a === null || b === null) return false;
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
 }

@@ -21,7 +21,7 @@ import x256 from "x256";
 // Force chalk colors
 if (!process.env.NO_COLOR) {
   if (process.env.FORCE_COLOR || process.stdout.isTTY) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+     
     // @ts-ignore
     if (chalk.level === 0) {
       chalk.level = 1;
@@ -193,7 +193,7 @@ export class Diff extends Box {
           ) {
             effectiveWidth = runtime.process.stdout.columns;
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore
         }
       }
@@ -354,7 +354,7 @@ export class Diff extends Box {
           ) {
             contentWidth = runtime.process.stdout.columns;
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors
         }
       }
@@ -429,12 +429,12 @@ export class Diff extends Box {
           );
           const highlighted = highlight(content, {
             language,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             theme: highlightTheme as any,
             ignoreIllegals: true,
           });
           content = highlighted;
-        } catch (e) {
+        } catch (_e) {
           // If highlighting fails, use original content
           // (e.g., language not supported)
         }
@@ -617,7 +617,7 @@ export class Diff extends Box {
           }
           converted[key] = result;
         }
-      } catch (e) {
+      } catch (_e) {
         // Skip invalid theme entries
       }
     }
@@ -629,7 +629,7 @@ export class Diff extends Box {
    * Get length of ANSI escape codes in a string
    */
   private _getAnsiLength(str: string): number {
-    // eslint-disable-next-line no-control-regex
+     
     const ansiRegex = /\x1B\[[0-9;]*[A-Za-z]/g;
     const matches = str.match(ansiRegex);
     return matches ? matches.join("").length : 0;

@@ -69,6 +69,7 @@
     "@unblessed/contrib": "workspace:*",
     "@unblessed/node": "workspace:*",
     "@testing-library/react": "^16.3.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "@types/react": "^19.2.0",
     "@types/react-reconciler": "^0.32.3",
     "react": "^19.2.0"

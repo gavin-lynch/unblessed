@@ -353,14 +353,16 @@ class Tree extends List {
     }
 
     // Config defaults - Classic style (blessed-contrib compatible)
+    // Support both `template` (classic blessed-contrib name) and `config` (alias).
+    const template = options.template ?? options.config;
     this.config = {
-      collapse: options.config?.collapse ?? " [+]", // Suffix when collapsed
-      expand: options.config?.expand ?? " [-]", // Suffix when expanded
-      prefixIndicator: options.config?.prefixIndicator, // Left side indicator
-      suffixIndicator: options.config?.suffixIndicator, // Right side indicator
-      lines: options.config?.lines ?? true,
-      spaces: options.config?.spaces ?? false,
-      indent: options.config?.indent ?? 2,
+      collapse: template?.collapse ?? " [+]", // Suffix when collapsed
+      expand: template?.expand ?? " [-]", // Suffix when expanded
+      prefixIndicator: template?.prefixIndicator, // Left side indicator
+      suffixIndicator: template?.suffixIndicator, // Right side indicator
+      lines: template?.lines ?? true,
+      spaces: template?.spaces ?? false,
+      indent: template?.indent ?? 2,
     };
 
     // Icon rules for automatic icon assignment

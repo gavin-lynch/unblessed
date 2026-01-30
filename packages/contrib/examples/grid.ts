@@ -13,11 +13,11 @@ const screen = new Screen({ smartCSR: true });
 
 const grid = new Grid({ rows: 12, cols: 12, screen: screen });
 
-const map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {
+const _map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {
   label: "World Map",
 });
 
-const box = grid.set(4, 4, 4, 4, (opts) => new Box(opts), {
+const _box = grid.set(4, 4, 4, 4, (opts) => new Box(opts), {
   content: "My Box",
 });
 

@@ -9,7 +9,7 @@
 
 import { Box, type BoxOptions } from "@unblessed/core";
 import { marked } from "marked";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore - marked-terminal doesn't have type definitions
 import chalk from "chalk";
 import TerminalRenderer from "marked-terminal";
@@ -19,7 +19,7 @@ import TerminalRenderer from "marked-terminal";
 if (!process.env.NO_COLOR) {
   // Always force colors if FORCE_COLOR is set or we're in a TTY
   if (process.env.FORCE_COLOR || process.stdout.isTTY) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+     
     // @ts-ignore - chalk.level is writable in chalk v5
     if (chalk.level === 0) {
       chalk.level = 1; // Basic 16 colors

@@ -20,6 +20,8 @@ import * as util from "util";
 import { vi } from "vitest";
 import { clearEnvCache } from "../../src/lib/runtime-helpers.js";
 import { getRuntime, setRuntime } from "../../src/runtime-context.js";
+import { createCell } from "../../src/widgets/cell.js";
+import Screen from "../../src/widgets/screen.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -547,6 +549,27 @@ export function createMockScreen(options = {}) {
   screen.renders = 0;
   screen.tput = program.tput;
 
+  // Attach Screen color + SGR helpers used by render paths.
+  // We borrow the real Screen prototype methods so behavior stays in sync.
+  screen._rgbCache = new Map();
+  screen._colorPolicy = Screen.prototype._getDefaultColorPolicy.call(screen);
+  Screen.prototype._recomputeColorProfile.call(screen);
+  // Private helpers used internally by resolveColor/resolveStyle.
+  screen._clamp8 = Screen.prototype._clamp8.bind(screen);
+  screen._getCachedRgb = Screen.prototype._getCachedRgb.bind(screen);
+  screen._rgbFromInput = Screen.prototype._rgbFromInput.bind(screen);
+  screen._paletteIndexForRgb =
+    Screen.prototype._paletteIndexForRgb.bind(screen);
+  screen._invalidateOlines = Screen.prototype._invalidateOlines.bind(screen);
+  screen.resolveColor = Screen.prototype.resolveColor.bind(screen);
+  screen.resolveStyle = Screen.prototype.resolveStyle.bind(screen);
+  screen.parseSgrAt = Screen.prototype.parseSgrAt.bind(screen);
+  screen.applySgr = Screen.prototype.applySgr.bind(screen);
+  screen.getColorPolicy = Screen.prototype.getColorPolicy.bind(screen);
+  screen.getEffectiveColorMode =
+    Screen.prototype.getEffectiveColorMode.bind(screen);
+  screen.setColorPolicy = Screen.prototype.setColorPolicy.bind(screen);
+
   screen.children = [];
   screen.parent = null;
   screen.focused = null;
@@ -579,7 +602,7 @@ export function createMockScreen(options = {}) {
   for (let i = 0; i < screen.height; i++) {
     screen.lines[i] = [];
     for (let j = 0; j < screen.width; j++) {
-      screen.lines[i][j] = [screen.dattr, " "];
+      screen.lines[i][j] = createCell(screen.dattr, " ", null, null);
     }
   }
 
@@ -587,7 +610,7 @@ export function createMockScreen(options = {}) {
   for (let i = 0; i < screen.height; i++) {
     screen.olines[i] = [];
     for (let j = 0; j < screen.width; j++) {
-      screen.olines[i][j] = [screen.dattr, " "];
+      screen.olines[i][j] = createCell(screen.dattr, " ", null, null);
     }
   }
 
@@ -626,8 +649,37 @@ export function createMockScreen(options = {}) {
 
   screen.render = vi.fn();
   screen.draw = vi.fn();
-  screen.clearRegion = vi.fn();
-  screen.fillRegion = vi.fn();
+  screen.clearRegion = vi.fn((xi, xl, yi, yl, override) => {
+    screen.fillRegion(screen.dattr, " ", xi, xl, yi, yl, override, null, null);
+  });
+  screen.fillRegion = vi.fn(
+    (attr, ch, xi, xl, yi, yl, override, tcBg, tcFg) => {
+      if (xi < 0) xi = 0;
+      if (yi < 0) yi = 0;
+      for (; yi < yl; yi++) {
+        if (!screen.lines[yi]) break;
+        for (let x = xi; x < xl; x++) {
+          const cell = screen.lines[yi][x];
+          if (!cell) break;
+          if (
+            override ||
+            cell[0] !== attr ||
+            cell[1] !== ch ||
+            cell[2] !== (tcBg ?? null) ||
+            cell[3] !== (tcFg ?? null)
+          ) {
+            screen.lines[yi][x] = createCell(
+              attr,
+              ch,
+              tcBg ?? null,
+              tcFg ?? null,
+            );
+            screen.lines[yi].dirty = true;
+          }
+        }
+      }
+    },
+  );
   screen.focusNext = vi.fn();
   screen.focusPrevious = vi.fn();
   screen.focusPush = vi.fn();

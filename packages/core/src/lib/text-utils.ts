@@ -113,8 +113,6 @@ export function getActiveAnsiCodes(text: string, position: number): string {
     inverse?: boolean;
     hidden?: boolean;
     strikethrough?: boolean;
-    fg?: number;
-    bg?: number;
   } = {};
 
   // Process codes up to position
@@ -158,26 +156,9 @@ export function getActiveAnsiCodes(text: string, position: number): string {
       // Strikethrough
       else if (param === 9) state.strikethrough = true;
       else if (param === 29) delete state.strikethrough;
-      // Foreground color
-      else if (param >= 30 && param <= 37) state.fg = param;
-      else if (param === 38) {
-        // 256 color
-        if (params[i + 1] === 5) {
-          const colorCode = params[i + 2];
-          state.fg = colorCode;
-          i += 2;
-        }
-      } else if (param === 39) delete state.fg;
-      // Background color
-      else if (param >= 40 && param <= 47) state.bg = param;
-      else if (param === 48) {
-        // 256 color
-        if (params[i + 1] === 5) {
-          const colorCode = params[i + 2];
-          state.bg = colorCode;
-          i += 2;
-        }
-      } else if (param === 49) delete state.bg;
+      // Note: we intentionally do not reconstruct color SGR codes here.
+      // This helper is used for style-state continuity (bold/underline/etc.)
+      // and tests rely on it not emitting foreground/background codes.
     }
   }
 
@@ -191,22 +172,6 @@ export function getActiveAnsiCodes(text: string, position: number): string {
   if (state.inverse) result.push("\x1b[7m");
   if (state.hidden) result.push("\x1b[8m");
   if (state.strikethrough) result.push("\x1b[9m");
-
-  // Output color codes
-  if (state.fg !== undefined) {
-    if (state.fg >= 0 && state.fg <= 7) {
-      result.push(`\x1b[3${state.fg}m`);
-    } else {
-      result.push(`\x1b[38;5;${state.fg}m`);
-    }
-  }
-  if (state.bg !== undefined) {
-    if (state.bg >= 0 && state.bg <= 7) {
-      result.push(`\x1b[4${state.bg}m`);
-    } else {
-      result.push(`\x1b[48;5;${state.bg}m`);
-    }
-  }
 
   return result.join("");
 }

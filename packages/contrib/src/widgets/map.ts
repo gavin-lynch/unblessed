@@ -8,7 +8,7 @@
  */
 
 import { CanvasWidget, DrawilleCanvas, type BoxOptions } from "@unblessed/core";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore - map-canvas doesn't have type definitions
 import MapCanvas from "map-canvas";
 
@@ -266,7 +266,7 @@ export class WorldMap extends CanvasWidget {
                 }
               }
               // Don't fall back to simplified map - map-canvas should have drawn
-            } catch (err) {
+            } catch (_err) {
               // If draw() throws, fall back to simplified map
               this.innerMap = null;
               this._drawSimplifiedMap();
@@ -276,12 +276,12 @@ export class WorldMap extends CanvasWidget {
             this.innerMap = null;
             this._drawSimplifiedMap();
           }
-        } catch (err) {
+        } catch (_err) {
           // If map-canvas fails, fall back to simplified map
           this.innerMap = null;
           this._drawSimplifiedMap();
         }
-      } catch (err) {
+      } catch (_err) {
         // Any error - fall back to simplified map
         this._drawSimplifiedMap();
       } finally {
@@ -397,7 +397,7 @@ export class WorldMap extends CanvasWidget {
     if (this.innerMap && typeof this.innerMap.addMarker === "function") {
       try {
         this.innerMap.addMarker(marker);
-      } catch (err) {
+      } catch (_err) {
         // If addMarker fails, just draw it manually
         if (this.ctx) {
           this._drawSimpleMarker(marker);

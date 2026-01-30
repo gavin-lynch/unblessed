@@ -17,7 +17,7 @@ const grid = new Grid({
   screen: screen,
 });
 
-const gauge1 = grid.set(0, 0, 1, 1, (opts) => new Gauge(opts), {
+const _gauge1 = grid.set(0, 0, 1, 1, (opts) => new Gauge(opts), {
   showLabel: false,
   stack: [
     { percent: 30, stroke: "green" },

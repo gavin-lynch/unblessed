@@ -170,6 +170,20 @@ describe("AnsiTermCanvas", () => {
     expect(frame).toContain("Test");
   });
 
+  it("should not drop the first column on subsequent lines", () => {
+    const canvas = new AnsiTermCanvas(4, 2);
+    canvas.writeText("A", 0, 0);
+    canvas.writeText("B", 0, 1);
+
+    const frame = canvas.frame();
+    const ESC = String.fromCharCode(27);
+    const cleaned = frame.replace(new RegExp(ESC + "\\[[\\d;]*m", "g"), "");
+    const lines = cleaned.split("\n");
+
+    expect(lines[0]?.[0]).toBe("A");
+    expect(lines[1]?.[0]).toBe("B");
+  });
+
   it("should measure text with 1:1 mapping", () => {
     const canvas = new AnsiTermCanvas(40, 12);
 
@@ -480,15 +494,17 @@ describe("Color utilities", () => {
 
   it("should handle RGB arrays", () => {
     const fg = getFgCode([255, 0, 0]);
-    expect(fg).toMatch(/\x1b\[38;5;\d+m/);
+    const ESC = String.fromCharCode(27);
+    expect(fg).toMatch(new RegExp(ESC + "\\[38;5;\\d+m"));
 
     const bg = getBgCode([0, 255, 0]);
-    expect(bg).toMatch(/\x1b\[48;5;\d+m/);
+    expect(bg).toMatch(new RegExp(ESC + "\\[48;5;\\d+m"));
   });
 
   it("should handle hex colors", () => {
     const fg = getFgCode("#ff0000");
-    expect(fg).toMatch(/\x1b\[38;5;\d+m/);
+    const ESC = String.fromCharCode(27);
+    expect(fg).toMatch(new RegExp(ESC + "\\[38;5;\\d+m"));
   });
 });
 

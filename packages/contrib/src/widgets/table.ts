@@ -46,7 +46,7 @@ export interface TableOptions extends BoxOptions {
  * Strip ANSI escape codes from a string
  */
 function stripAnsi(str: string): string {
-  // eslint-disable-next-line no-control-regex
+   
   return str.replace(/\x1B\[[0-9;]*[A-Za-z]/g, "");
 }
 

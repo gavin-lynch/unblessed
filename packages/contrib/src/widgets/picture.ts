@@ -8,7 +8,7 @@
  */
 
 import { Box, type BoxOptions, getRuntime } from "@unblessed/core";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+ 
 // @ts-ignore - picture-tuber doesn't have type definitions
 import pictureTube from "picture-tuber";
 

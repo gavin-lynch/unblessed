@@ -15,7 +15,7 @@
 
 import type { BoxOptions } from "../types/index.js";
 import { Box } from "./box.js";
-import { createCell, type Cell } from "./cell.js";
+import { createCell } from "./cell.js";
 
 /**
  * BrailleCanvas options
@@ -475,7 +475,7 @@ export class BrailleCanvas extends Box {
     }
 
     // Convert buffer to braille characters and write to screen (using normalized cells)
-    const defaultAttr = this.sattr(this.style);
+    const defaultStyle = this.screen.resolveStyle(this.style, this);
     for (
       let y = 0;
       y < this.charHeight && yi + y < this.screen.lines.length;
@@ -486,13 +486,11 @@ export class BrailleCanvas extends Box {
         const byte = this.buffer[x + this.charWidth * y];
         // Convert to braille Unicode (U+2800 base + bit pattern)
         const char = byte ? String.fromCharCode(0x2800 + byte) : " ";
-        const existingCell = line[xi + x] as Cell;
-        // Preserve existing truecolor state, update character
         line[xi + x] = createCell(
-          defaultAttr,
+          defaultStyle.attr,
           char,
-          existingCell[2],
-          existingCell[3],
+          defaultStyle.tcBg,
+          defaultStyle.tcFg,
         );
       }
       line.dirty = true;

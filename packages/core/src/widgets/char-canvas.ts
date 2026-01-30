@@ -320,8 +320,7 @@ export class CharCanvas extends Box {
       yi++;
     }
 
-    // Get default attribute from style (for cells with attr === 0)
-    const defaultAttr = this.sattr(this.style);
+    const defaultStyle = this.screen.resolveStyle(this.style, this);
 
     // Write buffer to screen lines (using normalized cells)
     for (
@@ -333,8 +332,11 @@ export class CharCanvas extends Box {
       for (let x = 0; x < this.canvasWidth && xi + x < line.length; x++) {
         const cell = this.buffer[y][x] as Cell;
         // Use element's style when attr is 0, otherwise use provided attr
-        const finalAttr = cell[0] === 0 ? defaultAttr : cell[0];
-        line[xi + x] = createCell(finalAttr, cell[1], cell[2], cell[3]);
+        const useDefault = cell[0] === 0;
+        const finalAttr = useDefault ? defaultStyle.attr : cell[0];
+        const finalBg = useDefault ? (cell[2] ?? defaultStyle.tcBg) : cell[2];
+        const finalFg = useDefault ? (cell[3] ?? defaultStyle.tcFg) : cell[3];
+        line[xi + x] = createCell(finalAttr, cell[1], finalBg, finalFg);
       }
       line.dirty = true;
     }
