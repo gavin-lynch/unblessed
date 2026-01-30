@@ -4,6 +4,7 @@
 
 import type { BufferType, ReadableType, WritableType } from "../runtime.js";
 import type { Node } from "../widgets/node.js";
+import type { ScreenColorPolicyOptions } from "./color-policy.js";
 import type {
   Alignment,
   Border,
@@ -761,6 +762,15 @@ export interface TreeOptions extends ListOptions<TreeStyle> {
 
   /**
    * Template configuration for tree node rendering.
+   *
+   * `template` is the blessed-contrib compatible name.
+   */
+  template?: TreeConfig;
+
+  /**
+   * Alias for {@link TreeOptions.template}.
+   *
+   * Newer code may prefer `config`, but both are supported.
    */
   config?: TreeConfig;
 
@@ -1340,6 +1350,14 @@ export interface ScreenOptions extends NodeOptions {
    * pressing F12. It will display all log and debug messages.
    */
   debug?: boolean;
+
+  /**
+   * Screen-level color policy.
+   *
+   * Controls truecolor support, content SGR behavior, and compact-vs-fidelity
+   * decisions.
+   */
+  color?: ScreenColorPolicyOptions;
 
   /**
    * Array of keys in their full format (e.g. C-c) to ignore when keys are locked or grabbed. Useful

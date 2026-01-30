@@ -29,6 +29,11 @@ export interface TreePreset {
   config: TreeConfig;
 
   /**
+   * Blessed-contrib compatible alias for {@link TreePreset.config}.
+   */
+  template: TreeConfig;
+
+  /**
    * Style configuration for colors and visual appearance.
    */
   style: TreeStyle;
@@ -157,6 +162,18 @@ const UnicodeIcons = {
  * ```
  */
 export const Modern: TreePreset = {
+  template: {
+    lines: false,
+    spaces: true,
+    indent: 2,
+    collapse: "", // No suffix indicator
+    expand: "", // No suffix indicator
+    // NERDTree-style prefix indicators (triangles)
+    prefixIndicator: (node) =>
+      node.extended
+        ? UnicodeIcons.expanded + " " // ▾
+        : UnicodeIcons.collapsed + " ", // ▸
+  },
   config: {
     lines: false,
     spaces: true,
@@ -316,6 +333,13 @@ export const Modern: TreePreset = {
  * ```
  */
 export const Classic: TreePreset = {
+  template: {
+    lines: true, // Show tree lines (├─, └─, │)
+    spaces: false, // Don't use space-based indentation
+    indent: 2, // 2-space indent for continuation
+    collapse: " [+]", // Suffix when collapsed
+    expand: " [-]", // Suffix when expanded
+  },
   config: {
     lines: true, // Show tree lines (├─, └─, │)
     spaces: false, // Don't use space-based indentation

@@ -33,6 +33,13 @@ export class AnsiTermCanvas {
   /** Current font background color */
   fontBg: CanvasColor = "normal";
 
+  private _canvasAnsi(color: CanvasColor, type: "fg" | "bg"): string {
+    // Canvas treats "normal"/"default" as "no explicit color".
+    // Reset codes are handled separately when needed.
+    if (color === "normal" || color === "default") return "";
+    return toAnsiCode(color, type);
+  }
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
@@ -57,7 +64,7 @@ export class AnsiTermCanvas {
     }
 
     const coord = this.getCoord(x, y);
-    const color = toAnsiCode(this.color, "bg");
+    const color = this._canvasAnsi(this.color, "bg");
     // Set background color on space character - don't reset immediately
     // The reset will happen naturally when rendering or when color changes
     this.content[coord] = color + " ";
@@ -109,8 +116,8 @@ export class AnsiTermCanvas {
 
     const coord = this.getCoord(x, y);
 
-    const bg = toAnsiCode(this.fontBg, "bg");
-    const fg = toAnsiCode(this.fontFg, "fg");
+    const bg = this._canvasAnsi(this.fontBg, "bg");
+    const fg = this._canvasAnsi(this.fontFg, "fg");
     const hasColors = bg !== "" || fg !== "";
     const reset = hasColors ? "\x1b[39m\x1b[49m" : "";
 
@@ -136,45 +143,61 @@ export class AnsiTermCanvas {
    * Render the canvas to a string
    */
   frame(delimiter: string = "\n"): string {
+    // If the canvas is completely empty, return an empty frame.
+    // This matches blessed-contrib expectations and avoids emitting stray resets.
+    let hasAnyContent = false;
+    for (let i = 0; i < this.content.length; i++) {
+      if (this.content[i] !== null) {
+        hasAnyContent = true;
+        break;
+      }
+    }
+    if (!hasAnyContent) {
+      return "";
+    }
+
     const result: string[] = [];
     const resetAll = "\x1b[39m\x1b[49m"; // Reset foreground and background
 
-    for (let i = 0, j = 0; i < this.content.length; i++, j++) {
-      if (j === this.width) {
-        // End of line - always reset colors to prevent leaking to next line
-        result.push(resetAll);
-        result.push(delimiter);
-        j = 0;
-        continue;
-      }
+    for (let y = 0; y < this.height; y++) {
+      const rowStart = y * this.width;
 
-      const cell = this.content[i];
-      const prevCell = j > 0 ? this.content[i - 1] : null;
-      
-      // Check if previous cell had color codes
-      const prevHadColors = prevCell !== null && prevCell.includes("\x1b[");
-      
-      if (cell === null) {
-        // Empty cell - reset if previous cell had colors
-        if (prevHadColors) {
-          result.push(resetAll);
+      for (let x = 0; x < this.width; x++) {
+        const i = rowStart + x;
+        const cell = this.content[i];
+        const prevCell = x > 0 ? this.content[i - 1] : null;
+
+        // Check if previous cell had color codes
+        const prevHadColors = prevCell !== null && prevCell.includes("\x1b[");
+
+        if (cell === null) {
+          // Empty cell - reset if previous cell had colors
+          if (prevHadColors) {
+            result.push(resetAll);
+          }
+          result.push(" ");
+          continue;
         }
-        result.push(" ");
-      } else {
-        // Check if this cell has color codes
+
         const cellHasColors = cell.includes("\x1b[");
-        
+
         // Reset when transitioning from colored to non-colored
         if (prevHadColors && !cellHasColors) {
           result.push(resetAll);
         }
+
         result.push(cell);
       }
+
+      // End of line - always reset colors to prevent leaking to next line
+      result.push(resetAll);
+      result.push(delimiter);
     }
 
-    // Reset at the very end
+    // Ensure terminal state is reset at the very end
     result.push(resetAll);
     result.push(delimiter);
+
     return result.join("");
   }
 }

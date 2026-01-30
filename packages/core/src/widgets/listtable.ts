@@ -8,6 +8,7 @@
 
 import type { ListTableOptions } from "../types";
 import Box from "./box.js";
+import type { Cell } from "./cell.js";
 import List from "./list.js";
 import Table from "./table.js";
 
@@ -226,7 +227,14 @@ class ListTable extends List {
     const yi = coords.yi;
     let rx: number, ry: number, i: number;
 
-    const battr = this.sattr(this.style.border);
+    const bStyle = this.screen.resolveStyle(
+      this.style.border,
+      this,
+      "style",
+      this.style.border?.fg ?? this.style.fg,
+      this.style.border?.bg ?? this.style.bg,
+    );
+    const battr = bStyle.attr;
 
     const height = coords.yl - coords.yi - this.ibottom;
 
@@ -255,6 +263,8 @@ class ListTable extends List {
           // top
           rx++;
           lines[yi + ry][xi + rx][0] = battr;
+          (lines[yi + ry][xi + rx] as Cell)[2] = bStyle.tcBg;
+          (lines[yi + ry][xi + rx] as Cell)[3] = bStyle.tcFg;
           lines[yi + ry][xi + rx][1] = "\u252c"; // '┬'
           // XXX If we alter iheight and itop for no borders - nothing should be written here
           if (!border.top) {
@@ -265,6 +275,8 @@ class ListTable extends List {
           // bottom
           rx++;
           lines[yi + ry][xi + rx][0] = battr;
+          (lines[yi + ry][xi + rx] as Cell)[2] = bStyle.tcBg;
+          (lines[yi + ry][xi + rx] as Cell)[3] = bStyle.tcFg;
           lines[yi + ry][xi + rx][1] = "\u2534"; // '┴'
           // XXX If we alter iheight and ibottom for no borders - nothing should be written here
           if (!border.bottom) {
@@ -288,11 +300,16 @@ class ListTable extends List {
         if (!lines[yi + ry][xi + rx + 1]) return;
         if (this.options.fillCellBorders !== false) {
           const lbg = lines[yi + ry][xi + rx][0] & 0x1ff;
+          const base = lines[yi + ry][xi + rx] as Cell;
           rx++;
           lines[yi + ry][xi + rx][0] = (battr & ~0x1ff) | lbg;
+          (lines[yi + ry][xi + rx] as Cell)[2] = base[2];
+          (lines[yi + ry][xi + rx] as Cell)[3] = bStyle.tcFg;
         } else {
           rx++;
           lines[yi + ry][xi + rx][0] = battr;
+          (lines[yi + ry][xi + rx] as Cell)[2] = bStyle.tcBg;
+          (lines[yi + ry][xi + rx] as Cell)[3] = bStyle.tcFg;
         }
         lines[yi + ry][xi + rx][1] = "\u2502"; // '│'
         lines[yi + ry].dirty = true;

@@ -244,9 +244,9 @@ export function toAnsiCode(
   type: "fg" | "bg",
   capabilities?: ColorCapabilities,
 ): string {
-  // Handle "normal" as a special case - return empty string (no color code)
-  if (color === "normal" || color === "default") {
-    return "";
+  // Handle "normal"/"default" as explicit resets.
+  if (color === ("normal" as any) || color === ("default" as any)) {
+    return type === "fg" ? "\x1b[39m" : "\x1b[49m";
   }
 
   const normalized = normalizeColor(color, undefined, capabilities);
