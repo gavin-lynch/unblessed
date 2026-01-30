@@ -311,7 +311,8 @@ unblessed/
 │   └── docs/         # Documentation (Docusaurus)
 ├── tools/
 │   └── benchmarks/   # Performance benchmarks
-└── scripts/          # Build & release scripts
+├── tests/            # @unblessed/tests – truecolor theme demos, Everforest demo (not under packages/)
+└── scripts/         # Build & release scripts
 ```
 
 **Build Configuration:**
@@ -557,6 +558,7 @@ pnpm --filter benchmarks bench
 - [@unblessed/layout](./packages/layout/README.md)
 - [@unblessed/react](./packages/react/README.md)
 - [@unblessed/vrt](./packages/vrt/README.md)
+- [@unblessed/tests](./tests/README.md) - Truecolor theme demos, Everforest demo (lives in `./tests/`, not under `packages/`)
 
 ### External Resources
 - [blessed](https://github.com/chjj/blessed) - Original library
