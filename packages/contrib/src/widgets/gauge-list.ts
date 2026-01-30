@@ -98,7 +98,8 @@ export class GaugeList extends CanvasWidget {
     };
   }
 
-  override setData(_data: unknown): void {
+  override setData(data: unknown): void {
+    super.setData(data);
     // Not used - use setGauges instead
   }
 

@@ -133,6 +133,7 @@ export class StackedBar extends CanvasWidget {
   }
 
   override setData(data: unknown): void {
+    super.setData(data);
     const bars = data as StackedBarData;
 
     if (!this.ctx) {

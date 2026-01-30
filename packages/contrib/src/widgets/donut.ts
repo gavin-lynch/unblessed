@@ -8,6 +8,7 @@
  */
 
 import { CanvasWidget, DrawilleCanvas, type BoxOptions } from "@unblessed/core";
+import { getColorCode } from "../utils.js";
 
 /**
  * Donut chart data item
@@ -97,23 +98,27 @@ export class Donut extends CanvasWidget {
   }
 
   override calcSize(): void {
-    let width = Math.round(this.width * 2 - 5);
-    let height = this.height * 4 - 12;
+    // Size the canvas to the *inner* drawable area so the rendered frame
+    // doesn't get truncated by Box borders/labels.
+    const innerWidthChars = Math.max(1, Math.floor(this.width - this.iwidth));
+    const innerHeightChars = Math.max(
+      1,
+      Math.floor(this.height - this.iheight),
+    );
 
-    // Ensure width is even for braille
-    if (width % 2 === 1) {
-      width--;
-    }
+    // DrawilleCanvas uses 2x4 pixels per character cell.
+    const width = Math.max(2, innerWidthChars * 2);
+    const height = Math.max(4, innerHeightChars * 4);
 
-    // Ensure height aligns with braille
-    if (height % 4 !== 1) {
-      height += height % 4;
-    }
-
-    this.canvasSize = { width, height };
+    // Ensure valid braille dimensions.
+    this.canvasSize = {
+      width: Math.floor(width / 2) * 2,
+      height: Math.floor(height / 4) * 4,
+    };
   }
 
   override setData(data: unknown): void {
+    super.setData(data);
     this.update(data as DonutData[]);
   }
 
@@ -129,10 +134,13 @@ export class Donut extends CanvasWidget {
 
     const c = this.ctx;
     c.save();
-    c.translate(0, -this.options.yPadding!);
+    // Keep the context in identity space.
+    // We handle yPadding by shifting draw coordinates, and we draw arcs by
+    // setting pixels directly (avoids gaps and keeps animation smooth).
+    c.resetTransform();
 
-    c.strokeStyle = this.options.stroke! as any;
-    c.fillStyle = this.options.fill! as any;
+    c.strokeStyle = getColorCode(this.options.stroke!) as any;
+    c.fillStyle = getColorCode(this.options.fill!) as any;
 
     c.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
 
@@ -142,7 +150,11 @@ export class Donut extends CanvasWidget {
     const arcWidth = this.options.arcWidth!;
     const remainColor = this.options.remainColor!;
 
-    // Draw a ring/arc
+    const yOffset = this.options.yPadding ?? 0;
+
+    // Draw a ring/arc (concentric stroked arcs so the ring appears filled with color)
+    // Arc extent: percent 0-1 maps to 0..points; percent >= 1 (e.g. 100 for bg) = full circle
+    // Colors: getColorCode supports truecolor (RGB [r,g,b]), 256-color, and names (blessed-contrib uses x256 only)
     const makeRound = (
       percent: number,
       r: number,
@@ -151,34 +163,69 @@ export class Donut extends CanvasWidget {
       cy: number,
       color: string | number | number[],
     ): void => {
-      let s = 0;
+      const canvas = c._canvas as any;
+      if (!canvas || typeof canvas.set !== "function") return;
+
       const points = 370;
-      c.strokeStyle = color as any;
+      const slice = (2 * PI) / points;
+      const p =
+        percent >= 1 ? points : Math.max(0, Math.min(points, percent * points));
 
-      while (s < r) {
-        if (s < r - width) {
-          s++;
-          continue;
+      const plotLine = (x0: number, y0: number, x1: number, y1: number) => {
+        let x = Math.floor(x0);
+        let y = Math.floor(y0);
+        const ex = Math.floor(x1);
+        const ey = Math.floor(y1);
+        const dx = Math.abs(ex - x);
+        const dy = Math.abs(ey - y);
+        const sx = x < ex ? 1 : -1;
+        const sy = y < ey ? 1 : -1;
+        let err = dx - dy;
+        for (;;) {
+          // Slightly thicken the arc so it reads as a smooth ring in braille.
+          // A 2x2 brush in pixel-space densifies the curve without needing
+          // expensive path stroking.
+          canvas.set(x, y, color);
+          canvas.set(x + 1, y, color);
+          canvas.set(x, y + 1, color);
+          canvas.set(x + 1, y + 1, color);
+          if (x === ex && y === ey) break;
+          const e2 = 2 * err;
+          if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+          }
+          if (e2 < dx) {
+            err += dx;
+            y += sy;
+          }
         }
+      };
 
-        const slice = (2 * PI) / points;
-        c.beginPath();
-        const p = parseFloat(String(percent * 360));
-
-        for (let i = 0; i <= points; i++) {
-          if (i > p) continue;
-          const si = i - 90;
-          const a = slice * si;
-          c.lineTo(Math.round(cx + s * cos(a)), Math.round(cy + s * sin(a)));
+      for (let s = Math.max(0, Math.floor(r - width)); s < Math.floor(r); s++) {
+        if (p <= 0) continue;
+        // Start at -90 degrees.
+        let prevX = Math.round(cx + s * cos(slice * (0 - 90)));
+        let prevY = Math.round(cy + s * sin(slice * (0 - 90)));
+        for (let i = 1; i <= Math.floor(p); i++) {
+          const a = slice * (i - 90);
+          const x = Math.round(cx + s * cos(a));
+          const y = Math.round(cy + s * sin(a));
+          plotLine(prevX, prevY, x, y);
+          prevX = x;
+          prevY = y;
         }
-
-        c.stroke();
-        c.closePath();
-        s++;
+        // Fractional tail for smooth animation.
+        if (p < points && p !== Math.floor(p)) {
+          const a = slice * (p - 90);
+          const x = Math.round(cx + s * cos(a));
+          const y = Math.round(cy + s * sin(a));
+          plotLine(prevX, prevY, x, y);
+        }
       }
     };
 
-    const middle = cheight / 2;
+    const middle = cheight / 2 - yOffset;
     const donuts = data.length;
     const spacing = (cwidth - donuts * radius * 2) / (donuts + 1);
 
@@ -193,12 +240,13 @@ export class Donut extends CanvasWidget {
       color: string | number | number[],
       percentAltNumber?: number,
     ): void => {
-      // Draw background ring
-      makeRound(100, r, width, cxx, mid, remainColor);
-      // Draw filled portion
+      // Draw background ring (full circle in remainColor)
+      makeRound(1, r, width, cxx, mid, remainColor);
+      // Draw filled portion (arc 0..percent in segment color)
       makeRound(percent, r, width, cxx, mid, color);
 
-      // Draw percentage text
+      // Draw percentage text (always use fill color so segment color doesn't bleed into label)
+      c.fillStyle = getColorCode(this.options.fill!) as any;
       const ptext = percentAltNumber
         ? percentAltNumber.toFixed(0)
         : parseFloat(String(percent * 100)).toFixed(0) + "%";
@@ -210,7 +258,8 @@ export class Donut extends CanvasWidget {
         mid,
       );
 
-      // Draw label
+      // Draw label (always use fill color so segment color doesn't bleed into label)
+      c.fillStyle = getColorCode(this.options.fill!) as any;
       c.fillText(
         label,
         cxx -
@@ -258,7 +307,7 @@ export class Donut extends CanvasWidget {
 
     this.currentData = data;
 
-    c.strokeStyle = "magenta";
+    c.strokeStyle = getColorCode(this.options.stroke!) as any;
     c.restore();
   }
 

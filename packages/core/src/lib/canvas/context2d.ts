@@ -333,22 +333,52 @@ export class Canvas2DContext {
 
   /**
    * Stroke the current path
+   * When lineWidth >= 2, draws a thicker line so braille cells are filled
+   * (2 pixels = 1 cell, 4 pixels = 2 cells for solid ⢠⠃ appearance).
+   * Segment endpoints get only 1 pixel so lines terminate properly and
+   * vertical spacing stays correct.
    */
   stroke(): void {
     if (this.lineWidth === 0) return;
+
+    const thick = Math.floor(this.lineWidth);
+    const w = this._canvas.width;
+    const h = this._canvas.height;
+    // Capture stroke color at stroke time so every pixel gets this color (fixes donut/chart coloring)
+    const strokeColor = this._canvas.color;
+
+    const drawBrush = (x: number, y: number, size: number) => {
+      if (size <= 1) {
+        this._canvas.set(x, y, strokeColor);
+        return;
+      }
+
+      // Square brush centered on (x,y). For even sizes, bias up/left by 1.
+      const offset = -Math.floor(size / 2);
+      for (let dy = 0; dy < size; dy++) {
+        const py = y + offset + dy;
+        if (py < 0 || py >= h) continue;
+        for (let dx = 0; dx < size; dx++) {
+          const px = x + offset + dx;
+          if (px < 0 || px >= w) continue;
+          this._canvas.set(px, py, strokeColor);
+        }
+      }
+    };
 
     for (let i = 0; i < this._currentPath.length - 1; i++) {
       const cur = this._currentPath[i];
       const nex = this._currentPath[i + 1];
 
       if (nex.stroke) {
-        for (const { x, y } of bresenham(
-          cur.point[0],
-          cur.point[1],
-          nex.point[0],
-          nex.point[1],
-        )) {
-          this._canvas.set(x, y);
+        const points = Array.from(
+          bresenham(cur.point[0], cur.point[1], nex.point[0], nex.point[1]),
+        );
+        for (let j = 0; j < points.length; j++) {
+          const { x, y } = points[j]!;
+          const isEndpoint = j === 0 || j === points.length - 1;
+          const drawWidth = isEndpoint ? 1 : thick >= 2 ? thick : 1;
+          drawBrush(x, y, drawWidth);
         }
       }
     }
@@ -366,8 +396,29 @@ export class Canvas2DContext {
 
   /**
    * Fill a rectangle with filled pixels
+   * Uses exact pixel loop when matrix is identity so [x,x+w) x [y,y+h) is filled.
    */
   fillRect(x: number, y: number, w: number, h: number): void {
+    const m = this._matrix;
+    const isIdentity =
+      m.a === 1 &&
+      m.b === 0 &&
+      m.c === 0 &&
+      m.d === 1 &&
+      m.e === 0 &&
+      m.f === 0;
+    if (isIdentity && w > 0 && h > 0) {
+      const x0 = Math.floor(x);
+      const y0 = Math.floor(y);
+      const x1 = Math.floor(x + w);
+      const y1 = Math.floor(y + h);
+      for (let py = y0; py < y1; py++) {
+        for (let px = x0; px < x1; px++) {
+          this._canvas.set(px, py);
+        }
+      }
+      return;
+    }
     this._fillQuad(x, y, w, h, (px, py) => this._canvas.set(px, py));
   }
 
@@ -375,6 +426,26 @@ export class Canvas2DContext {
    * Clear a rectangle (unset pixels)
    */
   clearRect(x: number, y: number, w: number, h: number): void {
+    const m = this._matrix;
+    const isIdentity =
+      m.a === 1 &&
+      m.b === 0 &&
+      m.c === 0 &&
+      m.d === 1 &&
+      m.e === 0 &&
+      m.f === 0;
+    if (isIdentity && w > 0 && h > 0) {
+      const x0 = Math.floor(x);
+      const y0 = Math.floor(y);
+      const x1 = Math.floor(x + w);
+      const y1 = Math.floor(y + h);
+      for (let py = y0; py < y1; py++) {
+        for (let px = x0; px < x1; px++) {
+          this._canvas.unset(px, py);
+        }
+      }
+      return;
+    }
     this._fillQuad(x, y, w, h, (px, py) => this._canvas.unset(px, py));
   }
 

@@ -6,6 +6,7 @@
  * Modules
  */
 
+import { toCellColor } from "../lib/color-converter.js";
 import type {
   KeyEvent,
   MouseEvent,
@@ -129,7 +130,37 @@ class ProgressBar extends Input {
 
     dattr = this.sattr(this.style.bar);
 
-    this.screen.fillRegion(dattr, this.pch, xi, xl, yi, yl);
+    const resolvedBarBg =
+      this.style.bar?.bg != null
+        ? typeof this.style.bar.bg === "function"
+          ? this.style.bar.bg(this)
+          : this.style.bar.bg
+        : null;
+    const resolvedBarFg =
+      this.style.bar?.fg != null
+        ? typeof this.style.bar.fg === "function"
+          ? this.style.bar.fg(this)
+          : this.style.bar.fg
+        : null;
+    const barBg =
+      resolvedBarBg != null
+        ? toCellColor(resolvedBarBg, "bg").truecolor
+        : null;
+    const barFg =
+      resolvedBarFg != null
+        ? toCellColor(resolvedBarFg, "fg").truecolor
+        : null;
+    this.screen.fillRegion(
+      dattr,
+      this.pch,
+      xi,
+      xl,
+      yi,
+      yl,
+      undefined,
+      barBg,
+      barFg,
+    );
 
     if (this.content) {
       const line = this.screen.lines[yi];

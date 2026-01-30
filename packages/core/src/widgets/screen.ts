@@ -1511,6 +1511,11 @@ class Screen extends Node {
 
       out = "";
       attr = this.dattr;
+      // Track the *terminal* truecolor state for this output line.
+      // We cannot infer terminal state from neighboring cells when we skip unchanged
+      // regions (we may jump the cursor without emitting any SGR).
+      let termTruecolorBg: [number, number, number] | null = null;
+      let termTruecolorFg: [number, number, number] | null = null;
 
       for (x = 0; x < line.length; x++) {
         data = line[x][0];
@@ -1614,9 +1619,28 @@ class Screen extends Node {
           // }
         }
 
+        // All cells are normalized to 4 elements: [attr, ch, truecolorBg, truecolorFg]
+        const cell = line[x] as Cell;
+        const oCell = o[x] as Cell;
+        const sameTruecolor = (
+          a: [number, number, number] | null,
+          b: [number, number, number] | null,
+        ) =>
+          (a === null && b === null) ||
+          (a !== null &&
+            b !== null &&
+            a[0] === b[0] &&
+            a[1] === b[1] &&
+            a[2] === b[2]);
+
         // Optimize by comparing the real output
-        // buffer to the pending output buffer.
-        if (data === o[x][0] && ch === o[x][1]) {
+        // buffer to the pending output buffer (including truecolor so animated colors redraw).
+        if (
+          data === o[x][0] &&
+          ch === o[x][1] &&
+          sameTruecolor(cell[2], oCell[2]) &&
+          sameTruecolor(cell[3], oCell[3])
+        ) {
           if (lx === -1) {
             lx = x;
             ly = y;
@@ -1633,63 +1657,72 @@ class Screen extends Node {
         }
         o[x][0] = data;
         o[x][1] = ch;
-
-        // All cells are normalized to 4 elements: [attr, ch, truecolorBg, truecolorFg]
-        const cell = line[x] as Cell;
+        o[x][2] = cell[2] ? [cell[2][0], cell[2][1], cell[2][2]] : null;
+        o[x][3] = cell[3] ? [cell[3][0], cell[3][1], cell[3][2]] : null;
         const truecolorBg = cell[2];
         const truecolorFg = cell[3];
-        const prevCell = x > 0 ? (line[x - 1] as Cell) : null;
-        const prevTruecolorBg = prevCell ? prevCell[2] : null;
-        const prevTruecolorFg = prevCell ? prevCell[3] : null;
-
-        // Check if we have actual truecolor values (not null)
         const hasTruecolorBg = truecolorBg !== null;
         const hasTruecolorFg = truecolorFg !== null;
-        const hasPrevTruecolorBg = prevTruecolorBg !== null;
-        const hasPrevTruecolorFg = prevTruecolorFg !== null;
+        const hasTermTruecolorBg = termTruecolorBg !== null;
+        const hasTermTruecolorFg = termTruecolorFg !== null;
 
-        // Output truecolor codes if they changed or at line start
-        if (
-          x === 0 ||
-          hasTruecolorBg !== hasPrevTruecolorBg ||
-          hasTruecolorFg !== hasPrevTruecolorFg ||
+        // Ensure terminal truecolor state matches the cell's truecolor state.
+        // Use the tracked terminal state, NOT neighboring cells, because we can
+        // skip regions and jump the cursor without emitting SGR.
+        const needsTruecolorUpdate =
+          hasTruecolorBg !== hasTermTruecolorBg ||
+          hasTruecolorFg !== hasTermTruecolorFg ||
           (hasTruecolorBg &&
-            hasPrevTruecolorBg &&
+            hasTermTruecolorBg &&
             truecolorBg !== null &&
-            prevTruecolorBg !== null &&
-            (truecolorBg[0] !== prevTruecolorBg[0] ||
-              truecolorBg[1] !== prevTruecolorBg[1] ||
-              truecolorBg[2] !== prevTruecolorBg[2])) ||
+            termTruecolorBg !== null &&
+            (truecolorBg[0] !== termTruecolorBg[0] ||
+              truecolorBg[1] !== termTruecolorBg[1] ||
+              truecolorBg[2] !== termTruecolorBg[2])) ||
           (hasTruecolorFg &&
-            hasPrevTruecolorFg &&
+            hasTermTruecolorFg &&
             truecolorFg !== null &&
-            prevTruecolorFg !== null &&
-            (truecolorFg[0] !== prevTruecolorFg[0] ||
-              truecolorFg[1] !== prevTruecolorFg[1] ||
-              truecolorFg[2] !== prevTruecolorFg[2]))
-        ) {
-          // Reset attributes first if we had truecolor before
-          if (x > 0 && (hasPrevTruecolorBg || hasPrevTruecolorFg)) {
+            termTruecolorFg !== null &&
+            (truecolorFg[0] !== termTruecolorFg[0] ||
+              truecolorFg[1] !== termTruecolorFg[1] ||
+              truecolorFg[2] !== termTruecolorFg[2]));
+
+        if (needsTruecolorUpdate) {
+          // Reset attributes first if terminal had truecolor (or if we're changing modes).
+          if (hasTermTruecolorBg || hasTermTruecolorFg) {
             out += "\x1b[m";
             attr = this.dattr;
           }
 
-          // Output truecolor codes
+          // Output truecolor codes for this cell.
           if (hasTruecolorBg && truecolorBg !== null) {
             out += `\x1b[48;2;${truecolorBg[0]};${truecolorBg[1]};${truecolorBg[2]}m`;
+            termTruecolorBg = [truecolorBg[0], truecolorBg[1], truecolorBg[2]];
+          } else {
+            termTruecolorBg = null;
           }
           if (hasTruecolorFg && truecolorFg !== null) {
             out += `\x1b[38;2;${truecolorFg[0]};${truecolorFg[1]};${truecolorFg[2]}m`;
+            termTruecolorFg = [truecolorFg[0], truecolorFg[1], truecolorFg[2]];
+          } else {
+            termTruecolorFg = null;
           }
         }
 
-        // If we have truecolor, skip normal attribute handling but still output the character
         if (hasTruecolorBg || hasTruecolorFg) {
           out += ch;
           continue;
         }
 
         if (data !== attr) {
+          // Leaving truecolor mode: ensure the terminal is reset so non-truecolor
+          // cells don't accidentally inherit a previously set truecolor.
+          if (termTruecolorBg !== null || termTruecolorFg !== null) {
+            out += "\x1b[m";
+            termTruecolorBg = null;
+            termTruecolorFg = null;
+            attr = this.dattr;
+          }
           if (attr !== this.dattr) {
             out += "\x1b[m";
           }
@@ -1764,6 +1797,10 @@ class Screen extends Node {
 
             out += "m";
           }
+
+          // Any non-truecolor SGR resets truecolor mode.
+          termTruecolorBg = null;
+          termTruecolorFg = null;
         }
 
         // If we find a double-width char, eat the next character which should be
@@ -1865,6 +1902,8 @@ class Screen extends Node {
       ) {
         out += "\x1b[m";
         attr = this.dattr;
+        termTruecolorBg = null;
+        termTruecolorFg = null;
       }
 
       if (out) {
@@ -2362,6 +2401,8 @@ class Screen extends Node {
    * @param yi - Top Y coordinate
    * @param yl - Bottom Y coordinate
    * @param override - If true, always write even if cell hasn't changed
+   * @param truecolorBg - Optional truecolor background [r, g, b] for style.bg
+   * @param truecolorFg - Optional truecolor foreground [r, g, b] for style.fg
    */
   fillRegion(
     attr: number,
@@ -2371,10 +2412,14 @@ class Screen extends Node {
     yi: number,
     yl: number,
     override?: boolean,
+    truecolorBg?: [number, number, number] | null,
+    truecolorFg?: [number, number, number] | null,
   ): void {
     const lines = this.lines;
     let cell: Cell;
     let xx: number;
+    const bg = truecolorBg ?? null;
+    const fg = truecolorFg ?? null;
 
     if (xi < 0) xi = 0;
     if (yi < 0) yi = 0;
@@ -2384,8 +2429,14 @@ class Screen extends Node {
       for (xx = xi; xx < xl; xx++) {
         cell = lines[yi][xx] as Cell;
         if (!cell) break;
-        if (override || attr !== cell[0] || ch !== cell[1]) {
-          lines[yi][xx] = createCell(attr, ch, cell[2], cell[3]);
+        if (
+          override ||
+          attr !== cell[0] ||
+          ch !== cell[1] ||
+          cell[2] !== bg ||
+          cell[3] !== fg
+        ) {
+          lines[yi][xx] = createCell(attr, ch, bg, fg);
           lines[yi].dirty = true;
         }
       }

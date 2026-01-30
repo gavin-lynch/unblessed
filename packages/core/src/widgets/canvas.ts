@@ -87,6 +87,9 @@ export class CanvasWidget extends Box {
   /** Calculated canvas size in pixels */
   canvasSize: CanvasSize = { width: 0, height: 0 };
 
+  /** Last data passed to setData() so resize can redraw (subclasses set this) */
+  protected _lastData: unknown = undefined;
+
   /** Canvas constructor to use */
   protected canvasType: CanvasConstructor;
 
@@ -130,11 +133,12 @@ export class CanvasWidget extends Box {
         );
         this.ctx = this._canvas.getContext();
 
-        // Set initial data if provided
-        // Use this.options.data in case options object was updated
+        // Set initial data if provided (options.data or last setData() for resize)
         const dataToSet =
-          (this.options as CanvasWidgetOptions).data || options.data;
-        if (dataToSet) {
+          this._lastData ??
+          (this.options as CanvasWidgetOptions).data ??
+          options.data;
+        if (dataToSet !== undefined && dataToSet !== null) {
           this.setData(dataToSet);
         }
 
@@ -180,11 +184,12 @@ export class CanvasWidget extends Box {
                   this.canvasType,
                 );
                 this.ctx = this._canvas.getContext();
-                // Re-render if we have data
-                // Use this.options.data in case options object was updated
+                // Re-render with last data so chart survives resize (user often calls setData after append)
                 const dataToSet =
-                  (this.options as CanvasWidgetOptions).data || options.data;
-                if (dataToSet) {
+                  this._lastData ??
+                  (this.options as CanvasWidgetOptions).data ??
+                  options.data;
+                if (dataToSet !== undefined && dataToSet !== null) {
                   this.setData(dataToSet);
                 }
                 this.render();
@@ -239,9 +244,9 @@ export class CanvasWidget extends Box {
    *
    * Override this in subclasses to handle specific data formats.
    */
-  setData(_data: unknown): void {
-    // Base implementation does nothing
-    // Subclasses should override to handle their data format
+  setData(data: unknown): void {
+    this._lastData = data;
+    // Subclasses override to actually draw
   }
 
   /**
@@ -259,69 +264,48 @@ export class CanvasWidget extends Box {
    * Converts the canvas buffer to content and renders as a Box.
    */
   override render(): any {
-    // Update content from canvas before rendering
-    // This is called during the screen's render cycle, so position should be calculated
-    if (this._canvas) {
-      // Get the latest frame from canvas (in case it was redrawn)
-      let frame = this._canvas.frame();
-
-      // CRITICAL: Truncate each line to fit within available width to prevent border overflow
-      // The available width is the widget width minus borders/padding
-      // We need to be very conservative here - subtract 2 to ensure we never overflow
-      const availableWidth = Math.max(1, this.width - this.iwidth - 2);
-
-      if (availableWidth > 0) {
-        // Split frame into lines and truncate each line to fit available width
-        // This prevents content from overflowing and overwriting the border
-        const lines = frame.split("\n");
-        const truncatedLines = lines.map((line) => {
-          // Count visible characters (strip ANSI codes to get actual width)
-          const visibleChars = stripAnsi(line).length;
-
-          if (visibleChars <= availableWidth) {
-            return line;
-          }
-
-          // Truncate line to available width while preserving ANSI codes
-          // We need to be careful: ANSI codes don't count toward width
-          let result = "";
-          let visibleCount = 0;
-          let i = 0;
-
-          while (i < line.length && visibleCount < availableWidth) {
-            if (line[i] === "\x1b" && line[i + 1] === "[") {
-              // ANSI escape sequence - copy it entirely
-              const end = line.indexOf("m", i);
-              if (end !== -1) {
-                result += line.substring(i, end + 1);
-                i = end + 1;
-                continue;
-              }
-            }
-
-            // Regular character - count it
-            result += line[i];
-            visibleCount++;
-            i++;
-          }
-
-          return result;
-        });
-
-        frame = truncatedLines.join("\n");
-      }
-
-      // Set content using setContent - parseContent will handle truncation
-      // Since we set textWrap to 'truncate-end', _wrapContent will truncate each line
-      this.setContent(frame, true, false);
-    } else {
-      // Canvas not created yet - might be waiting for dimensions
-      this.setContent("", true);
-    }
-
-    // Render as normal Box (calls Element.render)
+    this.setContent(this.getFrameFromCanvas(), true, false);
     return super.render();
   }
+
+
+  /**
+   * Return the frame string to use as content. Subclasses (e.g. Line) can override
+   * to prepend a blank line so the box label gets its own row above the chart.
+   */
+  protected getFrameFromCanvas(): string {
+    if (!this._canvas) return "";
+    let frame = this._canvas.frame();
+    const availableWidth = Math.max(1, this.width - this.iwidth - 2);
+    if (availableWidth > 0) {
+      const lines = frame.split("\n");
+      const truncatedLines = lines.map((line) => {
+        const visibleChars = stripAnsi(line).length;
+        if (visibleChars <= availableWidth) return line;
+        let result = "";
+        let visibleCount = 0;
+        let i = 0;
+        while (i < line.length && visibleCount < availableWidth) {
+          if (line[i] === "\x1b" && line[i + 1] === "[") {
+            const end = line.indexOf("m", i);
+            if (end !== -1) {
+              result += line.substring(i, end + 1);
+              i = end + 1;
+              continue;
+            }
+          }
+          result += line[i];
+          visibleCount++;
+          i++;
+        }
+        result += "\x1b[39m\x1b[49m";
+        return result;
+      });
+      frame = truncatedLines.join("\n");
+    }
+    return frame;
+  }
+
 }
 
 /**
