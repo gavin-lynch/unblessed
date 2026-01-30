@@ -7,7 +7,6 @@
  */
 
 import { getBorderChars } from "../lib/border-styles.js";
-import { toCellColor } from "../lib/color-converter.js";
 import colors from "../lib/colors.js";
 import helpers from "../lib/helpers.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
@@ -33,7 +32,12 @@ import type {
   TextWrapMode,
   TrackConfig,
 } from "../types";
-import { createCell, type Cell } from "./cell.js";
+import {
+  createCell,
+  sameTruecolor,
+  type Cell,
+  type Truecolor,
+} from "./cell.js";
 import Node from "./node.js";
 
 const nextTick = getNextTick();
@@ -2389,10 +2393,9 @@ class Element extends Node {
     const content = this._pcontent;
     let ci = (this._clines.ci && this._clines.ci[coords.base]) || 0;
     let dattr: number;
-    let c: any;
     // Track truecolor state (RGB arrays or null)
-    let truecolorBg: [number, number, number] | null = null;
-    let truecolorFg: [number, number, number] | null = null;
+    let truecolorBg: Truecolor | null = null;
+    let truecolorFg: Truecolor | null = null;
     let visible: number;
     let i: number = 0;
     const bch = this.ch;
@@ -2444,26 +2447,11 @@ class Element extends Node {
       // this.screen._borderStops[coords.yl - 1] = this.screen._borderStops[coords.yi];
     }
 
-    dattr = this.sattr(this.style);
+    const defaultStyle = this.screen.resolveStyle(this.style, this);
+    dattr = defaultStyle.attr;
     attr = dattr;
-
-    // Default truecolor from element style (for fill cells when terminal supports truecolor)
-    const resolvedStyleBg =
-      typeof this.style.bg === "function"
-        ? this.style.bg(this)
-        : this.style.bg;
-    const resolvedStyleFg =
-      typeof this.style.fg === "function"
-        ? this.style.fg(this)
-        : this.style.fg;
-    const defaultTruecolorBg =
-      resolvedStyleBg != null
-        ? toCellColor(resolvedStyleBg, "bg").truecolor
-        : null;
-    const defaultTruecolorFg =
-      resolvedStyleFg != null
-        ? toCellColor(resolvedStyleFg, "fg").truecolor
-        : null;
+    const defaultTruecolorBg = defaultStyle.tcBg;
+    const defaultTruecolorFg = defaultStyle.tcFg;
 
     // If we're in a scrollable text box, check to
     // see which attributes this line starts with.
@@ -2564,193 +2552,47 @@ class Element extends Node {
         //   coords._contentEnd = { x: x - xi, y: y - yi };
         // }
 
-        // Handle escape codes (including truecolor).
-        // We use a loop to handle multiple consecutive escape codes (e.g., truecolor + syntax highlighting)
+        // Handle SGR escape codes.
+        // We loop to handle multiple consecutive sequences.
         while (ch === "\x1b" && ci - 1 < content!.length) {
-          if (process.env.DEBUG_ELEMENT) {
-            console.log(
-              `[DEBUG ELEMENT] Line ${y}, Col ${x}, ci=${ci - 1}: Processing escape sequence`,
-            );
+          const escStart = ci - 1;
+          const parsed = this.screen.parseSgrAt(content!, escStart);
+          if (!parsed) {
+            break;
           }
 
-          // Check for truecolor codes first (48;2;r;g;b or 38;2;r;g;b)
-          // Truecolor codes cannot be represented in attributes, so we track them separately
-          const substr = content!.substring(ci - 1);
-          const truecolorBgMatch = /^\x1b\[48;2;(\d+);(\d+);(\d+)m/.exec(
-            substr,
+          const next: {
+            attr: number;
+            tcBg: Truecolor | null;
+            tcFg: Truecolor | null;
+          } = this.screen.applySgr(
+            parsed.params,
+            { attr, tcBg: truecolorBg, tcFg: truecolorFg },
+            dattr,
           );
-          const truecolorFgMatch = /^\x1b\[38;2;(\d+);(\d+);(\d+)m/.exec(
-            substr,
-          );
-          const truecolorResetMatch = /^\x1b\[(?:49|39|0)m/.exec(substr);
+          attr = next.attr;
+          truecolorBg = next.tcBg;
+          truecolorFg = next.tcFg;
 
-          if (truecolorBgMatch) {
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Matched truecolor BG: ${truecolorBgMatch[0]} at ci=${ci - 1}`,
-              );
-            }
-            // Truecolor background - store RGB values
-            truecolorBg = [
-              parseInt(truecolorBgMatch[1], 10),
-              parseInt(truecolorBgMatch[2], 10),
-              parseInt(truecolorBgMatch[3], 10),
-            ];
-            // Advance past the truecolor code (ci-1 is the start of the code)
-            const oldCi = ci;
-            ci = ci - 1 + truecolorBgMatch[0].length;
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorBgMatch[0].length})`,
-              );
-            }
-            // Update ch to the character at the new position and consume it
-            if (ci < content!.length) {
-              ch = content![ci] || bch;
-              ci++;
-            } else {
-              ch = bch;
-              break;
-            }
-            // If next char is another escape, continue processing.
-            // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
-            // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
-            if (ch === "\x1b") {
-              continue;
-            }
-            break;
-          } else if (truecolorFgMatch) {
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Matched truecolor FG: ${truecolorFgMatch[0]} at ci=${ci - 1}`,
-              );
-            }
-            // Truecolor foreground - store RGB values
-            truecolorFg = [
-              parseInt(truecolorFgMatch[1], 10),
-              parseInt(truecolorFgMatch[2], 10),
-              parseInt(truecolorFgMatch[3], 10),
-            ];
-            // Advance past the truecolor code (ci-1 is the start of the code)
-            const oldCi = ci;
-            ci = ci - 1 + truecolorFgMatch[0].length;
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorFgMatch[0].length})`,
-              );
-            }
-            // Update ch to the character at the new position and consume it
-            if (ci < content!.length) {
-              ch = content![ci] || bch;
-              ci++;
-            } else {
-              ch = bch;
-              break;
-            }
-            // If next char is another escape, continue processing.
-            // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
-            // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
-            if (ch === "\x1b") {
-              continue;
-            }
-            break;
-          } else if (truecolorResetMatch) {
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Matched truecolor reset: ${truecolorResetMatch[0]} at ci=${ci - 1}`,
-              );
-            }
-            // Reset truecolor (49 = default bg, 39 = default fg, 0 = all)
-            if (
-              truecolorResetMatch[0].includes("49") ||
-              truecolorResetMatch[0] === "\x1b[0m"
-            ) {
-              truecolorBg = null;
-            }
-            if (
-              truecolorResetMatch[0].includes("39") ||
-              truecolorResetMatch[0] === "\x1b[0m"
-            ) {
-              truecolorFg = null;
-            }
-
-            // `\x1b[39m`, `\x1b[49m`, and `\x1b[0m` are *also* standard SGR resets.
-            // Even when we track truecolor separately, we must still update the packed
-            // attribute state so subsequent non-truecolor cells (e.g. border gaps, spaces,
-            // and non-truecolor ring segments) don't inherit a stale fg/bg.
-            attr = this.screen.attrCode(truecolorResetMatch[0], attr, dattr);
-            // Advance past the reset code (ci-1 is the start of the code)
-            const oldCi = ci;
-            ci = ci - 1 + truecolorResetMatch[0].length;
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorResetMatch[0].length})`,
-              );
-            }
-            // Update ch to the character at the new position and consume it
-            if (ci < content!.length) {
-              ch = content![ci] || bch;
-              ci++;
-              // If next char is another escape, continue processing.
-              // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
-              // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
-              if (ch === "\x1b") {
-                continue;
-              }
-              break;
-            } else {
-              // End of content - use blank character
-              if (process.env.DEBUG_ELEMENT) {
-                console.log(`[DEBUG ELEMENT] End of content, using blank char`);
-              }
-              ch = bch;
-              break;
-            }
+          // Ignore foreground changes for selected items.
+          if (
+            this.parent._isList &&
+            this.parent.interactive &&
+            this.parent.items[this.parent.selected] === this &&
+            this.parent.options.invertSelected !== false
+          ) {
+            attr = (attr & ~(0x1ff << 9)) | (dattr & (0x1ff << 9));
+            truecolorFg = defaultTruecolorFg;
           }
 
-          // Handle standard ANSI codes
-          if ((c = /^\x1b\[[\d;]*m/.exec(substr))) {
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Matched standard ANSI: ${c[0]} at ci=${ci - 1}`,
-              );
-            }
-            const oldCi = ci;
-            ci = ci - 1 + c[0].length;
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${c[0].length})`,
-              );
-            }
-            attr = this.screen.attrCode(c[0], attr, dattr);
-            // Ignore foreground changes for selected items.
-            if (
-              this.parent._isList &&
-              this.parent.interactive &&
-              this.parent.items[this.parent.selected] === this &&
-              this.parent.options.invertSelected !== false
-            ) {
-              attr = (attr & ~(0x1ff << 9)) | (dattr & (0x1ff << 9));
-            }
-            // Get next character and increment ci
+          ci = escStart + parsed.length;
+          if (ci < content!.length) {
             ch = content![ci] || bch;
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] Next char at ci=${ci}: ${JSON.stringify(ch)} (0x${ch.charCodeAt(0).toString(16)})`,
-              );
-            }
             ci++;
-          } else {
-            if (process.env.DEBUG_ELEMENT) {
-              console.log(
-                `[DEBUG ELEMENT] No match for escape sequence at ci=${ci - 1}, breaking`,
-              );
-              console.log(
-                `[DEBUG ELEMENT] Substring: ${JSON.stringify(substr.substring(0, 20))}`,
-              );
-            }
-            break;
+            continue;
           }
+          ch = bch;
+          break;
         }
 
         if (process.env.DEBUG_ELEMENT && y < 5 && x < 50) {
@@ -2791,8 +2633,8 @@ class Element extends Node {
               if (
                 attr !== baseCell[0] ||
                 ch !== baseCell[1] ||
-                baseCell[2] !== fillBg ||
-                baseCell[3] !== fillFg
+                !sameTruecolor(baseCell[2], fillBg) ||
+                !sameTruecolor(baseCell[3], fillFg)
               ) {
                 lines[y][x] = createCell(attr, ch, fillBg, fillFg);
                 lines[y].dirty = true;
@@ -2844,8 +2686,8 @@ class Element extends Node {
           if (
             attr !== baseCell[0] ||
             ch !== baseCell[1] ||
-            baseCell[2] !== fillBg ||
-            baseCell[3] !== fillFg
+            !sameTruecolor(baseCell[2], fillBg) ||
+            !sameTruecolor(baseCell[3], fillFg)
           ) {
             lines[y][x] = createCell(attr, ch, fillBg, fillFg);
             lines[y].dirty = true;
@@ -2876,31 +2718,14 @@ class Element extends Node {
       if (cell) {
         if (this.track) {
           ch = this.track.ch || " ";
-          attr = this.sattr(
-            this.style.track,
+          const trackStyle = this.screen.resolveStyle(
+            this.style.track || {},
+            this,
+            "style",
             this.style.track?.fg || this.style.fg,
             this.style.track?.bg || this.style.bg,
           );
-          const resolvedTrackBg =
-            this.style.track?.bg != null
-              ? typeof this.style.track.bg === "function"
-                ? this.style.track.bg(this)
-                : this.style.track.bg
-              : null;
-          const resolvedTrackFg =
-            this.style.track?.fg != null
-              ? typeof this.style.track.fg === "function"
-                ? this.style.track.fg(this)
-                : this.style.track.fg
-              : null;
-          const trackBg =
-            resolvedTrackBg != null
-              ? toCellColor(resolvedTrackBg, "bg").truecolor
-              : defaultTruecolorBg;
-          const trackFg =
-            resolvedTrackFg != null
-              ? toCellColor(resolvedTrackFg, "fg").truecolor
-              : defaultTruecolorFg;
+          attr = trackStyle.attr;
           this.screen.fillRegion(
             attr,
             ch,
@@ -2909,42 +2734,27 @@ class Element extends Node {
             yi,
             yl,
             undefined,
-            trackBg,
-            trackFg,
+            trackStyle.tcBg ?? defaultTruecolorBg,
+            trackStyle.tcFg ?? defaultTruecolorFg,
           );
         }
         ch = this.scrollbar.ch || " ";
-        attr = this.sattr(
-          this.style.scrollbar,
+        const scrollbarStyle = this.screen.resolveStyle(
+          this.style.scrollbar || {},
+          this,
+          "style",
           this.style.scrollbar?.fg || this.style.fg,
           this.style.scrollbar?.bg || this.style.bg,
         );
-        const resolvedScrollbarBg =
-          this.style.scrollbar?.bg != null
-            ? typeof this.style.scrollbar.bg === "function"
-              ? this.style.scrollbar.bg(this)
-              : this.style.scrollbar.bg
-            : null;
-        const resolvedScrollbarFg =
-          this.style.scrollbar?.fg != null
-            ? typeof this.style.scrollbar.fg === "function"
-              ? this.style.scrollbar.fg(this)
-              : this.style.scrollbar.fg
-            : null;
-        const scrollbarBg =
-          resolvedScrollbarBg != null
-            ? toCellColor(resolvedScrollbarBg, "bg").truecolor
-            : defaultTruecolorBg;
-        const scrollbarFg =
-          resolvedScrollbarFg != null
-            ? toCellColor(resolvedScrollbarFg, "fg").truecolor
-            : defaultTruecolorFg;
+        attr = scrollbarStyle.attr;
+        const scrollbarBg = scrollbarStyle.tcBg ?? defaultTruecolorBg;
+        const scrollbarFg = scrollbarStyle.tcFg ?? defaultTruecolorFg;
         const baseCell = cell as Cell;
         if (
           attr !== baseCell[0] ||
           ch !== baseCell[1] ||
-          baseCell[2] !== scrollbarBg ||
-          baseCell[3] !== scrollbarFg
+          !sameTruecolor(baseCell[2], scrollbarBg) ||
+          !sameTruecolor(baseCell[3], scrollbarFg)
         ) {
           lines[y][x] = createCell(attr, ch, scrollbarBg, scrollbarFg);
           lines[y].dirty = true;
@@ -2971,7 +2781,11 @@ class Element extends Node {
       // Helper to get border attribute for a specific side (with per-side color and dim support)
       const getBorderAttr = (
         side: "top" | "bottom" | "left" | "right",
-      ): number => {
+      ): {
+        attr: number;
+        tcBg: [number, number, number] | null;
+        tcFg: [number, number, number] | null;
+      } => {
         const baseStyle = this.style.border || {};
         const sideStyle: any = { ...baseStyle };
 
@@ -2979,12 +2793,8 @@ class Element extends Node {
         const sideColorKey = `${side}Color` as keyof typeof this.border;
         const sideColor = this.border?.[sideColorKey];
         if (sideColor !== undefined) {
-          // Convert color (supports names like "cyan", hex like "#00ff00", or numeric codes)
-          if (typeof sideColor === "string") {
-            sideStyle.fg = colors.convert(sideColor);
-          } else {
-            sideStyle.fg = sideColor;
-          }
+          // Preserve the original input (string/number/RGB) and let Screen policy decide.
+          sideStyle.fg = sideColor as any;
         }
 
         // Apply dim effect if specified (using dim attribute flag)
@@ -2994,16 +2804,26 @@ class Element extends Node {
           sideStyle.dim = true;
         }
 
-        // Get final attribute with potentially dimmed color
-        return this.sattr(sideStyle);
+        // Resolve with fallbacks to element fg/bg.
+        return this.screen.resolveStyle(
+          sideStyle,
+          this,
+          "style",
+          sideStyle.fg ?? this.style.fg,
+          sideStyle.bg ?? this.style.bg,
+        );
       };
 
       // Helper: get color for specific cell index (addressable border colors)
       const getBorderColorAt = (
         cellIndex: number,
         side: "top" | "bottom" | "left" | "right",
-      ): number => {
-        let colorValue: string | number | null = null;
+      ): {
+        attr: number;
+        tcBg: [number, number, number] | null;
+        tcFg: [number, number, number] | null;
+      } => {
+        let colorValue: any = null;
 
         // Priority 1: colors array (addressable border)
         if (this._borderColors && this._borderColors.length > 0) {
@@ -3027,10 +2847,7 @@ class Element extends Node {
         // Convert color from array
         const baseStyle = this.style.border || {};
         const sideStyle: any = { ...baseStyle };
-        sideStyle.fg =
-          typeof colorValue === "string"
-            ? colors.convert(colorValue)
-            : colorValue;
+        sideStyle.fg = colorValue;
 
         // Apply dim for this side (using dim attribute flag)
         const dimKey = `${side}Dim` as keyof typeof this.border;
@@ -3039,7 +2856,13 @@ class Element extends Node {
           sideStyle.dim = true;
         }
 
-        return this.sattr(sideStyle);
+        return this.screen.resolveStyle(
+          sideStyle,
+          this,
+          "style",
+          sideStyle.fg ?? this.style.fg,
+          sideStyle.bg ?? this.style.bg,
+        );
       };
 
       // Determine corner color mode (default to 'vertical')
@@ -3069,8 +2892,8 @@ class Element extends Node {
           fallbackSide = cornerMode === "vertical" ? "right" : "top";
         }
 
-        // Get color for this specific cell (addressable or fallback)
-        const currentAttr = getBorderColorAt(cellIndex++, fallbackSide);
+        // Get style for this specific cell (addressable or fallback)
+        const currentStyle = getBorderColorAt(cellIndex++, fallbackSide);
 
         if (this.border.type === "line") {
           if (x === xi) {
@@ -3108,14 +2931,34 @@ class Element extends Node {
         const baseCell = cell as Cell;
         if (!this.border.top && x !== xi && x !== xl - 1) {
           ch = " ";
-          if (dattr !== baseCell[0] || ch !== baseCell[1]) {
-            lines[y][x] = createCell(dattr, ch, baseCell[2], baseCell[3]);
+          if (
+            dattr !== baseCell[0] ||
+            ch !== baseCell[1] ||
+            !sameTruecolor(baseCell[2], defaultTruecolorBg) ||
+            !sameTruecolor(baseCell[3], defaultTruecolorFg)
+          ) {
+            lines[y][x] = createCell(
+              dattr,
+              ch,
+              defaultTruecolorBg,
+              defaultTruecolorFg,
+            );
             lines[y].dirty = true;
             continue;
           }
         }
-        if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
-          lines[y][x] = createCell(currentAttr, ch, baseCell[2], baseCell[3]);
+        if (
+          currentStyle.attr !== baseCell[0] ||
+          ch !== baseCell[1] ||
+          !sameTruecolor(baseCell[2], currentStyle.tcBg) ||
+          !sameTruecolor(baseCell[3], currentStyle.tcFg)
+        ) {
+          lines[y][x] = createCell(
+            currentStyle.attr,
+            ch,
+            currentStyle.tcBg,
+            currentStyle.tcFg,
+          );
           lines[y].dirty = true;
         }
       }
@@ -3127,8 +2970,8 @@ class Element extends Node {
         cell = lines[y][xl - 1];
         if (cell) {
           if (this.border.right) {
-            // Get color for this specific cell
-            const currentAttr = getBorderColorAt(cellIndex++, "right");
+            // Get style for this specific cell
+            const currentStyle = getBorderColorAt(cellIndex++, "right");
 
             if (this.border.type === "line") {
               ch = borderChars.right;
@@ -3137,24 +2980,34 @@ class Element extends Node {
             }
             const baseCell = cell as Cell;
             if (!coords.noright)
-              if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+              if (
+                currentStyle.attr !== baseCell[0] ||
+                ch !== baseCell[1] ||
+                !sameTruecolor(baseCell[2], currentStyle.tcBg) ||
+                !sameTruecolor(baseCell[3], currentStyle.tcFg)
+              ) {
                 lines[y][xl - 1] = createCell(
-                  currentAttr,
+                  currentStyle.attr,
                   ch,
-                  baseCell[2],
-                  baseCell[3],
+                  currentStyle.tcBg,
+                  currentStyle.tcFg,
                 );
                 lines[y].dirty = true;
               }
           } else {
             const baseCell = cell as Cell;
             ch = " ";
-            if (dattr !== baseCell[0] || ch !== baseCell[1]) {
+            if (
+              dattr !== baseCell[0] ||
+              ch !== baseCell[1] ||
+              !sameTruecolor(baseCell[2], defaultTruecolorBg) ||
+              !sameTruecolor(baseCell[3], defaultTruecolorFg)
+            ) {
               lines[y][xl - 1] = createCell(
                 dattr,
                 ch,
-                baseCell[2],
-                baseCell[3],
+                defaultTruecolorBg,
+                defaultTruecolorFg,
               );
               lines[y].dirty = true;
             }
@@ -3180,8 +3033,8 @@ class Element extends Node {
           fallbackSide = cornerMode === "vertical" ? "right" : "bottom";
         }
 
-        // Get color for this specific cell (addressable or fallback)
-        const currentAttr = getBorderColorAt(cellIndex++, fallbackSide);
+        // Get style for this specific cell (addressable or fallback)
+        const currentStyle = getBorderColorAt(cellIndex++, fallbackSide);
 
         if (this.border.type === "line") {
           if (x === xi) {
@@ -3219,14 +3072,34 @@ class Element extends Node {
         const baseCell = cell as Cell;
         if (!this.border.bottom && x !== xi && x !== xl - 1) {
           ch = " ";
-          if (dattr !== baseCell[0] || ch !== baseCell[1]) {
-            lines[y][x] = createCell(dattr, ch, baseCell[2], baseCell[3]);
+          if (
+            dattr !== baseCell[0] ||
+            ch !== baseCell[1] ||
+            !sameTruecolor(baseCell[2], defaultTruecolorBg) ||
+            !sameTruecolor(baseCell[3], defaultTruecolorFg)
+          ) {
+            lines[y][x] = createCell(
+              dattr,
+              ch,
+              defaultTruecolorBg,
+              defaultTruecolorFg,
+            );
             lines[y].dirty = true;
           }
           continue;
         }
-        if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
-          lines[y][x] = createCell(currentAttr, ch, baseCell[2], baseCell[3]);
+        if (
+          currentStyle.attr !== baseCell[0] ||
+          ch !== baseCell[1] ||
+          !sameTruecolor(baseCell[2], currentStyle.tcBg) ||
+          !sameTruecolor(baseCell[3], currentStyle.tcFg)
+        ) {
+          lines[y][x] = createCell(
+            currentStyle.attr,
+            ch,
+            currentStyle.tcBg,
+            currentStyle.tcFg,
+          );
           lines[y].dirty = true;
         }
       }
@@ -3238,8 +3111,8 @@ class Element extends Node {
         cell = lines[y][xi];
         if (cell) {
           if (this.border.left) {
-            // Get color for this specific cell
-            const currentAttr = getBorderColorAt(cellIndex++, "left");
+            // Get style for this specific cell
+            const currentStyle = getBorderColorAt(cellIndex++, "left");
 
             if (this.border.type === "line") {
               ch = borderChars.left;
@@ -3248,20 +3121,35 @@ class Element extends Node {
             }
             const baseCell = cell as Cell;
             if (!coords.noleft)
-              if (currentAttr !== baseCell[0] || ch !== baseCell[1]) {
+              if (
+                currentStyle.attr !== baseCell[0] ||
+                ch !== baseCell[1] ||
+                !sameTruecolor(baseCell[2], currentStyle.tcBg) ||
+                !sameTruecolor(baseCell[3], currentStyle.tcFg)
+              ) {
                 lines[y][xi] = createCell(
-                  currentAttr,
+                  currentStyle.attr,
                   ch,
-                  baseCell[2],
-                  baseCell[3],
+                  currentStyle.tcBg,
+                  currentStyle.tcFg,
                 );
                 lines[y].dirty = true;
               }
           } else {
             const baseCell = cell as Cell;
             ch = " ";
-            if (dattr !== baseCell[0] || ch !== baseCell[1]) {
-              lines[y][xi] = createCell(dattr, ch, baseCell[2], baseCell[3]);
+            if (
+              dattr !== baseCell[0] ||
+              ch !== baseCell[1] ||
+              !sameTruecolor(baseCell[2], defaultTruecolorBg) ||
+              !sameTruecolor(baseCell[3], defaultTruecolorFg)
+            ) {
+              lines[y][xi] = createCell(
+                dattr,
+                ch,
+                defaultTruecolorBg,
+                defaultTruecolorFg,
+              );
               lines[y].dirty = true;
             }
           }

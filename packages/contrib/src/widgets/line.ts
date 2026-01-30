@@ -240,9 +240,7 @@ export class Line extends CanvasWidget {
     const getXPixel = (val: number): number => {
       const n = labels.length;
       if (n <= 1) return chartLeftPx;
-      return (
-        ((this.canvasSize.width - xPadding) / n) * val + xPadding + 2
-      );
+      return ((this.canvasSize.width - xPadding) / n) * val + xPadding + 2;
     };
 
     // Helper: get Y pixel position (blessed-contrib: height - yPadding - (plotHeight / range) * (val - minY) - 2)

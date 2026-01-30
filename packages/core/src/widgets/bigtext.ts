@@ -9,6 +9,7 @@
 import { getDataPath } from "../lib/runtime-helpers.js";
 import type { BigTextOptions } from "../types";
 import Box from "./box.js";
+import type { Cell } from "./cell.js";
 
 /**
  * BigText
@@ -121,11 +122,14 @@ class BigText extends Box {
     const right = coords.xl - this.iright;
     const bottom = coords.yl - this.ibottom;
 
-    const dattr = this.sattr(this.style);
+    const dStyle = this.screen.resolveStyle(this.style, this);
+    const dattr = dStyle.attr;
     const bg = dattr & 0x1ff;
     const fg = (dattr >> 9) & 0x1ff;
     const flags = (dattr >> 18) & 0x1ff;
     const attr = (flags << 18) | (bg << 9) | fg;
+    const swappedTcBg = dStyle.tcFg;
+    const swappedTcFg = dStyle.tcBg;
 
     for (let x = left, i = 0; x < right; x += this.ratio.width, i++) {
       const ch = this.text[i];
@@ -139,12 +143,22 @@ class BigText extends Box {
         for (let mx = 0; mx < this.ratio.width; mx++) {
           const mcell = mline[mx];
           if (mcell == null) break;
+          const cell = lines[y][x + mx] as Cell;
           if (this.fch && this.fch !== " ") {
-            lines[y][x + mx][0] = dattr;
-            lines[y][x + mx][1] = mcell === 1 ? this.fch : this.ch;
+            cell[0] = dattr;
+            cell[1] = mcell === 1 ? this.fch : this.ch;
+            cell[2] = dStyle.tcBg;
+            cell[3] = dStyle.tcFg;
           } else {
-            lines[y][x + mx][0] = mcell === 1 ? attr : dattr;
-            lines[y][x + mx][1] = mcell === 1 ? " " : this.ch;
+            cell[0] = mcell === 1 ? attr : dattr;
+            cell[1] = mcell === 1 ? " " : this.ch;
+            if (mcell === 1) {
+              cell[2] = swappedTcBg;
+              cell[3] = swappedTcFg;
+            } else {
+              cell[2] = dStyle.tcBg;
+              cell[3] = dStyle.tcFg;
+            }
           }
         }
         lines[y].dirty = true;

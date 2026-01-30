@@ -8,6 +8,7 @@
 
 import type { StyleListTable, TableOptions } from "../types";
 import Box from "./box.js";
+import { createCell, sameTruecolor, type Cell } from "./cell.js";
 
 /**
  * Table
@@ -195,10 +196,33 @@ class Table extends Box {
     const yi = coords.yi;
     let rx: number, ry: number, i: number;
 
-    const dattr = this.sattr(this.style);
-    const hattr = this.sattr(this.style.header);
-    const cattr = this.sattr(this.style.cell);
-    const battr = this.sattr(this.style.border);
+    const dStyle = this.screen.resolveStyle(this.style, this);
+    const hStyle = this.screen.resolveStyle(
+      this.style.header,
+      this,
+      "style",
+      this.style.header?.fg ?? this.style.fg,
+      this.style.header?.bg ?? this.style.bg,
+    );
+    const cStyle = this.screen.resolveStyle(
+      this.style.cell,
+      this,
+      "style",
+      this.style.cell?.fg ?? this.style.fg,
+      this.style.cell?.bg ?? this.style.bg,
+    );
+    const bStyle = this.screen.resolveStyle(
+      this.style.border,
+      this,
+      "style",
+      this.style.border?.fg ?? this.style.fg,
+      this.style.border?.bg ?? this.style.bg,
+    );
+
+    const dattr = dStyle.attr;
+    const hattr = hStyle.attr;
+    const cattr = cStyle.attr;
+    const battr = bStyle.attr;
 
     const width = coords.xl - coords.xi - this.iright;
     const height = coords.yl - coords.yi - this.ibottom;
@@ -208,14 +232,31 @@ class Table extends Box {
       if (!lines[yi + y]) break;
       for (let x = this.ileft; x < width; x++) {
         if (!lines[yi + y][xi + x]) break;
-        // Check to see if it's not the default attr. Allows for tags:
-        if (lines[yi + y][xi + x][0] !== dattr) continue;
-        if (y === this.itop) {
-          lines[yi + y][xi + x][0] = hattr;
-        } else {
-          lines[yi + y][xi + x][0] = cattr;
+        const baseCell = lines[yi + y][xi + x] as Cell;
+
+        // Only override default table cells (preserves tags/content SGR).
+        if (
+          baseCell[0] !== dattr ||
+          !sameTruecolor(baseCell[2], dStyle.tcBg) ||
+          !sameTruecolor(baseCell[3], dStyle.tcFg)
+        ) {
+          continue;
         }
-        lines[yi + y].dirty = true;
+
+        const target = y === this.itop ? hStyle : cStyle;
+        if (
+          baseCell[0] !== target.attr ||
+          !sameTruecolor(baseCell[2], target.tcBg) ||
+          !sameTruecolor(baseCell[3], target.tcFg)
+        ) {
+          lines[yi + y][xi + x] = createCell(
+            target.attr,
+            baseCell[1],
+            target.tcBg,
+            target.tcFg,
+          );
+          lines[yi + y].dirty = true;
+        }
       }
     }
 
@@ -235,14 +276,20 @@ class Table extends Box {
           if (ry === 0) {
             // top
             lines[yi + ry][xi + 0][0] = battr;
+            lines[yi + ry][xi + 0][2] = bStyle.tcBg;
+            lines[yi + ry][xi + 0][3] = bStyle.tcFg;
             // lines[yi + ry][xi + 0][1] = '\u250c'; // '┌'
           } else if (ry / 2 === this.rows.length) {
             // bottom
             lines[yi + ry][xi + 0][0] = battr;
+            lines[yi + ry][xi + 0][2] = bStyle.tcBg;
+            lines[yi + ry][xi + 0][3] = bStyle.tcFg;
             // lines[yi + ry][xi + 0][1] = '\u2514'; // '└'
           } else {
             // middle
             lines[yi + ry][xi + 0][0] = battr;
+            lines[yi + ry][xi + 0][2] = bStyle.tcBg;
+            lines[yi + ry][xi + 0][3] = bStyle.tcFg;
             lines[yi + ry][xi + 0][1] = "\u251c"; // '├'
             // XXX If we alter iwidth and ileft for no borders - nothing should be written here
             if (!border.left) {
@@ -257,16 +304,22 @@ class Table extends Box {
             // top
             rx++;
             lines[yi + ry][xi + rx][0] = battr;
+            lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
             // lines[yi + ry][xi + rx][1] = '\u2510'; // '┐'
           } else if (ry / 2 === this.rows.length) {
             // bottom
             rx++;
             lines[yi + ry][xi + rx][0] = battr;
+            lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
             // lines[yi + ry][xi + rx][1] = '\u2518'; // '┘'
           } else {
             // middle
             rx++;
             lines[yi + ry][xi + rx][0] = battr;
+            lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
             lines[yi + ry][xi + rx][1] = "\u2524"; // '┤'
             // XXX If we alter iwidth and iright for no borders - nothing should be written here
             if (!border.right) {
@@ -282,6 +335,8 @@ class Table extends Box {
           // top
           rx++;
           lines[yi + ry][xi + rx][0] = battr;
+          lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+          lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           lines[yi + ry][xi + rx][1] = "\u252c"; // '┬'
           // XXX If we alter iheight and itop for no borders - nothing should be written here
           if (!border.top) {
@@ -291,6 +346,8 @@ class Table extends Box {
           // bottom
           rx++;
           lines[yi + ry][xi + rx][0] = battr;
+          lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+          lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           lines[yi + ry][xi + rx][1] = "\u2534"; // '┴'
           // XXX If we alter iheight and ibottom for no borders - nothing should be written here
           if (!border.bottom) {
@@ -302,9 +359,14 @@ class Table extends Box {
             const lbg = (ry <= 2 ? hattr : cattr) & 0x1ff;
             rx++;
             lines[yi + ry][xi + rx][0] = (battr & ~0x1ff) | lbg;
+            lines[yi + ry][xi + rx][2] =
+              (ry <= 2 ? hStyle.tcBg : cStyle.tcBg) ?? bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           } else {
             rx++;
             lines[yi + ry][xi + rx][0] = battr;
+            lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           }
           lines[yi + ry][xi + rx][1] = "\u253c"; // '┼'
           // rx++;
@@ -326,9 +388,14 @@ class Table extends Box {
             const lbg = (ry <= 2 ? hattr : cattr) & 0x1ff;
             rx++;
             lines[yi + ry][xi + rx][0] = (battr & ~0x1ff) | lbg;
+            lines[yi + ry][xi + rx][2] =
+              (ry <= 2 ? hStyle.tcBg : cStyle.tcBg) ?? bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           } else {
             rx++;
             lines[yi + ry][xi + rx][0] = battr;
+            lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+            lines[yi + ry][xi + rx][3] = bStyle.tcFg;
           }
           lines[yi + ry][xi + rx][1] = "\u2502"; // '│'
           lines[yi + ry].dirty = true;
@@ -345,8 +412,13 @@ class Table extends Box {
             if ((this.options as any).fillCellBorders) {
               const lbg = (ry <= 2 ? hattr : cattr) & 0x1ff;
               lines[yi + ry][xi + rx][0] = (battr & ~0x1ff) | lbg;
+              lines[yi + ry][xi + rx][2] =
+                (ry <= 2 ? hStyle.tcBg : cStyle.tcBg) ?? bStyle.tcBg;
+              lines[yi + ry][xi + rx][3] = bStyle.tcFg;
             } else {
               lines[yi + ry][xi + rx][0] = battr;
+              lines[yi + ry][xi + rx][2] = bStyle.tcBg;
+              lines[yi + ry][xi + rx][3] = bStyle.tcFg;
             }
             lines[yi + ry][xi + rx][1] = "\u2500"; // '─'
             lines[yi + ry].dirty = true;

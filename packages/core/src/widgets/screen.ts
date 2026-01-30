@@ -6,6 +6,11 @@
  * Modules
  */
 
+import {
+  detectColorCapabilities,
+  resetCapabilitiesCache,
+} from "../lib/color-capabilities.js";
+import type { ColorInput, ColorMode } from "../lib/color-types.js";
 import colors from "../lib/colors.js";
 import helpers from "../lib/helpers.js";
 import Program from "../lib/program.js";
@@ -16,10 +21,17 @@ import type {
   KeyEvent,
   MouseEvent,
   RenderCoords,
+  ScreenColorPolicy,
+  ScreenColorPolicyOptions,
   ScreenOptions,
 } from "../types";
 import Box from "./box.js";
-import { createCell, type Cell } from "./cell.js";
+import {
+  createCell,
+  sameTruecolor,
+  type Cell,
+  type Truecolor,
+} from "./cell.js";
 import Element from "./element.js";
 import Log from "./log.js";
 import Node from "./node.js";
@@ -153,12 +165,27 @@ class Screen extends Node {
   private _batchRenderNeeded: boolean = false;
   private _batchDepth: number = 0;
 
+  // ===== Color policy + caches =====
+  private _colorPolicy!: ScreenColorPolicy;
+  private _effectiveColorMode: ColorMode = "256";
+  private _colorSupports256: boolean = true;
+  private _colorSupportsTruecolor: boolean = false;
+  private _rgbCache: Map<string, Truecolor> = new Map();
+
   constructor(options: ScreenOptions = {}) {
+    // In tests/headless environments, Program may not have a meaningful TTY size.
+    // If the user provided explicit screen dimensions, treat them as authoritative.
+    const forcedCols =
+      typeof options.width === "number" ? options.width : undefined;
+    const forcedRows =
+      typeof options.height === "number" ? options.height : undefined;
+
     if (options.rsety && options.listen) {
       options = { program: options };
     }
 
     const program_instance = options.program;
+    const createdProgram = !program_instance;
 
     if (!program_instance) {
       options.program = new Program({
@@ -195,6 +222,23 @@ class Screen extends Node {
 
     this.program = options.program;
     this.tput = this.program.tput;
+
+    if (createdProgram) {
+      if (forcedCols != null) {
+        this.program.cols = forcedCols;
+        if (this.program.output) this.program.output.columns = forcedCols;
+      }
+      if (forcedRows != null) {
+        this.program.rows = forcedRows;
+        if (this.program.output) this.program.output.rows = forcedRows;
+      }
+    }
+
+    this._colorPolicy = {
+      ...this._getDefaultColorPolicy(),
+      ...(options.color ?? {}),
+    };
+    this._recomputeColorProfile();
 
     this.autoPadding = options.autoPadding !== false;
     this.tabc = Array((options.tabSize || 4) + 1).join(" ");
@@ -1083,6 +1127,449 @@ class Screen extends Node {
     }
   }
 
+  // ===== Color policy (public-ish) =====
+
+  private _getDefaultColorPolicy(): ScreenColorPolicy {
+    return {
+      mode: "auto",
+      preferForStyle: "compact",
+      preferForContent: "fidelity",
+      allowTruecolorFromContent: true,
+      contentTruecolorFallback: "quantize",
+    };
+  }
+
+  private _recomputeColorProfile(): void {
+    // Palette support comes from terminfo/tput (authoritative for 16 vs 256).
+    this._colorSupports256 = (this.tput?.colors ?? 256) >= 256;
+
+    // Truecolor support is primarily detected from env (and may be extended to terminfo
+    // setrgbf/setrgbb later).
+    resetCapabilitiesCache();
+    const caps = detectColorCapabilities();
+    this._colorSupportsTruecolor = caps.supportsTruecolor;
+
+    const requested = this._colorPolicy.mode;
+    const fallback = (): ColorMode => {
+      if (this._colorSupportsTruecolor) return "truecolor";
+      if (this._colorSupports256) return "256";
+      return "16";
+    };
+
+    if (requested === "auto") {
+      this._effectiveColorMode = fallback();
+      return;
+    }
+
+    if (requested === "truecolor") {
+      this._effectiveColorMode = this._colorSupportsTruecolor
+        ? "truecolor"
+        : fallback();
+      return;
+    }
+
+    if (requested === "256") {
+      this._effectiveColorMode = this._colorSupports256 ? "256" : "16";
+      return;
+    }
+
+    this._effectiveColorMode = "16";
+  }
+
+  getColorPolicy(): ScreenColorPolicy {
+    return this._colorPolicy;
+  }
+
+  getEffectiveColorMode(): ColorMode {
+    return this._effectiveColorMode;
+  }
+
+  setColorPolicy(policy: ScreenColorPolicyOptions): void {
+    const prevMode = this._effectiveColorMode;
+    this._colorPolicy = { ...this._colorPolicy, ...policy };
+    this._recomputeColorProfile();
+
+    // Changing policy can affect rendering even if effectiveMode is unchanged
+    // (e.g. allowTruecolorFromContent, prefer modes). Force a repaint.
+    if (this.lines.length > 0) {
+      this._invalidateOlines();
+      for (let y = 0; y < this.lines.length; y++) {
+        if (this.lines[y]) this.lines[y].dirty = true;
+      }
+    }
+
+    // If mode changed, clear RGB cache (stable tc references may no longer be meaningful).
+    if (prevMode !== this._effectiveColorMode) {
+      this._rgbCache.clear();
+    }
+  }
+
+  private _invalidateOlines(): void {
+    for (let y = 0; y < this.olines.length; y++) {
+      const oline = this.olines[y];
+      if (!oline) continue;
+      for (let x = 0; x < oline.length; x++) {
+        // Force a diff on next draw without changing pending buffer.
+        oline[x] = createCell(-1, "\0", null, null);
+      }
+      oline.dirty = true;
+    }
+  }
+
+  // ===== Color conversion helpers =====
+
+  private _clamp8(n: number): number {
+    if (!Number.isFinite(n)) return 0;
+    if (n < 0) return 0;
+    if (n > 255) return 255;
+    return n | 0;
+  }
+
+  private _getCachedRgb(rgb: Truecolor): Truecolor {
+    const key = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+    const cached = this._rgbCache.get(key);
+    if (cached) return cached;
+    this._rgbCache.set(key, rgb);
+    return rgb;
+  }
+
+  private _rgbFromInput(input: ColorInput): Truecolor | null {
+    if (Array.isArray(input) && input.length === 3) {
+      const r = this._clamp8(input[0] as number);
+      const g = this._clamp8(input[1] as number);
+      const b = this._clamp8(input[2] as number);
+      return this._getCachedRgb([r, g, b]);
+    }
+    if (typeof input === "string" && input.startsWith("#")) {
+      const rgb = colors.hexToRGB(input) as [number, number, number];
+      return this._getCachedRgb([rgb[0], rgb[1], rgb[2]]);
+    }
+    return null;
+  }
+
+  private _paletteIndexForRgb(rgb: Truecolor): number {
+    return colors.match(rgb);
+  }
+
+  resolveColor(
+    input: ColorInput | undefined,
+    channel: "fg" | "bg",
+    source: "style" | "content" = "style",
+  ): { attrPart: number; tc: Truecolor | null } {
+    const defPart = channel === "fg" ? 0x1ff << 9 : 0x1ff;
+    if (
+      input == null ||
+      input === ("default" as any) ||
+      input === ("normal" as any)
+    ) {
+      return { attrPart: defPart, tc: null };
+    }
+
+    const rgb = this._rgbFromInput(input);
+    const prefer =
+      source === "content"
+        ? this._colorPolicy.preferForContent
+        : this._colorPolicy.preferForStyle;
+
+    // Palette inputs stay palette.
+    if (rgb === null) {
+      const idx =
+        typeof input === "number" ? input & 0xff : colors.convert(input as any);
+      const part = channel === "fg" ? (idx & 0x1ff) << 9 : idx & 0x1ff;
+      return { attrPart: part, tc: null };
+    }
+
+    // RGB/hex inputs: choose whether to keep as truecolor.
+    if (this._effectiveColorMode !== "truecolor") {
+      // No truecolor in this mode.
+      const idx = this._paletteIndexForRgb(rgb);
+      const part = channel === "fg" ? (idx & 0x1ff) << 9 : idx & 0x1ff;
+      return { attrPart: part, tc: null };
+    }
+
+    const idx = this._paletteIndexForRgb(rgb);
+    const part = channel === "fg" ? (idx & 0x1ff) << 9 : idx & 0x1ff;
+
+    // If the RGB exactly matches a palette entry, 'compact' prefers palette encoding.
+    const paletteRgb = colors.vcolors[idx] as
+      | [number, number, number]
+      | undefined;
+    const isExact =
+      !!paletteRgb &&
+      paletteRgb[0] === rgb[0] &&
+      paletteRgb[1] === rgb[1] &&
+      paletteRgb[2] === rgb[2];
+    if (prefer === "compact" && isExact) {
+      return { attrPart: part, tc: null };
+    }
+
+    return { attrPart: part, tc: rgb };
+  }
+
+  resolveStyle(
+    style: any,
+    ctx: any,
+    source: "style" | "content" = "style",
+    fallbackFg?: ColorInput,
+    fallbackBg?: ColorInput,
+  ): { attr: number; tcBg: Truecolor | null; tcFg: Truecolor | null } {
+    // Compute flags via Element.sattr logic (without calling it).
+    let bold = style?.bold;
+    let dim = style?.dim;
+    let underline = style?.underline;
+    let blink = style?.blink;
+    let inverse = style?.inverse;
+    let invisible = style?.invisible;
+
+    if (typeof bold === "function") bold = bold(ctx);
+    if (typeof dim === "function") dim = dim(ctx);
+    if (typeof underline === "function") underline = underline(ctx);
+    if (typeof blink === "function") blink = blink(ctx);
+    if (typeof inverse === "function") inverse = inverse(ctx);
+    if (typeof invisible === "function") invisible = invisible(ctx);
+
+    let fg = fallbackFg ?? style?.fg;
+    let bg = fallbackBg ?? style?.bg;
+    if (typeof fg === "function") fg = fg(ctx);
+    if (typeof bg === "function") bg = bg(ctx);
+
+    const fgResolved = this.resolveColor(fg as any, "fg", source);
+    const bgResolved = this.resolveColor(bg as any, "bg", source);
+
+    const flags =
+      ((invisible ? 16 : 0) << 18) |
+      ((inverse ? 8 : 0) << 18) |
+      ((blink ? 4 : 0) << 18) |
+      ((underline ? 2 : 0) << 18) |
+      ((bold ? 1 : 0) << 18) |
+      ((dim ? 32 : 0) << 18);
+
+    const attr = flags | fgResolved.attrPart | bgResolved.attrPart;
+    return { attr, tcBg: bgResolved.tc, tcFg: fgResolved.tc };
+  }
+
+  // ===== SGR parsing + application (for content) =====
+
+  parseSgrAt(
+    content: string,
+    start: number,
+  ): { params: number[]; length: number } | null {
+    if (content.charCodeAt(start) !== 0x1b) return null;
+    if (content.charCodeAt(start + 1) !== 0x5b) return null; // '['
+
+    const params: number[] = [];
+    let num = 0;
+    let hasNum = false;
+
+    for (let i = start + 2; i < content.length; i++) {
+      const code = content.charCodeAt(i);
+
+      if (code >= 0x30 && code <= 0x39) {
+        num = num * 10 + (code - 0x30);
+        hasNum = true;
+        continue;
+      }
+
+      if (code === 0x3b) {
+        // ';'
+        params.push(hasNum ? num : 0);
+        num = 0;
+        hasNum = false;
+        continue;
+      }
+
+      if (code === 0x6d) {
+        // 'm'
+        params.push(hasNum ? num : 0);
+        return { params, length: i - start + 1 };
+      }
+
+      // Not an SGR sequence.
+      return null;
+    }
+
+    return null;
+  }
+
+  applySgr(
+    params: number[],
+    state: { attr: number; tcBg: Truecolor | null; tcFg: Truecolor | null },
+    defAttr: number,
+  ): { attr: number; tcBg: Truecolor | null; tcFg: Truecolor | null } {
+    let flags = (state.attr >> 18) & 0x1ff;
+    let fg = (state.attr >> 9) & 0x1ff;
+    let bg = state.attr & 0x1ff;
+
+    const defFlags = (defAttr >> 18) & 0x1ff;
+    const defFg = (defAttr >> 9) & 0x1ff;
+    const defBg = defAttr & 0x1ff;
+
+    let tcBg = state.tcBg;
+    let tcFg = state.tcFg;
+
+    const setFg = (idx: number) => {
+      fg = idx & 0x1ff;
+    };
+    const setBg = (idx: number) => {
+      bg = idx & 0x1ff;
+    };
+
+    for (let i = 0; i < params.length; i++) {
+      const c = params[i] ?? 0;
+      switch (c) {
+        case 0:
+          flags = defFlags;
+          fg = defFg;
+          bg = defBg;
+          tcBg = null;
+          tcFg = null;
+          break;
+        case 1:
+          flags |= 1;
+          break;
+        case 21:
+          flags &= ~1;
+          break;
+        case 2:
+          flags |= 32;
+          break;
+        case 22:
+          flags &= ~32;
+          break;
+        case 4:
+          flags |= 2;
+          break;
+        case 24:
+          flags &= ~2;
+          break;
+        case 5:
+          flags |= 4;
+          break;
+        case 25:
+          flags &= ~4;
+          break;
+        case 7:
+          flags |= 8;
+          break;
+        case 27:
+          flags &= ~8;
+          break;
+        case 8:
+          flags |= 16;
+          break;
+        case 28:
+          flags &= ~16;
+          break;
+        case 39:
+          fg = defFg;
+          tcFg = null;
+          break;
+        case 49:
+          bg = defBg;
+          tcBg = null;
+          break;
+        default:
+          // 256-color: 38;5;n or 48;5;n
+          if (
+            c === 38 &&
+            params[i + 1] === 5 &&
+            typeof params[i + 2] === "number"
+          ) {
+            setFg(params[i + 2] as number);
+            tcFg = null;
+            i += 2;
+            break;
+          }
+          if (
+            c === 48 &&
+            params[i + 1] === 5 &&
+            typeof params[i + 2] === "number"
+          ) {
+            setBg(params[i + 2] as number);
+            tcBg = null;
+            i += 2;
+            break;
+          }
+
+          // Truecolor: 38;2;r;g;b or 48;2;r;g;b
+          if (
+            (c === 38 || c === 48) &&
+            params[i + 1] === 2 &&
+            typeof params[i + 2] === "number" &&
+            typeof params[i + 3] === "number" &&
+            typeof params[i + 4] === "number"
+          ) {
+            const r = this._clamp8(params[i + 2] as number);
+            const g = this._clamp8(params[i + 3] as number);
+            const b = this._clamp8(params[i + 4] as number);
+            const rgb = this._getCachedRgb([r, g, b]);
+
+            const allow =
+              this._effectiveColorMode === "truecolor" &&
+              this._colorPolicy.allowTruecolorFromContent;
+
+            if (allow) {
+              const idx = this._paletteIndexForRgb(rgb);
+              if (c === 38) setFg(idx);
+              else setBg(idx);
+
+              // Optional exact-match downgrade for content.
+              const paletteRgb = colors.vcolors[idx] as
+                | [number, number, number]
+                | undefined;
+              const isExact =
+                !!paletteRgb &&
+                paletteRgb[0] === rgb[0] &&
+                paletteRgb[1] === rgb[1] &&
+                paletteRgb[2] === rgb[2];
+              const keepCompact =
+                this._colorPolicy.preferForContent === "compact" && isExact;
+
+              if (c === 38) tcFg = keepCompact ? null : rgb;
+              else tcBg = keepCompact ? null : rgb;
+            } else {
+              if (this._colorPolicy.contentTruecolorFallback === "quantize") {
+                const idx = this._paletteIndexForRgb(rgb);
+                if (c === 38) setFg(idx);
+                else setBg(idx);
+              }
+              if (c === 38) tcFg = null;
+              else tcBg = null;
+            }
+
+            i += 4;
+            break;
+          }
+
+          // 16-color ranges.
+          if (c >= 30 && c <= 37) {
+            setFg(c - 30);
+            tcFg = null;
+            break;
+          }
+          if (c >= 90 && c <= 97) {
+            setFg(c - 90 + 8);
+            tcFg = null;
+            break;
+          }
+          if (c >= 40 && c <= 47) {
+            setBg(c - 40);
+            tcBg = null;
+            break;
+          }
+          if (c >= 100 && c <= 107) {
+            setBg(c - 100 + 8);
+            tcBg = null;
+            break;
+          }
+          break;
+      }
+    }
+
+    const attr = (flags << 18) | ((fg & 0x1ff) << 9) | (bg & 0x1ff);
+    return { attr, tcBg, tcFg };
+  }
+
   /**
    * Create a blank line array for the screen buffer.
    * @param ch - Character to fill the line with (default: space)
@@ -1092,7 +1579,7 @@ class Screen extends Node {
   blankLine(ch?: string, dirty?: boolean): any[] {
     const out: any = [];
     for (let x = 0; x < this.cols; x++) {
-      out[x] = [this.dattr, ch || " "];
+      out[x] = createCell(this.dattr, ch || " ", null, null);
     }
     out.dirty = dirty;
     return out;
@@ -1516,6 +2003,7 @@ class Screen extends Node {
       // regions (we may jump the cursor without emitting any SGR).
       let termTruecolorBg: [number, number, number] | null = null;
       let termTruecolorFg: [number, number, number] | null = null;
+      let termFlags: number = (this.dattr >> 18) & 0x1ff;
 
       for (x = 0; x < line.length; x++) {
         data = line[x][0];
@@ -1540,6 +2028,8 @@ class Screen extends Node {
         if (
           this.options.useBCE &&
           ch === " " &&
+          termTruecolorBg === null &&
+          termTruecolorFg === null &&
           (this.tput.bools.back_color_erase ||
             (data & 0x1ff) === (this.dattr & 0x1ff)) &&
           ((data >> 18) & 8) === ((this.dattr >> 18) & 8)
@@ -1548,11 +2038,23 @@ class Screen extends Node {
           neq = false;
 
           for (xx = x; xx < line.length; xx++) {
-            if (line[xx][0] !== data || line[xx][1] !== " ") {
+            const runCell = line[xx] as Cell;
+            const runOCell = o[xx] as Cell;
+            if (
+              runCell[0] !== data ||
+              runCell[1] !== " " ||
+              runCell[2] !== null ||
+              runCell[3] !== null
+            ) {
               clr = false;
               break;
             }
-            if (line[xx][0] !== o[xx][0] || line[xx][1] !== o[xx][1]) {
+            if (
+              runCell[0] !== runOCell[0] ||
+              runCell[1] !== runOCell[1] ||
+              !sameTruecolor(runCell[2], runOCell[2]) ||
+              !sameTruecolor(runCell[3], runOCell[3])
+            ) {
               neq = true;
             }
           }
@@ -1569,6 +2071,8 @@ class Screen extends Node {
             for (xx = x; xx < line.length; xx++) {
               o[xx][0] = data;
               o[xx][1] = " ";
+              o[xx][2] = null;
+              o[xx][3] = null;
             }
             break;
           }
@@ -1622,16 +2126,6 @@ class Screen extends Node {
         // All cells are normalized to 4 elements: [attr, ch, truecolorBg, truecolorFg]
         const cell = line[x] as Cell;
         const oCell = o[x] as Cell;
-        const sameTruecolor = (
-          a: [number, number, number] | null,
-          b: [number, number, number] | null,
-        ) =>
-          (a === null && b === null) ||
-          (a !== null &&
-            b !== null &&
-            a[0] === b[0] &&
-            a[1] === b[1] &&
-            a[2] === b[2]);
 
         // Optimize by comparing the real output
         // buffer to the pending output buffer (including truecolor so animated colors redraw).
@@ -1657,59 +2151,55 @@ class Screen extends Node {
         }
         o[x][0] = data;
         o[x][1] = ch;
-        o[x][2] = cell[2] ? [cell[2][0], cell[2][1], cell[2][2]] : null;
-        o[x][3] = cell[3] ? [cell[3][0], cell[3][1], cell[3][2]] : null;
+        o[x][2] =
+          cell[2] !== null ? [cell[2][0], cell[2][1], cell[2][2]] : null;
+        o[x][3] =
+          cell[3] !== null ? [cell[3][0], cell[3][1], cell[3][2]] : null;
         const truecolorBg = cell[2];
         const truecolorFg = cell[3];
         const hasTruecolorBg = truecolorBg !== null;
         const hasTruecolorFg = truecolorFg !== null;
-        const hasTermTruecolorBg = termTruecolorBg !== null;
-        const hasTermTruecolorFg = termTruecolorFg !== null;
-
-        // Ensure terminal truecolor state matches the cell's truecolor state.
-        // Use the tracked terminal state, NOT neighboring cells, because we can
-        // skip regions and jump the cursor without emitting SGR.
-        const needsTruecolorUpdate =
-          hasTruecolorBg !== hasTermTruecolorBg ||
-          hasTruecolorFg !== hasTermTruecolorFg ||
-          (hasTruecolorBg &&
-            hasTermTruecolorBg &&
-            truecolorBg !== null &&
-            termTruecolorBg !== null &&
-            (truecolorBg[0] !== termTruecolorBg[0] ||
-              truecolorBg[1] !== termTruecolorBg[1] ||
-              truecolorBg[2] !== termTruecolorBg[2])) ||
-          (hasTruecolorFg &&
-            hasTermTruecolorFg &&
-            truecolorFg !== null &&
-            termTruecolorFg !== null &&
-            (truecolorFg[0] !== termTruecolorFg[0] ||
-              truecolorFg[1] !== termTruecolorFg[1] ||
-              truecolorFg[2] !== termTruecolorFg[2]));
-
-        if (needsTruecolorUpdate) {
-          // Reset attributes first if terminal had truecolor (or if we're changing modes).
-          if (hasTermTruecolorBg || hasTermTruecolorFg) {
-            out += "\x1b[m";
-            attr = this.dattr;
-          }
-
-          // Output truecolor codes for this cell.
-          if (hasTruecolorBg && truecolorBg !== null) {
-            out += `\x1b[48;2;${truecolorBg[0]};${truecolorBg[1]};${truecolorBg[2]}m`;
-            termTruecolorBg = [truecolorBg[0], truecolorBg[1], truecolorBg[2]];
-          } else {
-            termTruecolorBg = null;
-          }
-          if (hasTruecolorFg && truecolorFg !== null) {
-            out += `\x1b[38;2;${truecolorFg[0]};${truecolorFg[1]};${truecolorFg[2]}m`;
-            termTruecolorFg = [truecolorFg[0], truecolorFg[1], truecolorFg[2]];
-          } else {
-            termTruecolorFg = null;
-          }
-        }
+        const desiredFlags = (data >> 18) & 0x1ff;
 
         if (hasTruecolorBg || hasTruecolorFg) {
+          const desiredTcBg = truecolorBg;
+          const desiredTcFg = truecolorFg;
+          const needsUpdate =
+            desiredFlags !== termFlags ||
+            !sameTruecolor(desiredTcBg, termTruecolorBg) ||
+            !sameTruecolor(desiredTcFg, termTruecolorFg);
+
+          if (needsUpdate) {
+            // Reset and emit a full SGR for flags + truecolor.
+            out += "\x1b[m";
+            attr = this.dattr;
+
+            const parts: string[] = [];
+            if (desiredFlags & 1) parts.push("1");
+            if (desiredFlags & 32) parts.push("2");
+            if (desiredFlags & 2) parts.push("4");
+            if (desiredFlags & 4) parts.push("5");
+            if (desiredFlags & 8) parts.push("7");
+            if (desiredFlags & 16) parts.push("8");
+            if (desiredTcBg) {
+              parts.push(
+                `48;2;${desiredTcBg[0]};${desiredTcBg[1]};${desiredTcBg[2]}`,
+              );
+            }
+            if (desiredTcFg) {
+              parts.push(
+                `38;2;${desiredTcFg[0]};${desiredTcFg[1]};${desiredTcFg[2]}`,
+              );
+            }
+            if (parts.length) {
+              out += `\x1b[${parts.join(";")}m`;
+            }
+
+            termFlags = desiredFlags;
+            termTruecolorBg = desiredTcBg;
+            termTruecolorFg = desiredTcFg;
+          }
+
           out += ch;
           continue;
         }
@@ -1721,6 +2211,7 @@ class Screen extends Node {
             out += "\x1b[m";
             termTruecolorBg = null;
             termTruecolorFg = null;
+            termFlags = (this.dattr >> 18) & 0x1ff;
             attr = this.dattr;
           }
           if (attr !== this.dattr) {
@@ -1891,19 +2382,16 @@ class Screen extends Node {
 
       // Reset attributes and truecolor at the end of each line
       // This prevents backgrounds from leaking to the next line
-      const lastTruecolorBg =
-        line.length > 0 ? line[line.length - 1][2] : undefined;
-      const lastTruecolorFg =
-        line.length > 0 ? line[line.length - 1][3] : undefined;
       if (
         attr !== this.dattr ||
-        lastTruecolorBg !== undefined ||
-        lastTruecolorFg !== undefined
+        termTruecolorBg !== null ||
+        termTruecolorFg !== null
       ) {
         out += "\x1b[m";
         attr = this.dattr;
         termTruecolorBg = null;
         termTruecolorFg = null;
+        termFlags = (this.dattr >> 18) & 0x1ff;
       }
 
       if (out) {
@@ -2433,8 +2921,8 @@ class Screen extends Node {
           override ||
           attr !== cell[0] ||
           ch !== cell[1] ||
-          cell[2] !== bg ||
-          cell[3] !== fg
+          !sameTruecolor(cell[2], bg) ||
+          !sameTruecolor(cell[3], fg)
         ) {
           lines[yi][xx] = createCell(attr, ch, bg, fg);
           lines[yi].dirty = true;

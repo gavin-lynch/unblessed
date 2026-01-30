@@ -10,6 +10,7 @@ import { createRequire } from "module";
 import { getEnvVar, getNextTick, getRuntime } from "../lib/runtime-helpers.js";
 import type { TerminalOptions } from "../types";
 import Box from "./box.js";
+import { createCell, type Cell } from "./cell.js";
 
 const require = createRequire(import.meta.url);
 
@@ -305,7 +306,10 @@ class Terminal extends Box {
     const ret = super.render();
     if (!ret) return;
 
-    this.dattr = this.sattr(this.style);
+    const defaultStyle = this.screen.resolveStyle(this.style, this);
+    this.dattr = defaultStyle.attr;
+    const defaultTcBg = defaultStyle.tcBg;
+    const defaultTcFg = defaultStyle.tcFg;
 
     const xi = ret.xi + this.ileft,
       xl = ret.xl - this.iright,
@@ -334,32 +338,42 @@ class Terminal extends Box {
       for (let x = Math.max(xi, 0); x < xl; x++) {
         if (!line[x] || !this.term.lines[scrollback + y - yi][x - xi]) break;
 
-        line[x][0] = this.term.lines[scrollback + y - yi][x - xi][0];
+        const cell = line[x] as Cell;
+
+        cell[0] = this.term.lines[scrollback + y - yi][x - xi][0];
+        cell[2] = null;
+        cell[3] = null;
 
         if (x === cursor) {
           if (this.cursor === "line") {
-            line[x][0] = this.dattr;
-            line[x][1] = "\u2502";
+            line[x] = createCell(
+              this.dattr,
+              "\u2502",
+              defaultTcBg,
+              defaultTcFg,
+            );
             continue;
           } else if (this.cursor === "underline") {
-            line[x][0] = this.dattr | (2 << 18);
+            cell[0] = this.dattr | (2 << 18);
           } else if (this.cursor === "block" || !this.cursor) {
-            line[x][0] = this.dattr | (8 << 18);
+            cell[0] = this.dattr | (8 << 18);
           }
         }
 
-        line[x][1] = this.term.lines[scrollback + y - yi][x - xi][1];
+        cell[1] = this.term.lines[scrollback + y - yi][x - xi][1];
 
         // default foreground = 257
-        if (((line[x][0] >> 9) & 0x1ff) === 257) {
-          line[x][0] &= ~(0x1ff << 9);
-          line[x][0] |= ((this.dattr >> 9) & 0x1ff) << 9;
+        if (((cell[0] >> 9) & 0x1ff) === 257) {
+          cell[0] &= ~(0x1ff << 9);
+          cell[0] |= ((this.dattr >> 9) & 0x1ff) << 9;
+          cell[3] = defaultTcFg;
         }
 
         // default background = 256
-        if ((line[x][0] & 0x1ff) === 256) {
-          line[x][0] &= ~0x1ff;
-          line[x][0] |= this.dattr & 0x1ff;
+        if ((cell[0] & 0x1ff) === 256) {
+          cell[0] &= ~0x1ff;
+          cell[0] |= this.dattr & 0x1ff;
+          cell[2] = defaultTcBg;
         }
       }
 
