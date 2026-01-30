@@ -107,6 +107,7 @@ export class Gauge extends CanvasWidget {
    * Set gauge data (can be percent or stack)
    */
   override setData(data: unknown): void {
+    super.setData(data);
     if (Array.isArray(data) && data.length > 0) {
       this.setStack(data as (number | GaugeStackItem)[]);
     } else if (typeof data === "number") {

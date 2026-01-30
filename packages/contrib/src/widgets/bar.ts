@@ -102,6 +102,7 @@ export class Bar extends CanvasWidget {
   }
 
   override setData(data: unknown): void {
+    super.setData(data);
     const barData = data as BarData;
 
     if (!this.ctx) {

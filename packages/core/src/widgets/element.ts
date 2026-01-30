@@ -7,6 +7,7 @@
  */
 
 import { getBorderChars } from "../lib/border-styles.js";
+import { toCellColor } from "../lib/color-converter.js";
 import colors from "../lib/colors.js";
 import helpers from "../lib/helpers.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
@@ -603,6 +604,10 @@ class Element extends Node {
     if (this.detached) return false;
 
     const width = this.width - this.iwidth;
+    // Force recompute wrap for SGR content so we never reuse a corrupt _clines from stale cache
+    if (this.content.includes("\x1b[")) {
+      this._clines = null;
+    }
     if (
       this._clines == null ||
       this._clines.width !== width ||
@@ -855,8 +860,9 @@ class Element extends Node {
       wrapMode = this.wrap;
     }
 
-    // Check cache
+    // Check cache (skip for content with SGR - avoids using stale corrupt wrapped result from earlier buggy reattach logic)
     const cache = getGlobalWrapCache();
+    const hasSgr = content.includes("\x1b[");
     const cacheKey = {
       content,
       width,
@@ -866,9 +872,11 @@ class Element extends Node {
       parseTags: !!this.parseTags,
     };
 
-    const cached = cache.get(cacheKey);
-    if (cached) {
-      return cached;
+    if (!hasSgr) {
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return cached;
+      }
     }
 
     // Early return for empty content
@@ -882,7 +890,7 @@ class Element extends Node {
       wrappedOut.fake = lines;
       wrappedOut.real = out;
       wrappedOut.mwidth = 0;
-      cache.set(cacheKey, wrappedOut);
+      if (!hasSgr) cache.set(cacheKey, wrappedOut);
       return wrappedOut;
     }
 
@@ -984,6 +992,10 @@ class Element extends Node {
               // the control sequences before cutting off the line.
               i++;
               if (!wrap) {
+                // Never truncate in the middle of an SGR: if remainder starts with "[" or "38;..." etc., skip to after the "m"
+                if (line[i] === "[" || /^\d+;/.test(line.substring(i))) {
+                  while (line[i] && line[i++] !== "m") {}
+                }
                 rest = line.substring(i).match(/\x1b\[[^m]*m/g);
                 rest = rest ? rest.join("") : "";
                 out.push(
@@ -1051,6 +1063,11 @@ class Element extends Node {
             }
           }
 
+          // Never split in the middle of an SGR: if continuation would start with "[" or "38;..." etc., skip to after the "m"
+          if (line[i] === "[" || /^\d+;/.test(line.substring(i))) {
+            while (line[i] && line[i++] !== "m") {}
+          }
+
           part = line.substring(0, i);
           line = line.substring(i);
 
@@ -1087,8 +1104,8 @@ class Element extends Node {
       return line.length > current ? line.length : current;
     }, 0);
 
-    // Store in cache
-    cache.set(cacheKey, wrappedOut);
+    // Store in cache (skip for SGR so we always recompute and never store corrupt wrap)
+    if (!hasSgr) cache.set(cacheKey, wrappedOut);
 
     return wrappedOut;
   }
@@ -2430,6 +2447,24 @@ class Element extends Node {
     dattr = this.sattr(this.style);
     attr = dattr;
 
+    // Default truecolor from element style (for fill cells when terminal supports truecolor)
+    const resolvedStyleBg =
+      typeof this.style.bg === "function"
+        ? this.style.bg(this)
+        : this.style.bg;
+    const resolvedStyleFg =
+      typeof this.style.fg === "function"
+        ? this.style.fg(this)
+        : this.style.fg;
+    const defaultTruecolorBg =
+      resolvedStyleBg != null
+        ? toCellColor(resolvedStyleBg, "bg").truecolor
+        : null;
+    const defaultTruecolorFg =
+      resolvedStyleFg != null
+        ? toCellColor(resolvedStyleFg, "fg").truecolor
+        : null;
+
     // If we're in a scrollable text box, check to
     // see which attributes this line starts with.
     if (ci > 0) {
@@ -2464,7 +2499,17 @@ class Element extends Node {
           }
         }
       } else {
-        this.screen.fillRegion(dattr, bch, xi, xl, yi, yl);
+        this.screen.fillRegion(
+          dattr,
+          bch,
+          xi,
+          xl,
+          yi,
+          yl,
+          undefined,
+          defaultTruecolorBg,
+          defaultTruecolorFg,
+        );
       }
     }
 
@@ -2559,15 +2604,21 @@ class Element extends Node {
                 `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorBgMatch[0].length})`,
               );
             }
-            // Update ch to the character at the new position to check for more ANSI codes
+            // Update ch to the character at the new position and consume it
             if (ci < content!.length) {
               ch = content![ci] || bch;
+              ci++;
             } else {
               ch = bch;
               break;
             }
-            // Continue in while loop to process next escape sequence if present
-            continue;
+            // If next char is another escape, continue processing.
+            // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
+            // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
+            if (ch === "\x1b") {
+              continue;
+            }
+            break;
           } else if (truecolorFgMatch) {
             if (process.env.DEBUG_ELEMENT) {
               console.log(
@@ -2588,15 +2639,21 @@ class Element extends Node {
                 `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorFgMatch[0].length})`,
               );
             }
-            // Update ch to the character at the new position to check for more ANSI codes
+            // Update ch to the character at the new position and consume it
             if (ci < content!.length) {
               ch = content![ci] || bch;
+              ci++;
             } else {
               ch = bch;
               break;
             }
-            // Continue in while loop to process next escape sequence if present
-            continue;
+            // If next char is another escape, continue processing.
+            // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
+            // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
+            if (ch === "\x1b") {
+              continue;
+            }
+            break;
           } else if (truecolorResetMatch) {
             if (process.env.DEBUG_ELEMENT) {
               console.log(
@@ -2616,6 +2673,12 @@ class Element extends Node {
             ) {
               truecolorFg = null;
             }
+
+            // `\x1b[39m`, `\x1b[49m`, and `\x1b[0m` are *also* standard SGR resets.
+            // Even when we track truecolor separately, we must still update the packed
+            // attribute state so subsequent non-truecolor cells (e.g. border gaps, spaces,
+            // and non-truecolor ring segments) don't inherit a stale fg/bg.
+            attr = this.screen.attrCode(truecolorResetMatch[0], attr, dattr);
             // Advance past the reset code (ci-1 is the start of the code)
             const oldCi = ci;
             ci = ci - 1 + truecolorResetMatch[0].length;
@@ -2624,11 +2687,17 @@ class Element extends Node {
                 `[DEBUG ELEMENT] Advanced ci from ${oldCi - 1} to ${ci} (code length: ${truecolorResetMatch[0].length})`,
               );
             }
-            // Update ch to the character at the new position to check for more ANSI codes
+            // Update ch to the character at the new position and consume it
             if (ci < content!.length) {
               ch = content![ci] || bch;
-              // Continue in while loop to process next escape sequence if present
-              continue;
+              ci++;
+              // If next char is another escape, continue processing.
+              // IMPORTANT: do not fall through to standard ANSI handling in the same iteration
+              // or we may re-process the previous escape with a stale `substr` and corrupt `ci`.
+              if (ch === "\x1b") {
+                continue;
+              }
+              break;
             } else {
               // End of content - use blank character
               if (process.env.DEBUG_ELEMENT) {
@@ -2706,13 +2775,15 @@ class Element extends Node {
           for (; x < xl; x++) {
             cell = lines[y][x];
             if (!cell) break;
+            const fillBg = truecolorBg ?? defaultTruecolorBg;
+            const fillFg = truecolorFg ?? defaultTruecolorFg;
             if (this.style.transparent) {
               const baseCell = cell as Cell;
               lines[y][x] = createCell(
                 colors.blend(attr, baseCell[0]),
                 content![ci] ? ch : baseCell[1],
-                truecolorBg,
-                truecolorFg,
+                fillBg,
+                fillFg,
               );
               lines[y].dirty = true;
             } else {
@@ -2720,10 +2791,10 @@ class Element extends Node {
               if (
                 attr !== baseCell[0] ||
                 ch !== baseCell[1] ||
-                baseCell[2] !== truecolorBg ||
-                baseCell[3] !== truecolorFg
+                baseCell[2] !== fillBg ||
+                baseCell[3] !== fillFg
               ) {
-                lines[y][x] = createCell(attr, ch, truecolorBg, truecolorFg);
+                lines[y][x] = createCell(attr, ch, fillBg, fillFg);
                 lines[y].dirty = true;
               }
             }
@@ -2759,22 +2830,24 @@ class Element extends Node {
         if (this._noFill) continue;
 
         const baseCell = cell as Cell;
+        const fillBg = truecolorBg ?? defaultTruecolorBg;
+        const fillFg = truecolorFg ?? defaultTruecolorFg;
         if (this.style.transparent) {
           lines[y][x] = createCell(
             colors.blend(attr, baseCell[0]),
             content![ci] ? ch : baseCell[1],
-            truecolorBg,
-            truecolorFg,
+            fillBg,
+            fillFg,
           );
           lines[y].dirty = true;
         } else {
           if (
             attr !== baseCell[0] ||
             ch !== baseCell[1] ||
-            baseCell[2] !== truecolorBg ||
-            baseCell[3] !== truecolorFg
+            baseCell[2] !== fillBg ||
+            baseCell[3] !== fillFg
           ) {
-            lines[y][x] = createCell(attr, ch, truecolorBg, truecolorFg);
+            lines[y][x] = createCell(attr, ch, fillBg, fillFg);
             lines[y].dirty = true;
           }
         }
@@ -2808,7 +2881,37 @@ class Element extends Node {
             this.style.track?.fg || this.style.fg,
             this.style.track?.bg || this.style.bg,
           );
-          this.screen.fillRegion(attr, ch, x, x + 1, yi, yl);
+          const resolvedTrackBg =
+            this.style.track?.bg != null
+              ? typeof this.style.track.bg === "function"
+                ? this.style.track.bg(this)
+                : this.style.track.bg
+              : null;
+          const resolvedTrackFg =
+            this.style.track?.fg != null
+              ? typeof this.style.track.fg === "function"
+                ? this.style.track.fg(this)
+                : this.style.track.fg
+              : null;
+          const trackBg =
+            resolvedTrackBg != null
+              ? toCellColor(resolvedTrackBg, "bg").truecolor
+              : defaultTruecolorBg;
+          const trackFg =
+            resolvedTrackFg != null
+              ? toCellColor(resolvedTrackFg, "fg").truecolor
+              : defaultTruecolorFg;
+          this.screen.fillRegion(
+            attr,
+            ch,
+            x,
+            x + 1,
+            yi,
+            yl,
+            undefined,
+            trackBg,
+            trackFg,
+          );
         }
         ch = this.scrollbar.ch || " ";
         attr = this.sattr(
@@ -2816,9 +2919,34 @@ class Element extends Node {
           this.style.scrollbar?.fg || this.style.fg,
           this.style.scrollbar?.bg || this.style.bg,
         );
+        const resolvedScrollbarBg =
+          this.style.scrollbar?.bg != null
+            ? typeof this.style.scrollbar.bg === "function"
+              ? this.style.scrollbar.bg(this)
+              : this.style.scrollbar.bg
+            : null;
+        const resolvedScrollbarFg =
+          this.style.scrollbar?.fg != null
+            ? typeof this.style.scrollbar.fg === "function"
+              ? this.style.scrollbar.fg(this)
+              : this.style.scrollbar.fg
+            : null;
+        const scrollbarBg =
+          resolvedScrollbarBg != null
+            ? toCellColor(resolvedScrollbarBg, "bg").truecolor
+            : defaultTruecolorBg;
+        const scrollbarFg =
+          resolvedScrollbarFg != null
+            ? toCellColor(resolvedScrollbarFg, "fg").truecolor
+            : defaultTruecolorFg;
         const baseCell = cell as Cell;
-        if (attr !== baseCell[0] || ch !== baseCell[1]) {
-          lines[y][x] = createCell(attr, ch, baseCell[2], baseCell[3]);
+        if (
+          attr !== baseCell[0] ||
+          ch !== baseCell[1] ||
+          baseCell[2] !== scrollbarBg ||
+          baseCell[3] !== scrollbarFg
+        ) {
+          lines[y][x] = createCell(attr, ch, scrollbarBg, scrollbarFg);
           lines[y].dirty = true;
         }
       }

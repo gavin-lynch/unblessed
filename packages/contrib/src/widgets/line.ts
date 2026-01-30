@@ -121,6 +121,7 @@ export class Line extends CanvasWidget {
     options.xLabelPadding = options.xLabelPadding ?? 5;
     options.xPadding = options.xPadding ?? 10;
     options.numYLabels = options.numYLabels ?? 5;
+    // No default padding override (match blessed-contrib Box defaults)
     options.legend = options.legend || {};
     options.wholeNumbersOnly = options.wholeNumbersOnly ?? false;
     options.minY = options.minY ?? 0;
@@ -137,6 +138,7 @@ export class Line extends CanvasWidget {
   }
 
   override setData(data: unknown): void {
+    super.setData(data); // store for resize redraw
     let seriesData = data as LineSeriesData | LineSeriesData[];
 
     if (!this.ctx) {
@@ -151,9 +153,9 @@ export class Line extends CanvasWidget {
     }
 
     const xLabelPadding = this.options.xLabelPadding!;
-    const yLabelPadding = 3;
     let xPadding = this.options.xPadding!;
     const yPadding = 11;
+    const yLabelPadding = 3;
     const c = this.ctx;
     const labels = seriesData[0].x;
 
@@ -231,27 +233,30 @@ export class Line extends CanvasWidget {
       return maxLength;
     };
 
-    // Helper: get X pixel position
+    // Match blessed-contrib: chart left = xPadding, no top offset, same getXPixel/getYPixel
+    const chartLeftPx = xPadding;
+
+    // Helper: get X pixel position (blessed-contrib: (width - xPadding) / n * val + xPadding + 2)
     const getXPixel = (val: number): number => {
+      const n = labels.length;
+      if (n <= 1) return chartLeftPx;
       return (
-        ((this.canvasSize.width - xPadding) / labels.length) * val +
-        xPadding * 1.0 +
-        2
+        ((this.canvasSize.width - xPadding) / n) * val + xPadding + 2
       );
     };
 
-    // Helper: get Y pixel position
+    // Helper: get Y pixel position (blessed-contrib: height - yPadding - (plotHeight / range) * (val - minY) - 2)
     const getYPixel = (val: number, minY: number): number => {
+      const plotHeight = this.canvasSize.height - yPadding;
       let res =
         this.canvasSize.height -
         yPadding -
-        ((this.canvasSize.height - yPadding) / (getMaxY() - minY)) *
-          (val - minY);
-      res -= 2; // Separate baseline and data line
+        (plotHeight / (getMaxY() - minY)) * (val - minY);
+      res -= 2; // Separate baseline and data line (match bc)
       return res;
     };
 
-    // Draw a line series
+    // Draw a line series (lineWidth 1 = single braille stroke, e.g. ⢠⠃ like blessed-contrib)
     const drawLine = (
       values: number[],
       style: { line?: string | number | number[] } | undefined,
@@ -261,16 +266,16 @@ export class Line extends CanvasWidget {
       // getColorCode preserves RGB arrays for truecolor, uses x256 for 256-color (blessed-contrib compatibility)
       const lineColor = lineStyle.line || this.options.style!.line!;
       c.strokeStyle = getColorCode(lineColor) as any;
+      c.lineWidth = 1;
 
-      c.moveTo(0, 0);
       c.beginPath();
-      c.lineTo(getXPixel(0), getYPixel(values[0], minY));
-
+      c.moveTo(getXPixel(0), getYPixel(values[0], minY));
       for (let k = 1; k < values.length; k++) {
         c.lineTo(getXPixel(k), getYPixel(values[k], minY));
       }
 
       c.stroke();
+      c.lineWidth = 1;
     };
 
     // Add legend
@@ -289,7 +294,7 @@ export class Line extends CanvasWidget {
       yLabelIncrement = 1;
     }
 
-    // Draw Y axis labels
+    // Draw Y axis labels (blessed-contrib: xPadding - xLabelPadding)
     const maxY = getMaxY();
     for (let i = this.options.minY!; i < maxY; i += yLabelIncrement) {
       c.fillText(
@@ -311,15 +316,18 @@ export class Line extends CanvasWidget {
       drawLine(series.y, series.style, this.options.minY!);
     }
 
-    // Draw axes
+    // Draw axes (blessed-contrib: xPadding,0 -> xPadding,height-yPadding -> width,height-yPadding)
+    const baselineY = this.canvasSize.height - yPadding;
     c.strokeStyle = this.options.style!.baseline!;
     c.beginPath();
     c.lineTo(xPadding, 0);
-    c.lineTo(xPadding, this.canvasSize.height - yPadding);
-    c.lineTo(this.canvasSize.width, this.canvasSize.height - yPadding);
+    c.lineTo(xPadding, baselineY);
+    c.lineTo(this.canvasSize.width, baselineY);
     c.stroke();
+    c.fillStyle = this.options.style!.text!;
 
-    // Draw X axis labels
+    // Draw X axis labels (blessed-contrib: height - yPadding + yLabelPadding = height - 8)
+    const xLabelY = this.canvasSize.height - yPadding + yLabelPadding;
     const charsAvailable = (this.canvasSize.width - xPadding) / 2;
     const maxLabelsPossible = charsAvailable / (getMaxX() + 2);
     const pointsPerMaxLabel = Math.ceil(
@@ -331,12 +339,9 @@ export class Line extends CanvasWidget {
     }
 
     for (let i = 0; i < labels.length; i += showNthLabel) {
-      if (getXPixel(i) + labels[i].length * 2 <= this.canvasSize.width) {
-        c.fillText(
-          labels[i],
-          getXPixel(i),
-          this.canvasSize.height - yPadding + yLabelPadding,
-        );
+      const x = Math.floor(getXPixel(i));
+      if (x + labels[i].length * 2 <= this.canvasSize.width) {
+        c.fillText(labels[i], x, xLabelY);
       }
     }
   }

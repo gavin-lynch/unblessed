@@ -140,9 +140,11 @@ export class DrawilleCanvas {
   }
 
   /**
-   * Set a pixel at the given position
+   * Set a pixel at the given position.
+   * Uses colorOverride for this pixel when provided (so stroke() can freeze color at stroke time);
+   * otherwise uses this.color (current stroke/fill style).
    */
-  set(x: number, y: number): void {
+  set(x: number, y: number, colorOverride?: ColorInput): void {
     if (!(x >= 0 && x < this.width && y >= 0 && y < this.height)) {
       return;
     }
@@ -151,8 +153,8 @@ export class DrawilleCanvas {
     const mask = BRAILLE_MAP[Math.floor(y) % 4][Math.floor(x) % 2];
 
     this.content[coord] |= mask;
-    // Use unified color converter for ANSI code generation
-    this.colors[coord] = toAnsiCode(this.color, "fg");
+    const color = colorOverride !== undefined ? colorOverride : this.color;
+    this.colors[coord] = toAnsiCode(color, "fg");
     this.chars[coord] = null;
   }
 

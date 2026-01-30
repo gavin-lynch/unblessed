@@ -61,7 +61,7 @@ function updateDonuts() {
   pct += 0.01;
 }
 
-setInterval(updateDonuts, 5);
+setInterval(updateDonuts, 10);
 
 screen.key(["escape", "q", "C-c"], () => {
   screen.destroy();

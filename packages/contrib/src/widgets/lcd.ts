@@ -485,6 +485,7 @@ export class LCD extends CanvasWidget {
   }
 
   override setData(data: unknown): void {
+    super.setData(data);
     this.setDisplay(String(data));
   }
 
