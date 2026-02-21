@@ -8,6 +8,7 @@
  */
 
 import { AnsiTermCanvas, CanvasWidget, type BoxOptions } from "@unblessed/core";
+import { getInnerBoxSize } from "../utils.js";
 
 /**
  * Bar chart data
@@ -71,18 +72,22 @@ export interface BarOptions extends BoxOptions {
 export class Bar extends CanvasWidget {
   override type = "bar";
   declare options: BarOptions;
+  private static readonly LABEL_ROWS_WITH_TEXT = 2;
+  private static readonly LABEL_ROWS_NO_TEXT = 1;
 
   constructor(options: BarOptions = {}) {
     super(options, AnsiTermCanvas);
 
     this.options = options;
     this.options.barWidth = options.barWidth ?? 6;
-    this.options.barSpacing = options.barSpacing ?? 9;
+    this.options.barSpacing = options.barSpacing ?? 1;
 
-    // Ensure minimum spacing between bars
-    if (this.options.barSpacing - this.options.barWidth < 3) {
-      this.options.barSpacing = this.options.barWidth + 3;
+    // Ensure minimum spacing between bars (allow 1-column gaps)
+    /*
+    if (this.options.barSpacing - this.options.barWidth < 1) {
+      this.options.barSpacing = this.options.barWidth + 1;
     }
+    */
 
     this.options.xOffset = options.xOffset ?? 5;
     this.options.showText = options.showText !== false;
@@ -95,9 +100,10 @@ export class Bar extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const { innerWidthChars, innerHeightChars } = getInnerBoxSize(this);
     this.canvasSize = {
-      width: this.width - 2,
-      height: this.height,
+      width: innerWidthChars,
+      height: innerHeightChars,
     };
   }
 
@@ -119,44 +125,43 @@ export class Bar extends CanvasWidget {
       this.options.maxHeight ?? 0,
     );
     let x = this.options.xOffset!;
-    const barY = this.canvasSize.height - 5;
+    const labelRows = this.options.showText
+      ? Bar.LABEL_ROWS_WITH_TEXT
+      : Bar.LABEL_ROWS_NO_TEXT;
+    const barY = this.canvasSize.height - labelRows;
+    const valueRow = barY;
+    const labelRow = barY + 1;
 
     for (let i = 0; i < barData.data.length; i++) {
       const h = Math.round(barY * (barData.data[i] / max));
 
       const barColor = (this.options.barBgColor ?? "blue") as any;
+      const barWidth = this.options.barWidth! + 1;
 
       if (barData.data[i] > 0) {
         // Set strokeStyle which sets the canvas color for fillRect
         c.strokeStyle = barColor;
         // Fill the rectangle - fillRect uses _canvas.set() which uses getBgCode(this.color)
-        c.fillRect(x, barY - h + 1, this.options.barWidth!, h);
+        c.fillRect(x, barY - h + 1, barWidth, h);
       } else {
         c.strokeStyle = "normal";
       }
 
       // Set text background to match bar color, foreground to white
       if (this.options.showText) {
-        // Set background color for text (matching bar color)
         c._canvas.fontBg = barColor;
-        // Set foreground color for text (white)
         c.fillStyle = (this.options.barFgColor ?? "white") as any;
-        c.fillText(
-          barData.data[i].toString(),
-          x + 1,
-          this.canvasSize.height - 4,
-        );
+        c.fillText(barData.data[i].toString(), x + 1, valueRow);
+        c._canvas.fontBg = "normal";
       }
 
       c.strokeStyle = "normal";
-      // Reset background to normal for labels
-      c._canvas.fontBg = "normal";
       c.fillStyle = (this.options.labelColor ?? "white") as any;
       if (this.options.showText) {
-        c.fillText(barData.titles[i], x + 1, this.canvasSize.height - 3);
+        c.fillText(barData.titles[i], x + 1, labelRow);
       }
 
-      x += this.options.barSpacing!;
+      x += this.options.barSpacing! + 1;
     }
   }
 

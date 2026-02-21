@@ -126,7 +126,7 @@ function LineChartDemo() {
             border: 1,
             borderColor: "cyan",
           }}
-          onWidgetAttached={(widget) => {
+          onWidgetAttached={(_widget) => {
             isAttachedRef.current = true;
             // Initial data is set by canvas widget's attach handler
             // For updates, we'll use setData when data changes

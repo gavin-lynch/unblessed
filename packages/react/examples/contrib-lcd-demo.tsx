@@ -77,7 +77,7 @@ function LCDDemo() {
               border: 1,
               borderColor: "green",
             }}
-            onWidgetAttached={(widget) => {
+            onWidgetAttached={(_widget) => {
               isAttachedRef.current = true;
               // Set initial display after attachment
               if (widgetRef.current) {

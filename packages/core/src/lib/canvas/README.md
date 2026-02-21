@@ -273,6 +273,12 @@ ctx._canvas.fontFg = "white";
 ctx._canvas.fontBg = "blue";
 ```
 
+### Compatibility Notes
+
+- `Canvas2DContext.canvas` is writable to support canvas shims that wrap a real context.
+- `stroke()` treats any `lineWidth > 0` as at least 1 pixel so thin strokes still render.
+- `moveTo`/`lineTo` skip non-finite coordinates to avoid invalid path segments.
+
 ## Complete Example
 
 ```typescript

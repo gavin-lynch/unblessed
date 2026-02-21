@@ -120,10 +120,52 @@ export function toColorTag(color: ColorInput): string {
   return toColorTagNew(color);
 }
 
+export function getInnerBoxSize(widget: {
+  width: number;
+  height: number;
+  border?: unknown;
+}): { innerWidthChars: number; innerHeightChars: number } {
+  const borderSize = widget.border ? 2 : 0;
+  return {
+    innerWidthChars: Math.max(1, Math.floor(widget.width - borderSize)),
+    innerHeightChars: Math.max(1, Math.floor(widget.height - borderSize)),
+  };
+}
+
+export function truncateAnsiLines(frame: string, maxWidth: number): string {
+  const ansiRegex = new RegExp("\\x1b\\[[0-9;]*[A-Za-z]", "g");
+  const lines = frame.split("\n");
+  const truncatedLines = lines.map((line) => {
+    const visibleChars = line.replace(ansiRegex, "").length;
+    if (visibleChars <= maxWidth) return line;
+    let result = "";
+    let visibleCount = 0;
+    let i = 0;
+    while (i < line.length && visibleCount < maxWidth) {
+      if (line[i] === "\x1b" && line[i + 1] === "[") {
+        const end = line.indexOf("m", i);
+        if (end !== -1) {
+          result += line.substring(i, end + 1);
+          i = end + 1;
+          continue;
+        }
+      }
+      result += line[i];
+      visibleCount++;
+      i++;
+    }
+    result += "\x1b[39m\x1b[49m";
+    return result;
+  });
+  return truncatedLines.join("\n");
+}
+
 export default {
   mergeRecursive,
   getTypeName,
   abbreviateNumber,
   getColorCode,
   toColorTag,
+  getInnerBoxSize,
+  truncateAnsiLines,
 };

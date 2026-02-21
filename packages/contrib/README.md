@@ -105,6 +105,44 @@ screen.key(["escape", "q", "C-c"], () => process.exit(0));
 screen.render();
 ```
 
+## Sizing and Box Model
+
+Contrib widgets prioritize blessed-contrib compatibility. Dimensions are calculated from the **bordered** box, not full inner padding. Borders reduce the drawable area; padding does not.
+
+Key points:
+
+- Borders reduce the available drawing area; padding is not applied to canvas sizing.
+- Braille-based widgets apply extra internal padding for axes/labels.
+
+### Configurable Chart Padding
+
+Some widgets expose padding offsets so you can tune layout without changing code:
+
+```ts
+// Line
+new Line({
+  chartPaddingX: 12,
+  chartPaddingY: 8,
+});
+
+// Donut
+new Donut({
+  chartPaddingX: 5,
+  chartPaddingY: 12,
+});
+
+// LCD
+new LCD({
+  canvasPaddingX: 8,
+  canvasPaddingY: 12,
+});
+
+// WorldMap
+new WorldMap({
+  mapPaddingX: 12,
+});
+```
+
 ## Widgets
 
 ### Line Chart

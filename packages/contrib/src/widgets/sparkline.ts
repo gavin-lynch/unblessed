@@ -7,6 +7,7 @@
  */
 
 import { Box, type BoxOptions } from "@unblessed/core";
+import { getInnerBoxSize } from "../utils.js";
 
 /**
  * Sparkline data
@@ -121,7 +122,8 @@ export class Sparkline extends Box {
    */
   setData(titles: string[], datasets: number[][]): void {
     let res = "\r\n";
-    const maxWidth = this.width - 2;
+    const { innerWidthChars } = getInnerBoxSize(this);
+    const maxWidth = innerWidthChars;
 
     for (let i = 0; i < titles.length; i++) {
       const titleFg = this.options.style?.titleFg || "white";

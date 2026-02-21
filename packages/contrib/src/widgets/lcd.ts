@@ -13,6 +13,7 @@ import {
   type BoxOptions,
   type Canvas2DContext,
 } from "@unblessed/core";
+import { truncateAnsiLines } from "../utils.js";
 
 /**
  * LCD display options
@@ -34,6 +35,10 @@ export interface LCDOptions extends BoxOptions {
   elementPadding?: number;
   /** Color of active segments (default: 'white') */
   color?: string | number | number[];
+  /** Horizontal canvas padding in braille pixels (default: 8) */
+  canvasPaddingX?: number;
+  /** Vertical canvas padding in braille pixels (default: 12) */
+  canvasPaddingY?: number;
 }
 
 /**
@@ -447,6 +452,8 @@ export class LCD extends CanvasWidget {
     this.options.elementSpacing = options.elementSpacing ?? 4;
     this.options.elementPadding = options.elementPadding ?? 2;
     this.options.color = options.color ?? "white";
+    this.options.canvasPaddingX = options.canvasPaddingX ?? 8;
+    this.options.canvasPaddingY = options.canvasPaddingY ?? 12;
 
     this.on("attach", () => {
       const display = String(this.options.display ?? 1234);
@@ -478,10 +485,24 @@ export class LCD extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const outerWidthChars = Math.max(1, Math.floor(this.width));
+    const outerHeightChars = Math.max(1, Math.floor(this.height));
+    const lcdPaddingX = Math.max(0, this.options.canvasPaddingX ?? 0);
+    const lcdPaddingY = Math.max(0, this.options.canvasPaddingY ?? 0);
     this.canvasSize = {
-      width: this.width * 2 - 8,
-      height: this.height * 4 - 12,
+      width: Math.max(2, outerWidthChars * 2 - lcdPaddingX),
+      height: Math.max(4, outerHeightChars * 4 - lcdPaddingY),
     };
+  }
+
+  protected override getFrameFromCanvas(): string {
+    if (!this._canvas) return "";
+    const frame = this._canvas.frame();
+    const availableWidth = Math.max(
+      1,
+      Math.floor(this.width - (this.border ? 2 : 0)),
+    );
+    return truncateAnsiLines(frame, availableWidth);
   }
 
   override setData(data: unknown): void {

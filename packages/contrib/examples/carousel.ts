@@ -23,7 +23,7 @@ function page1(screen: Screen) {
     label: "Stocks",
   });
 
-  const map = grid.set(1, 2, 2, 2, (opts) => new WorldMap(opts), {
+  const _map = grid.set(1, 2, 2, 2, (opts) => new WorldMap(opts), {
     label: "Servers Location",
   });
 

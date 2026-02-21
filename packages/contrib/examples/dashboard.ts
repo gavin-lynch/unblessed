@@ -40,11 +40,13 @@ const donut = grid.set(8, 8, 4, 2, (opts) => new Donut(opts), {
 const gauge = grid.set(8, 10, 2, 2, (opts) => new Gauge(opts), {
   label: "Storage",
   data: [80, 20],
+  padding: { top: 2, left: 0, right: 0, bottom: 0 },
 });
 
 const gauge_two = grid.set(2, 9, 2, 3, (opts) => new Gauge(opts), {
   label: "Deployment Progress",
   data: 80,
+  padding: { top: 2, left: 0, right: 0, bottom: 0 },
 });
 
 const sparkline = grid.set(10, 10, 2, 2, (opts) => new Sparkline(opts), {

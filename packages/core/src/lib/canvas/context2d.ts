@@ -135,10 +135,15 @@ export type CanvasConstructor = new (
 export class Canvas2DContext {
   /** The underlying canvas buffer */
   readonly _canvas: InnerCanvas;
+  private _canvasRef: unknown = null;
 
   /** Alias for compatibility */
-  get canvas(): InnerCanvas {
-    return this._canvas;
+  get canvas(): unknown {
+    return this._canvasRef ?? this._canvas;
+  }
+
+  set canvas(val: unknown) {
+    this._canvasRef = val;
   }
 
   /** Current transformation matrix */
@@ -314,6 +319,9 @@ export class Canvas2DContext {
    */
   moveTo(x: number, y: number): void {
     const [tx, ty] = transformPoint(this._matrix, x, y);
+    if (!Number.isFinite(tx) || !Number.isFinite(ty)) {
+      return;
+    }
     this._currentPath.push({
       point: [Math.floor(tx), Math.floor(ty)],
       stroke: false,
@@ -325,6 +333,9 @@ export class Canvas2DContext {
    */
   lineTo(x: number, y: number): void {
     const [tx, ty] = transformPoint(this._matrix, x, y);
+    if (!Number.isFinite(tx) || !Number.isFinite(ty)) {
+      return;
+    }
     this._currentPath.push({
       point: [Math.floor(tx), Math.floor(ty)],
       stroke: true,
@@ -339,9 +350,9 @@ export class Canvas2DContext {
    * vertical spacing stays correct.
    */
   stroke(): void {
-    if (this.lineWidth === 0) return;
+    if (this.lineWidth <= 0) return;
 
-    const thick = Math.floor(this.lineWidth);
+    const thick = Math.max(1, Math.floor(this.lineWidth));
     const w = this._canvas.width;
     const h = this._canvas.height;
     // Capture stroke color at stroke time so every pixel gets this color (fixes donut/chart coloring)
@@ -371,14 +382,25 @@ export class Canvas2DContext {
       const nex = this._currentPath[i + 1];
 
       if (nex.stroke) {
-        const points = Array.from(
-          bresenham(cur.point[0], cur.point[1], nex.point[0], nex.point[1]),
-        );
-        for (let j = 0; j < points.length; j++) {
-          const { x, y } = points[j]!;
-          const isEndpoint = j === 0 || j === points.length - 1;
-          const drawWidth = isEndpoint ? 1 : thick >= 2 ? thick : 1;
-          drawBrush(x, y, drawWidth);
+        let firstPoint: { x: number; y: number } | null = null;
+        let lastPoint: { x: number; y: number } | null = null;
+
+        for (const point of bresenham(
+          cur.point[0],
+          cur.point[1],
+          nex.point[0],
+          nex.point[1],
+        )) {
+          if (!firstPoint) firstPoint = point;
+          lastPoint = point;
+          drawBrush(point.x, point.y, thick);
+        }
+
+        if (firstPoint) {
+          drawBrush(firstPoint.x, firstPoint.y, 1);
+        }
+        if (lastPoint && (!firstPoint || lastPoint !== firstPoint)) {
+          drawBrush(lastPoint.x, lastPoint.y, 1);
         }
       }
     }

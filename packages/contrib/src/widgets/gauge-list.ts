@@ -8,6 +8,7 @@
  */
 
 import { AnsiTermCanvas, CanvasWidget, type BoxOptions } from "@unblessed/core";
+import { getInnerBoxSize } from "../utils.js";
 
 /**
  * Stack item for a gauge
@@ -74,6 +75,10 @@ export class GaugeList extends CanvasWidget {
   override type = "gauge";
   declare options: GaugeListOptions;
   gauges: GaugeListItem[] = [];
+  private static readonly INDEX_PADDING = 3;
+  private static readonly BAR_RIGHT_PADDING = 5;
+  private static readonly BAR_HEIGHT_OFFSET = 1;
+  private static readonly LABEL_Y = 3;
 
   constructor(options: GaugeListOptions = {}) {
     super(options, AnsiTermCanvas);
@@ -92,9 +97,10 @@ export class GaugeList extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const { innerWidthChars, innerHeightChars } = getInnerBoxSize(this);
     this.canvasSize = {
-      width: this.width - 2,
-      height: this.height,
+      width: innerWidthChars,
+      height: innerHeightChars,
     };
   }
 
@@ -130,7 +136,7 @@ export class GaugeList extends CanvasWidget {
     const stack = gauge.stack;
     const c = this.ctx!;
 
-    let leftStart = 3;
+    let leftStart = GaugeList.INDEX_PADDING;
     const gaugeHeight = this.options.gaugeHeight!;
     const gaugeSpacing = this.options.gaugeSpacing!;
     const yOffset = offset * (gaugeHeight + gaugeSpacing);
@@ -158,9 +164,15 @@ export class GaugeList extends CanvasWidget {
       c.strokeStyle = strokeColor;
       c.fillStyle = this.options.fill!;
 
-      const width = (percent / 100) * (this.canvasSize.width - 5);
+      const width =
+        (percent / 100) * (this.canvasSize.width - GaugeList.BAR_RIGHT_PADDING);
 
-      c.fillRect(leftStart, yOffset, width, gaugeHeight - 1);
+      c.fillRect(
+        leftStart,
+        yOffset,
+        width,
+        gaugeHeight - GaugeList.BAR_HEIGHT_OFFSET,
+      );
 
       const textLeft = width / 2 - 1;
       const textX = leftStart + textLeft;
@@ -170,7 +182,7 @@ export class GaugeList extends CanvasWidget {
       }
 
       if (gauge.showLabel) {
-        c.fillText(percent + "%", textX, 3);
+        c.fillText(percent + "%", textX, GaugeList.LABEL_Y);
       }
 
       leftStart += width;

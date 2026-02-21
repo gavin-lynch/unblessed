@@ -285,7 +285,11 @@ export class CanvasWidget extends Box {
   protected getFrameFromCanvas(): string {
     if (!this._canvas) return "";
     let frame = this._canvas.frame();
-    const availableWidth = Math.max(1, this.width - this.iwidth - 2);
+    const isCharCanvas = this.canvasType === AnsiTermCanvas;
+    const availableWidth = Math.max(
+      1,
+      this.width - this.iwidth - (isCharCanvas ? 0 : 2),
+    );
     if (availableWidth > 0) {
       const lines = frame.split("\n");
       const truncatedLines = lines.map((line) => {

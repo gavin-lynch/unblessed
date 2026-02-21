@@ -13,7 +13,12 @@ import {
   DrawilleCanvas,
   type BoxOptions,
 } from "@unblessed/core";
-import { abbreviateNumber, getColorCode, toColorTag } from "../utils.js";
+import {
+  abbreviateNumber,
+  getColorCode,
+  toColorTag,
+  truncateAnsiLines,
+} from "../utils.js";
 
 /**
  * Data series for line chart
@@ -67,6 +72,10 @@ export interface LineOptions extends BoxOptions {
   maxY?: number;
   /** Abbreviate large numbers */
   abbreviate?: boolean;
+  /** Horizontal chart padding in braille pixels (default: 12) */
+  chartPaddingX?: number;
+  /** Vertical chart padding in braille pixels (default: 8) */
+  chartPaddingY?: number;
   /** Initial data */
   data?: LineSeriesData | LineSeriesData[];
 }
@@ -121,6 +130,8 @@ export class Line extends CanvasWidget {
     options.xLabelPadding = options.xLabelPadding ?? 5;
     options.xPadding = options.xPadding ?? 10;
     options.numYLabels = options.numYLabels ?? 5;
+    options.chartPaddingX = options.chartPaddingX ?? 12;
+    options.chartPaddingY = options.chartPaddingY ?? 8;
     // No default padding override (match blessed-contrib Box defaults)
     options.legend = options.legend || {};
     options.wholeNumbersOnly = options.wholeNumbersOnly ?? false;
@@ -131,10 +142,24 @@ export class Line extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const outerWidthChars = Math.max(1, Math.floor(this.width));
+    const outerHeightChars = Math.max(1, Math.floor(this.height));
+    const chartPaddingX = Math.max(0, this.options.chartPaddingX ?? 0);
+    const chartPaddingY = Math.max(0, this.options.chartPaddingY ?? 0);
     this.canvasSize = {
-      width: this.width * 2 - 12,
-      height: this.height * 4 - 8,
+      width: Math.max(2, outerWidthChars * 2 - chartPaddingX),
+      height: Math.max(4, outerHeightChars * 4 - chartPaddingY),
     };
+  }
+
+  protected override getFrameFromCanvas(): string {
+    if (!this._canvas) return "";
+    const frame = this._canvas.frame();
+    const availableWidth = Math.max(
+      1,
+      Math.floor(this.width - (this.border ? 2 : 0)),
+    );
+    return truncateAnsiLines(frame, availableWidth);
   }
 
   override setData(data: unknown): void {

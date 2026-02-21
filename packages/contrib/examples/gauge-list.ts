@@ -17,7 +17,7 @@ const grid = new Grid({
   screen: screen,
 });
 
-const gaugeList = grid.set(0, 0, 1, 2, (opts) => new GaugeList(opts), {
+const _gaugeList = grid.set(0, 0, 1, 2, (opts) => new GaugeList(opts), {
   gaugeSpacing: 0,
   gaugeHeight: 1,
   gauges: [

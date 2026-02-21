@@ -88,6 +88,9 @@ export class Diff extends Box {
     super(mergedOptions);
     this.options = mergedOptions;
 
+    this._disableAcs();
+    this.on("attach", () => this._disableAcs());
+
     // Compute or set diff content
     if (this.options.diffString) {
       this.diffContent = this.options.diffString;
@@ -110,6 +113,24 @@ export class Diff extends Box {
           this._renderDiff();
         }
       }, 100);
+    }
+  }
+
+  private _disableAcs(): void {
+    if (!this.screen || !this.screen.program || !this.screen.program.tput) {
+      return;
+    }
+
+    const tput = this.screen.program.tput;
+    tput.brokenACS = true;
+    tput.unicode = true;
+    if (tput.features) {
+      tput.features.unicode = true;
+    }
+
+    const screenAny = this.screen as any;
+    if (typeof screenAny._unicode === "boolean") {
+      screenAny._unicode = true;
     }
   }
 
@@ -193,7 +214,7 @@ export class Diff extends Box {
           ) {
             effectiveWidth = runtime.process.stdout.columns;
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore
         }
       }
@@ -354,7 +375,7 @@ export class Diff extends Box {
           ) {
             contentWidth = runtime.process.stdout.columns;
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore errors
         }
       }
@@ -424,19 +445,40 @@ export class Diff extends Box {
       // Apply syntax highlighting if enabled and language detected
       if (this.options.syntaxHighlight && language && content.trim()) {
         try {
-          const highlightTheme = this._convertHighlightTheme(
-            this.options.highlightTheme,
-          );
+          if (!process.env.NO_COLOR) {
+            if (!process.env.FORCE_COLOR) {
+              process.env.FORCE_COLOR = "1";
+            }
+            const supportsTruecolor = this._supportsTruecolor();
+            const desiredLevel = supportsTruecolor ? 3 : 1;
+            if (chalk.level < desiredLevel) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              chalk.level = desiredLevel;
+            }
+          }
+          const highlightTheme = this._getHighlightTheme();
           const highlighted = highlight(content, {
             language,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             theme: highlightTheme as any,
             ignoreIllegals: true,
           });
-          content = highlighted;
-        } catch (e) {
-          // If highlighting fails, use original content
-          // (e.g., language not supported)
+          const sanitized = this._sanitizeHighlightedContent(highlighted);
+          const hasEsc = !!sanitized && sanitized.includes("\x1b");
+          const hasBare = !!sanitized && /\[(\d+(?:;\d+)*)m/.test(sanitized);
+          if (hasBare && !hasEsc) {
+            const normalized = sanitized.replace(
+              /\[(\d+(?:;\d+)*)m/g,
+              "\x1b[$1m",
+            );
+            content = normalized;
+          } else if (sanitized && hasEsc) {
+            content = sanitized;
+          } else {
+            // No valid highlight output; leave content as plain text.
+          }
+        } catch (_e) {
+          // Highlight failed; leave content as plain text.
         }
       }
 
@@ -617,7 +659,7 @@ export class Diff extends Box {
           }
           converted[key] = result;
         }
-      } catch (e) {
+      } catch (_e) {
         // Skip invalid theme entries
       }
     }
@@ -625,14 +667,104 @@ export class Diff extends Box {
     return converted;
   }
 
+  private _getHighlightTheme(): Record<string, (text: string) => string> {
+    const base = this._getDefaultHighlightTheme();
+    if (!this.options.highlightTheme) return base;
+
+    const converted = this._convertHighlightTheme(this.options.highlightTheme);
+    return { ...base, ...(converted || {}) } as Record<
+      string,
+      (text: string) => string
+    >;
+  }
+
+  private _getDefaultHighlightTheme(): Record<
+    string,
+    (text: string) => string
+  > {
+    const color = (r: number, g: number, b: number) => (text: string) =>
+      `\x1b[38;2;${r};${g};${b}m${text}\x1b[39m`;
+
+    return {
+      keyword: color(120, 170, 255),
+      built_in: color(110, 200, 220),
+      type: color(110, 200, 220),
+      literal: color(120, 170, 255),
+      number: color(120, 200, 200),
+      regexp: color(220, 120, 120),
+      string: color(220, 130, 130),
+      subst: (text: string) => text,
+      symbol: (text: string) => text,
+      class: color(120, 170, 255),
+      function: color(210, 190, 120),
+      title: (text: string) => text,
+      params: (text: string) => text,
+      comment: color(150, 150, 150),
+      doctag: color(150, 150, 150),
+      meta: color(150, 150, 150),
+      "meta-keyword": (text: string) => text,
+      "meta-string": (text: string) => text,
+      section: (text: string) => text,
+      tag: color(150, 150, 150),
+      name: color(120, 170, 255),
+      "builtin-name": (text: string) => text,
+      attr: color(110, 200, 220),
+      attribute: (text: string) => text,
+      variable: (text: string) => text,
+      bullet: (text: string) => text,
+      code: (text: string) => text,
+      emphasis: (text: string) => text,
+      strong: (text: string) => text,
+      formula: (text: string) => text,
+      link: (text: string) => text,
+      quote: (text: string) => text,
+      "selector-tag": (text: string) => text,
+      "selector-id": (text: string) => text,
+      "selector-class": (text: string) => text,
+      "selector-attr": (text: string) => text,
+      "selector-pseudo": (text: string) => text,
+      "template-tag": (text: string) => text,
+      "template-variable": (text: string) => text,
+      addition: color(120, 200, 140),
+      deletion: color(200, 120, 120),
+      default: (text: string) => text,
+    };
+  }
+
   /**
    * Get length of ANSI escape codes in a string
    */
   private _getAnsiLength(str: string): number {
-    // eslint-disable-next-line no-control-regex
-    const ansiRegex = /\x1B\[[0-9;]*[A-Za-z]/g;
+    const ansiRegex = new RegExp("\\x1B\\[[0-9;]*[A-Za-z]", "g");
     const matches = str.match(ansiRegex);
     return matches ? matches.join("").length : 0;
+  }
+
+  /**
+   * Remove non-SGR control sequences from highlighted output.
+   */
+  private _sanitizeHighlightedContent(text: string): string {
+    if (!text) return text;
+
+    const oscRegex = new RegExp("\\x1b\\][\\s\\S]*?(?:\\x07|\\x1b\\\\)", "g");
+    const charsetRegex = new RegExp("\\x1b[\\(\\)][0-9A-Za-z]", "g");
+    const singleShiftRegex = new RegExp("\\x1b[NO]", "g");
+    const nonSgrEscRegex = new RegExp("\\x1b(?!\\[[0-9;]*m)", "g");
+    const c0Regex = new RegExp("[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f\\x7f]", "g");
+    const c1Regex = new RegExp("[\\x80-\\x9f]", "g");
+
+    return (
+      text
+        // Remove OSC and other non-SGR escapes that can corrupt charset state
+        .replace(oscRegex, "")
+        .replace(charsetRegex, "")
+        .replace(singleShiftRegex, "")
+        // Strip any remaining ESC that is not part of SGR
+        .replace(nonSgrEscRegex, "")
+        // Drop other control characters (C0/C1)
+        .replace(c0Regex, "")
+        .replace(c1Regex, "")
+    );
   }
 
   /**

@@ -13,7 +13,7 @@ import {
   CanvasWidget,
   type BoxOptions,
 } from "@unblessed/core";
-import { abbreviateNumber, toColorTag } from "../utils.js";
+import { abbreviateNumber, getInnerBoxSize, toColorTag } from "../utils.js";
 
 /**
  * Stacked bar chart data
@@ -90,6 +90,9 @@ export interface StackedBarOptions extends BoxOptions {
 export class StackedBar extends CanvasWidget {
   override type = "bar";
   declare options: StackedBarOptions;
+  private static readonly BAR_TOP_PADDING = 2;
+  private static readonly BORDER_PADDING = 2;
+  private static readonly LABEL_PADDING = 1;
   private legend: Box | null = null;
 
   constructor(options: StackedBarOptions = {}) {
@@ -99,9 +102,9 @@ export class StackedBar extends CanvasWidget {
     this.options.barWidth = options.barWidth ?? 6;
     this.options.barSpacing = options.barSpacing ?? 9;
 
-    // Ensure minimum spacing
-    if (this.options.barSpacing - this.options.barWidth < 3) {
-      this.options.barSpacing = this.options.barWidth + 3;
+    // Ensure minimum spacing (allow 1-column gaps)
+    if (this.options.barSpacing - this.options.barWidth < 1) {
+      this.options.barSpacing = this.options.barWidth + 1;
     }
 
     this.options.xOffset = options.xOffset ?? 5;
@@ -117,9 +120,10 @@ export class StackedBar extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const { innerWidthChars, innerHeightChars } = getInnerBoxSize(this);
     this.canvasSize = {
-      width: this.width - 2,
-      height: this.height,
+      width: innerWidthChars,
+      height: innerHeightChars,
     };
   }
 
@@ -159,7 +163,7 @@ export class StackedBar extends CanvasWidget {
         maxBarValue,
         bars.barCategory[i],
       );
-      x += this.options.barSpacing!;
+      x += this.options.barSpacing! + 1;
     }
 
     this.addLegend(bars, x);
@@ -172,9 +176,10 @@ export class StackedBar extends CanvasWidget {
     maxBarValue: number,
     category: string,
   ): void {
-    const BUFFER_FROM_TOP = 2;
-    const BUFFER_FROM_BOTTOM =
-      (this.border ? 2 : 0) + (this.options.showText ? 1 : 0);
+    const BUFFER_FROM_TOP = StackedBar.BAR_TOP_PADDING;
+    const borderPadding = this.border ? StackedBar.BORDER_PADDING : 0;
+    const labelPadding = this.options.showText ? StackedBar.LABEL_PADDING : 0;
+    const BUFFER_FROM_BOTTOM = borderPadding + labelPadding;
 
     const c = this.ctx!;
 
@@ -194,8 +199,8 @@ export class StackedBar extends CanvasWidget {
     );
 
     // Start painting from bottom of bar, section by section
-    // Bars should end one row above the labels, so subtract 1 from the bottom
-    let y = maxBarHeight + BUFFER_FROM_TOP - 1;
+    const barBottom = this.canvasSize.height - BUFFER_FROM_BOTTOM - 1;
+    let y = barBottom;
     let availableBarHeight = currentBarHeight;
 
     for (let i = 0; i < bar.length; i++) {
@@ -223,6 +228,7 @@ export class StackedBar extends CanvasWidget {
     bg: any,
   ): number {
     const c = this.ctx!;
+    const barWidth = this.options.barWidth! + 1;
 
     const currStackHeight =
       currentBarHeight <= 0
@@ -235,10 +241,10 @@ export class StackedBar extends CanvasWidget {
     c.strokeStyle = bg as any;
 
     if (currStackHeight > 0) {
-      const calcY = y - currStackHeight;
+      const calcY = y - currStackHeight + 1;
       const calcHeight = currStackHeight;
 
-      c.fillRect(x, calcY, this.options.barWidth!, calcHeight);
+      c.fillRect(x, calcY, barWidth, calcHeight);
 
       // Set text background to match bar color, foreground to white
       if (this.options.showText) {
@@ -247,10 +253,11 @@ export class StackedBar extends CanvasWidget {
         // Set foreground color for text (white by default, or user-specified)
         c.fillStyle = (this.options.barFgColor ?? "white") as any;
         const str = abbreviateNumber(data);
+        const textY = calcY + Math.ceil((calcHeight - 1) / 2);
         c.fillText(
           str,
-          Math.floor(x + this.options.barWidth! / 2 + str.length / 2),
-          calcY + Math.round(calcHeight / 2),
+          Math.floor(x + barWidth / 2 + str.length / 2) - 1,
+          textY,
         );
         // Reset background after text
         c._canvas.fontBg = "normal";
