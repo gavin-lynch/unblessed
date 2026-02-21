@@ -248,6 +248,14 @@ class Screen extends Node {
     this._dblclickTimeout = options.dblclickTimeout ?? 400;
 
     this._unicode = this.tput.unicode || this.tput.numbers.U8 === 1;
+    const envUtf8 =
+      /UTF-?8/i.test(getEnvVar("LANG") || "") ||
+      /UTF-?8/i.test(getEnvVar("LC_ALL") || "") ||
+      /UTF-?8/i.test(getEnvVar("LC_CTYPE") || "");
+    if (envUtf8) {
+      this._unicode = true;
+      this.tput.unicode = true;
+    }
     this.fullUnicode = !!(this.options.fullUnicode && this._unicode);
 
     this.dattr = (0 << 18) | (0x1ff << 9) | 0x1ff;
@@ -256,11 +264,23 @@ class Screen extends Node {
 
     // Capture screen reference for position getters
     const self = this;
+    this.left = 0;
+    this.aleft = 0;
+    this.rleft = 0;
+    this.right = 0;
+    this.aright = 0;
+    this.rright = 0;
+    this.top = 0;
+    this.atop = 0;
+    this.rtop = 0;
+    this.bottom = 0;
+    this.abottom = 0;
+    this.rbottom = 0;
     this.position = {
-      left: (this.left = this.aleft = this.rleft = 0),
-      right: (this.right = this.aright = this.rright = 0),
-      top: (this.top = this.atop = this.rtop = 0),
-      bottom: (this.bottom = this.abottom = this.rbottom = 0),
+      left: this.left,
+      right: this.right,
+      top: this.top,
+      bottom: this.bottom,
       get height() {
         return self.height;
       },
@@ -961,7 +981,7 @@ class Screen extends Node {
    * Reallocate the screen buffers and clear the screen.
    */
   realloc(): void {
-    return this.alloc(true);
+    this.alloc(true);
   }
 
   /**
@@ -1717,7 +1737,7 @@ class Screen extends Node {
    * @param bottom - Bottom of scroll region
    */
   insertBottom(top: number, bottom: number): void {
-    return this.deleteLine(1, top, top, bottom);
+    this.deleteLine(1, top, top, bottom);
   }
 
   /**
@@ -1726,7 +1746,7 @@ class Screen extends Node {
    * @param bottom - Bottom of scroll region
    */
   insertTop(top: number, bottom: number): void {
-    return this.insertLine(1, top, top, bottom);
+    this.insertLine(1, top, top, bottom);
   }
 
   /**
@@ -1735,7 +1755,7 @@ class Screen extends Node {
    * @param bottom - Bottom of scroll region
    */
   deleteBottom(_top: number, bottom: number): void {
-    return this.clearRegion(0, this.width, bottom, bottom);
+    this.clearRegion(0, this.width, bottom, bottom);
   }
 
   /**
@@ -1745,7 +1765,7 @@ class Screen extends Node {
    */
   deleteTop(top: number, bottom: number): void {
     // Same as: return this.insertBottom(top, bottom);
-    return this.deleteLine(1, top, top, bottom);
+    this.deleteLine(1, top, top, bottom);
   }
 
   /**
@@ -1768,17 +1788,26 @@ class Screen extends Node {
     }
 
     if (pos.xi <= 0 && pos.xl >= this.width) {
-      return (pos._cleanSides = true);
+      pos._cleanSides = true;
+      return true;
     }
 
     if (this.options.fastCSR) {
       // Maybe just do this instead of parsing.
-      if (pos.yi < 0) return (pos._cleanSides = false);
-      if (pos.yl > this.height) return (pos._cleanSides = false);
-      if (this.width - (pos.xl - pos.xi) < 40) {
-        return (pos._cleanSides = true);
+      if (pos.yi < 0) {
+        pos._cleanSides = false;
+        return false;
       }
-      return (pos._cleanSides = false);
+      if (pos.yl > this.height) {
+        pos._cleanSides = false;
+        return false;
+      }
+      if (this.width - (pos.xl - pos.xi) < 40) {
+        pos._cleanSides = true;
+        return true;
+      }
+      pos._cleanSides = false;
+      return false;
     }
 
     if (!this.options.smartCSR) {
@@ -2004,6 +2033,8 @@ class Screen extends Node {
       let termTruecolorBg: [number, number, number] | null = null;
       let termTruecolorFg: [number, number, number] | null = null;
       let termFlags: number = (this.dattr >> 18) & 0x1ff;
+      let termAttrFg: number = (this.dattr >> 9) & 0x1ff;
+      let termAttrBg: number = this.dattr & 0x1ff;
 
       for (x = 0; x < line.length; x++) {
         data = line[x][0];
@@ -2160,6 +2191,8 @@ class Screen extends Node {
         const hasTruecolorBg = truecolorBg !== null;
         const hasTruecolorFg = truecolorFg !== null;
         const desiredFlags = (data >> 18) & 0x1ff;
+        const desiredAttrBg = data & 0x1ff;
+        const desiredAttrFg = (data >> 9) & 0x1ff;
 
         if (hasTruecolorBg || hasTruecolorFg) {
           const desiredTcBg = truecolorBg;
@@ -2167,12 +2200,16 @@ class Screen extends Node {
           const needsUpdate =
             desiredFlags !== termFlags ||
             !sameTruecolor(desiredTcBg, termTruecolorBg) ||
-            !sameTruecolor(desiredTcFg, termTruecolorFg);
+            !sameTruecolor(desiredTcFg, termTruecolorFg) ||
+            (!desiredTcBg && desiredAttrBg !== termAttrBg) ||
+            (!desiredTcFg && desiredAttrFg !== termAttrFg);
 
           if (needsUpdate) {
             // Reset and emit a full SGR for flags + truecolor.
             out += "\x1b[m";
             attr = this.dattr;
+            termAttrFg = (this.dattr >> 9) & 0x1ff;
+            termAttrBg = this.dattr & 0x1ff;
 
             const parts: string[] = [];
             if (desiredFlags & 1) parts.push("1");
@@ -2191,6 +2228,38 @@ class Screen extends Node {
                 `38;2;${desiredTcFg[0]};${desiredTcFg[1]};${desiredTcFg[2]}`,
               );
             }
+            if (!desiredTcBg || !desiredTcFg) {
+              if (!desiredTcBg && desiredAttrBg !== 0x1ff) {
+                let bg = this._reduceColor(desiredAttrBg);
+                if (bg < 16) {
+                  if (bg < 8) {
+                    bg += 40;
+                  } else {
+                    bg -= 8;
+                    bg += 100;
+                  }
+                  parts.push(String(bg));
+                } else {
+                  parts.push(`48;5;${bg}`);
+                }
+                termAttrBg = desiredAttrBg;
+              }
+              if (!desiredTcFg && desiredAttrFg !== 0x1ff) {
+                let fg = this._reduceColor(desiredAttrFg);
+                if (fg < 16) {
+                  if (fg < 8) {
+                    fg += 30;
+                  } else {
+                    fg -= 8;
+                    fg += 90;
+                  }
+                  parts.push(String(fg));
+                } else {
+                  parts.push(`38;5;${fg}`);
+                }
+                termAttrFg = desiredAttrFg;
+              }
+            }
             if (parts.length) {
               out += `\x1b[${parts.join(";")}m`;
             }
@@ -2198,6 +2267,8 @@ class Screen extends Node {
             termFlags = desiredFlags;
             termTruecolorBg = desiredTcBg;
             termTruecolorFg = desiredTcFg;
+            if (desiredTcBg) termAttrBg = desiredAttrBg;
+            if (desiredTcFg) termAttrFg = desiredAttrFg;
           }
 
           out += ch;
@@ -2212,6 +2283,8 @@ class Screen extends Node {
             termTruecolorBg = null;
             termTruecolorFg = null;
             termFlags = (this.dattr >> 18) & 0x1ff;
+            termAttrFg = (this.dattr >> 9) & 0x1ff;
+            termAttrBg = this.dattr & 0x1ff;
             attr = this.dattr;
           }
           if (attr !== this.dattr) {
@@ -2292,6 +2365,8 @@ class Screen extends Node {
           // Any non-truecolor SGR resets truecolor mode.
           termTruecolorBg = null;
           termTruecolorFg = null;
+          termAttrBg = data & 0x1ff;
+          termAttrFg = (data >> 9) & 0x1ff;
         }
 
         // If we find a double-width char, eat the next character which should be
@@ -2341,9 +2416,14 @@ class Screen extends Node {
         // supports UTF8, but I imagine it's unlikely.
         // Maybe remove !this.tput.unicode check, however,
         // this seems to be the way ncurses does it.
+        const envUtf8 =
+          /UTF-?8/i.test(getEnvVar("LANG") || "") ||
+          /UTF-?8/i.test(getEnvVar("LC_ALL") || "") ||
+          /UTF-?8/i.test(getEnvVar("LC_CTYPE") || "");
+        const useAcs = !envUtf8 && !this._unicode && !this.tput.brokenACS;
         if (
+          useAcs &&
           this.tput.strings.enter_alt_charset_mode &&
-          !this.tput.brokenACS &&
           (this.tput.acscr[ch] || acs)
         ) {
           // Fun fact: even if this.tput.brokenACS wasn't checked here,

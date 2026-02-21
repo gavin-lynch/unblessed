@@ -61,7 +61,7 @@ const explorer: any = {
       } else {
         return self.childrenContent;
       }
-    } catch (e) {}
+    } catch (_e) {}
     return result;
   },
 };

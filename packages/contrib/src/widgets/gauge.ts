@@ -8,6 +8,7 @@
  */
 
 import { AnsiTermCanvas, CanvasWidget, type BoxOptions } from "@unblessed/core";
+import { getInnerBoxSize } from "../utils.js";
 
 /**
  * Stack item for stacked gauge
@@ -75,6 +76,8 @@ export class Gauge extends CanvasWidget {
   declare options: GaugeOptions;
   private _percent: number = 0;
   private _stack: (number | GaugeStackItem)[] | null = null;
+  private static readonly BAR_MAX_HEIGHT = 3;
+  private static readonly BAR_RIGHT_PADDING = 3;
 
   constructor(options: GaugeOptions = {}) {
     super(options, AnsiTermCanvas);
@@ -97,9 +100,10 @@ export class Gauge extends CanvasWidget {
   }
 
   override calcSize(): void {
+    const { innerWidthChars, innerHeightChars } = getInnerBoxSize(this);
     this.canvasSize = {
-      width: this.width - 2,
-      height: this.height,
+      width: innerWidthChars,
+      height: innerHeightChars,
     };
   }
 
@@ -138,16 +142,15 @@ export class Gauge extends CanvasWidget {
       percent = percent * 100;
     }
 
-    const width = (percent / 100) * (this.canvasSize.width - 3);
-    c.fillRect(1, 2, width, 2);
-
-    const textX = 7;
-    if (width < textX) {
-      c.strokeStyle = "normal";
-    }
+    const width =
+      (percent / 100) * (this.canvasSize.width - Gauge.BAR_RIGHT_PADDING);
+    const { barTop, barHeight, labelY } = this._getBarGeometry();
+    const barWidth = Math.max(0, Math.floor(width));
+    const barStartX = 1;
+    c.fillRect(barStartX, barTop, barWidth, barHeight);
 
     if (this.options.showLabel) {
-      c.fillText(Math.round(percent) + "%", textX, 3);
+      this._renderLabel(`${Math.round(percent)}%`, barStartX, barWidth, labelY);
     }
   }
 
@@ -191,17 +194,20 @@ export class Gauge extends CanvasWidget {
         percent = percent * 100;
       }
 
-      const width = (percent / 100) * (this.canvasSize.width - 3);
-      c.fillRect(leftStart, 2, width, 2);
-
-      const textX = leftStart + width / 2 - 1;
-
-      if (leftStart + width < textX) {
-        c.strokeStyle = "normal";
-      }
+      const width =
+        (percent / 100) * (this.canvasSize.width - Gauge.BAR_RIGHT_PADDING);
+      const { barTop, barHeight, labelY } = this._getBarGeometry();
+      const barWidth = Math.max(0, Math.floor(width));
+      const barStartX = Math.floor(leftStart);
+      c.fillRect(barStartX, barTop, barWidth, barHeight);
 
       if (this.options.showLabel) {
-        c.fillText(percent + "%", textX, 3);
+        this._renderLabel(
+          `${Math.round(percent)}%`,
+          barStartX,
+          barWidth,
+          labelY,
+        );
       }
 
       leftStart += width;
@@ -213,6 +219,50 @@ export class Gauge extends CanvasWidget {
    */
   getOptionsPrototype(): GaugeOptions {
     return { percent: 10 };
+  }
+
+  private _getBarGeometry(): {
+    barTop: number;
+    barHeight: number;
+    labelY: number;
+  } {
+    const barHeight = Math.max(
+      1,
+      Math.min(Gauge.BAR_MAX_HEIGHT, this.canvasSize.height),
+    );
+    const barTop = 0;
+    const labelInside = Math.min(
+      this.canvasSize.height - 1,
+      barTop + Math.floor(barHeight / 2),
+    );
+    const labelY = labelInside;
+
+    return { barTop, barHeight, labelY };
+  }
+
+  private _renderLabel(
+    label: string,
+    barStartX: number,
+    barWidth: number,
+    labelY: number,
+  ): void {
+    if (!this.ctx || barWidth <= 0) return;
+    const c = this.ctx;
+    const maxLabelWidth = Math.max(0, barWidth);
+    if (maxLabelWidth === 0) return;
+
+    let text = label;
+    if (text.length > maxLabelWidth) {
+      text = text.slice(0, maxLabelWidth);
+    }
+    if (!text) return;
+
+    const barEndX = barStartX + barWidth - 1;
+    const centeredX = barStartX + Math.floor((barWidth - text.length) / 2);
+    const maxStartX = barEndX - text.length + 1;
+    const textX = Math.max(barStartX, Math.min(centeredX, maxStartX));
+
+    c.fillText(text, textX, labelY);
   }
 }
 

@@ -207,6 +207,42 @@ describe("Gauge", () => {
   });
 });
 
+describe("Box model sizing", () => {
+  it("should honor inner box metrics for gauge", async () => {
+    const screen = new Screen({ width: 80, height: 24 });
+    const gauge = new Gauge({
+      parent: screen,
+      width: 20,
+      height: 6,
+      border: { type: "line" },
+      padding: 1,
+    });
+
+    screen.append(gauge);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(gauge.canvasSize).toEqual({ width: 18, height: 4 });
+    screen.destroy();
+  });
+
+  it("should honor inner box metrics for line chart", async () => {
+    const screen = new Screen({ width: 80, height: 24 });
+    const line = new Line({
+      parent: screen,
+      width: 20,
+      height: 6,
+      border: { type: "line" },
+      padding: 1,
+    });
+
+    screen.append(line);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(line.canvasSize).toEqual({ width: 28, height: 16 });
+    screen.destroy();
+  });
+});
+
 describe("Donut", () => {
   it("should create a Donut chart", () => {
     const screen = new Screen({ width: 80, height: 24 });

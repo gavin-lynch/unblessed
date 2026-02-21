@@ -8,7 +8,7 @@
  */
 
 import { CanvasWidget, DrawilleCanvas, type BoxOptions } from "@unblessed/core";
-import { getColorCode } from "../utils.js";
+import { getColorCode, truncateAnsiLines } from "../utils.js";
 
 /**
  * Donut chart data item
@@ -42,6 +42,26 @@ export interface DonutOptions extends BoxOptions {
   yPadding?: number;
   /** Color for remaining portion (default: 'black') */
   remainColor?: string | number | number[];
+  /** Dimmer factor for remaining portion when color is RGB (0-1) */
+  remainOpacity?: number;
+  /** Pixel brush size for arc drawing (default: 1) */
+  brushSize?: number;
+  /** Number of segments for arc smoothing (default: 370) */
+  points?: number;
+  /** Start angle in degrees (default: -90) */
+  startAngle?: number;
+  /** Horizontal offset for value text (default: 3) */
+  valueOffsetX?: number;
+  /** Vertical offset for value text (default: 0) */
+  valueOffsetY?: number;
+  /** Horizontal offset for label text (default: 3) */
+  labelOffsetX?: number;
+  /** Vertical offset for label text (default: 5) */
+  labelOffsetY?: number;
+  /** Horizontal chart padding in braille pixels (default: 5) */
+  chartPaddingX?: number;
+  /** Vertical chart padding in braille pixels (default: 12) */
+  chartPaddingY?: number;
   /** Initial data */
   data?: DonutData[];
 }
@@ -90,6 +110,16 @@ export class Donut extends CanvasWidget {
     this.options.spacing = options.spacing ?? 2;
     this.options.yPadding = options.yPadding ?? 2;
     this.options.remainColor = options.remainColor ?? "black";
+    this.options.remainOpacity = options.remainOpacity;
+    this.options.brushSize = options.brushSize ?? 1;
+    this.options.points = options.points ?? 370;
+    this.options.startAngle = options.startAngle ?? -90;
+    this.options.valueOffsetX = options.valueOffsetX ?? 3;
+    this.options.valueOffsetY = options.valueOffsetY ?? 0;
+    this.options.labelOffsetX = options.labelOffsetX ?? 3;
+    this.options.labelOffsetY = options.labelOffsetY ?? 5;
+    this.options.chartPaddingX = options.chartPaddingX ?? 5;
+    this.options.chartPaddingY = options.chartPaddingY ?? 12;
     this.options.data = options.data ?? [];
 
     this.on("attach", () => {
@@ -98,23 +128,30 @@ export class Donut extends CanvasWidget {
   }
 
   override calcSize(): void {
-    // Size the canvas to the *inner* drawable area so the rendered frame
-    // doesn't get truncated by Box borders/labels.
-    const innerWidthChars = Math.max(1, Math.floor(this.width - this.iwidth));
-    const innerHeightChars = Math.max(
-      1,
-      Math.floor(this.height - this.iheight),
-    );
+    const outerWidthChars = Math.max(1, Math.floor(this.width));
+    const outerHeightChars = Math.max(1, Math.floor(this.height));
+    const donutPaddingX = Math.max(0, this.options.chartPaddingX ?? 0);
+    const donutPaddingY = Math.max(0, this.options.chartPaddingY ?? 0);
+    let width = Math.round(outerWidthChars * 2 - donutPaddingX);
+    let height = outerHeightChars * 4 - donutPaddingY;
 
-    // DrawilleCanvas uses 2x4 pixels per character cell.
-    const width = Math.max(2, innerWidthChars * 2);
-    const height = Math.max(4, innerHeightChars * 4);
+    if (width % 2 === 1) width--;
+    if (height % 4 !== 1) height += height % 4;
 
-    // Ensure valid braille dimensions.
     this.canvasSize = {
-      width: Math.floor(width / 2) * 2,
-      height: Math.floor(height / 4) * 4,
+      width: Math.max(2, width),
+      height: Math.max(4, height),
     };
+  }
+
+  protected override getFrameFromCanvas(): string {
+    if (!this._canvas) return "";
+    const frame = this._canvas.frame();
+    const availableWidth = Math.max(
+      1,
+      Math.floor(this.width - (this.border ? 2 : 0)),
+    );
+    return truncateAnsiLines(frame, availableWidth);
   }
 
   override setData(data: unknown): void {
@@ -149,6 +186,33 @@ export class Donut extends CanvasWidget {
     const radius = this.options.radius!;
     const arcWidth = this.options.arcWidth!;
     const remainColor = this.options.remainColor!;
+    const brushSize = Math.max(1, Math.round(this.options.brushSize ?? 1));
+    const points = Math.max(4, Math.round(this.options.points ?? 370));
+    const startAngle = this.options.startAngle ?? -90;
+    const valueOffsetX = this.options.valueOffsetX ?? 3;
+    const valueOffsetY = this.options.valueOffsetY ?? 0;
+    const labelOffsetX = this.options.labelOffsetX ?? 3;
+    const labelOffsetY = this.options.labelOffsetY ?? 5;
+
+    const applyOpacity = (
+      color: string | number | number[],
+      opacity?: number,
+    ): string | number | number[] => {
+      if (opacity === undefined) return color;
+      if (!Array.isArray(color)) return color;
+      const [r, g, b] = color;
+      const alpha = Math.max(0, Math.min(1, opacity));
+      return [
+        Math.round(r * alpha),
+        Math.round(g * alpha),
+        Math.round(b * alpha),
+      ];
+    };
+
+    const remainColorAdjusted = applyOpacity(
+      remainColor,
+      this.options.remainOpacity,
+    );
 
     const yOffset = this.options.yPadding ?? 0;
 
@@ -166,7 +230,6 @@ export class Donut extends CanvasWidget {
       const canvas = c._canvas as any;
       if (!canvas || typeof canvas.set !== "function") return;
 
-      const points = 370;
       const slice = (2 * PI) / points;
       const p =
         percent >= 1 ? points : Math.max(0, Math.min(points, percent * points));
@@ -182,13 +245,15 @@ export class Donut extends CanvasWidget {
         const sy = y < ey ? 1 : -1;
         let err = dx - dy;
         for (;;) {
-          // Slightly thicken the arc so it reads as a smooth ring in braille.
-          // A 2x2 brush in pixel-space densifies the curve without needing
-          // expensive path stroking.
-          canvas.set(x, y, color);
-          canvas.set(x + 1, y, color);
-          canvas.set(x, y + 1, color);
-          canvas.set(x + 1, y + 1, color);
+          if (brushSize === 1) {
+            canvas.set(x, y, color);
+          } else {
+            for (let by = 0; by < brushSize; by++) {
+              for (let bx = 0; bx < brushSize; bx++) {
+                canvas.set(x + bx, y + by, color);
+              }
+            }
+          }
           if (x === ex && y === ey) break;
           const e2 = 2 * err;
           if (e2 > -dy) {
@@ -204,11 +269,11 @@ export class Donut extends CanvasWidget {
 
       for (let s = Math.max(0, Math.floor(r - width)); s < Math.floor(r); s++) {
         if (p <= 0) continue;
-        // Start at -90 degrees.
-        let prevX = Math.round(cx + s * cos(slice * (0 - 90)));
-        let prevY = Math.round(cy + s * sin(slice * (0 - 90)));
+        // Start at configured angle.
+        let prevX = Math.round(cx + s * cos(slice * (0 + startAngle)));
+        let prevY = Math.round(cy + s * sin(slice * (0 + startAngle)));
         for (let i = 1; i <= Math.floor(p); i++) {
-          const a = slice * (i - 90);
+          const a = slice * (i + startAngle);
           const x = Math.round(cx + s * cos(a));
           const y = Math.round(cy + s * sin(a));
           plotLine(prevX, prevY, x, y);
@@ -217,7 +282,7 @@ export class Donut extends CanvasWidget {
         }
         // Fractional tail for smooth animation.
         if (p < points && p !== Math.floor(p)) {
-          const a = slice * (p - 90);
+          const a = slice * (p + startAngle);
           const x = Math.round(cx + s * cos(a));
           const y = Math.round(cy + s * sin(a));
           plotLine(prevX, prevY, x, y);
@@ -241,7 +306,7 @@ export class Donut extends CanvasWidget {
       percentAltNumber?: number,
     ): void => {
       // Draw background ring (full circle in remainColor)
-      makeRound(1, r, width, cxx, mid, remainColor);
+      makeRound(1, r, width, cxx, mid, remainColorAdjusted);
       // Draw filled portion (arc 0..percent in segment color)
       makeRound(percent, r, width, cxx, mid, color);
 
@@ -254,8 +319,8 @@ export class Donut extends CanvasWidget {
         ptext,
         cxx -
           Math.round(parseFloat(String(c.measureText(ptext).width)) / 2) +
-          3,
-        mid,
+          valueOffsetX,
+        mid + valueOffsetY,
       );
 
       // Draw label (always use fill color so segment color doesn't bleed into label)
@@ -264,8 +329,8 @@ export class Donut extends CanvasWidget {
         label,
         cxx -
           Math.round(parseFloat(String(c.measureText(label).width)) / 2) +
-          3,
-        mid + r + 5,
+          labelOffsetX,
+        mid + r + labelOffsetY,
       );
     };
 

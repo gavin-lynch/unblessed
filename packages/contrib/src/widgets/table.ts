@@ -46,8 +46,8 @@ export interface TableOptions extends BoxOptions {
  * Strip ANSI escape codes from a string
  */
 function stripAnsi(str: string): string {
-  // eslint-disable-next-line no-control-regex
-  return str.replace(/\x1B\[[0-9;]*[A-Za-z]/g, "");
+  const ansiRegex = new RegExp("\\x1B\\[[0-9;]*[A-Za-z]", "g");
+  return str.replace(ansiRegex, "");
 }
 
 /**
@@ -149,7 +149,7 @@ export class Table extends Box {
       this.rows.focus();
     }
 
-    this.rows.width = this.width - 3;
+    this.rows.width = this.width - (this.border ? 2 : 0);
     this.rows.height = this.height - 4;
 
     return super.render();
@@ -190,7 +190,8 @@ export class Table extends Box {
       formatted.push(str);
     });
 
-    this.setContent(dataToString(table.headers));
+    const header = dataToString(table.headers);
+    this.setContent(`\x1b[1m${header}\x1b[22m`);
     this.rows.setItems(formatted);
   }
 

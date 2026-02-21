@@ -18,9 +18,9 @@ const grid = new Grid({
   screen: screen,
 });
 
-const map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {});
+const _map = grid.set(0, 0, 4, 4, (opts) => new WorldMap(opts), {});
 
-const box = grid.set(4, 4, 4, 4, (opts) => new Box(opts), {
+const _box = grid.set(4, 4, 4, 4, (opts) => new Box(opts), {
   content: "My Box",
 });
 

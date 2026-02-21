@@ -8,6 +8,7 @@
  */
 
 import { Box, type BoxOptions, getRuntime } from "@unblessed/core";
+import { getInnerBoxSize } from "../utils.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - picture-tuber doesn't have type definitions
 import pictureTube from "picture-tuber";
@@ -50,6 +51,10 @@ export class Picture extends Box {
   declare options: PictureOptions;
   private _imageContent: string = "";
   private _isLoading: boolean = false;
+  private static readonly MIN_PLACEHOLDER_WIDTH = 10;
+  private static readonly MAX_PLACEHOLDER_WIDTH = 40;
+  private static readonly MIN_PLACEHOLDER_HEIGHT = 6;
+  private static readonly MAX_PLACEHOLDER_HEIGHT = 10;
 
   constructor(options: PictureOptions = {}) {
     options.cols = options.cols ?? 50;
@@ -137,8 +142,15 @@ export class Picture extends Box {
    * Create a placeholder when image loading fails
    */
   private _createPlaceholder(source: string): string {
-    const width = Math.max(10, Math.min(this.width - 2, 40));
-    const height = Math.max(6, Math.min(this.height - 2, 10));
+    const { innerWidthChars, innerHeightChars } = getInnerBoxSize(this);
+    const width = Math.max(
+      Picture.MIN_PLACEHOLDER_WIDTH,
+      Math.min(innerWidthChars, Picture.MAX_PLACEHOLDER_WIDTH),
+    );
+    const height = Math.max(
+      Picture.MIN_PLACEHOLDER_HEIGHT,
+      Math.min(innerHeightChars, Picture.MAX_PLACEHOLDER_HEIGHT),
+    );
     const innerWidth = Math.max(1, width - 2);
 
     let content = "\n";

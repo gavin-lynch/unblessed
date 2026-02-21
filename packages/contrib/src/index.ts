@@ -70,6 +70,7 @@ export {
   type StackedBarOptions,
 } from "./widgets/stacked-bar.js";
 export { Table, type TableData, type TableOptions } from "./widgets/table.js";
+export { Tabs, type TabItem, type TabsOptions } from "./widgets/tabs.js";
 
 // Widgets with optional dependencies
 export { Diff, type DiffOptions } from "./widgets/diff.js";

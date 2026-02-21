@@ -11,7 +11,10 @@ import type { Screen } from "@unblessed/core";
 /**
  * Page function type - called to render a page
  */
-export type CarouselPage = (screen: Screen, pageIndex: number) => void;
+export type CarouselPage = (
+  screen: Screen,
+  pageIndex: number,
+) => void | Promise<void>;
 
 /**
  * Carousel options
@@ -25,6 +28,8 @@ export interface CarouselOptions {
   interval?: number;
   /** Enable control keys (left/right/home/end) */
   controlKeys?: boolean;
+  /** Called after a page finishes rendering */
+  onAfterMove?: (pageIndex: number) => void | Promise<void>;
 }
 
 /**
@@ -60,7 +65,7 @@ export class Carousel {
   private pages: CarouselPage[];
   private options: CarouselOptions;
   private screen: Screen;
-  private intervalId: ReturnType<typeof setInterval> | null = null;
+  private intervalId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(pages: CarouselPage[], options: CarouselOptions) {
     this.pages = pages;
@@ -85,7 +90,7 @@ export class Carousel {
   /**
    * Move to current page (renders the page)
    */
-  move(): void {
+  async move(): Promise<void> {
     // Detach all children
     let i = this.screen.children.length;
     while (i--) {
@@ -93,14 +98,17 @@ export class Carousel {
     }
 
     // Render current page
-    this.pages[this.currPage](this.screen, this.currPage);
+    await this.pages[this.currPage](this.screen, this.currPage);
     this.screen.render();
+    if (this.options.onAfterMove) {
+      await this.options.onAfterMove(this.currPage);
+    }
   }
 
   /**
    * Go to next page
    */
-  next(): void {
+  async next(): Promise<void> {
     this.currPage++;
 
     if (this.currPage === this.pages.length) {
@@ -112,13 +120,13 @@ export class Carousel {
       }
     }
 
-    this.move();
+    await this.move();
   }
 
   /**
    * Go to previous page
    */
-  prev(): void {
+  async prev(): Promise<void> {
     this.currPage--;
 
     if (this.currPage < 0) {
@@ -130,32 +138,32 @@ export class Carousel {
       }
     }
 
-    this.move();
+    await this.move();
   }
 
   /**
    * Go to first page
    */
-  home(): void {
+  async home(): Promise<void> {
     this.currPage = 0;
-    this.move();
+    await this.move();
   }
 
   /**
    * Go to last page
    */
-  end(): void {
+  async end(): Promise<void> {
     this.currPage = this.pages.length - 1;
-    this.move();
+    await this.move();
   }
 
   /**
    * Go to a specific page
    */
-  goto(page: number): void {
+  async goto(page: number): Promise<void> {
     if (page >= 0 && page < this.pages.length) {
       this.currPage = page;
-      this.move();
+      await this.move();
     }
   }
 
@@ -163,11 +171,17 @@ export class Carousel {
    * Start the carousel
    */
   start(): void {
-    this.move();
+    void this.move();
 
     // Auto-advance if interval specified
     if (this.options.interval) {
-      this.intervalId = setInterval(() => this.next(), this.options.interval);
+      const tick = async () => {
+        await this.next();
+        if (this.options.interval) {
+          this.intervalId = setTimeout(tick, this.options.interval);
+        }
+      };
+      this.intervalId = setTimeout(tick, this.options.interval);
     }
 
     // Bind control keys
@@ -175,10 +189,10 @@ export class Carousel {
       this.screen.key(
         ["right", "left", "home", "end"],
         (_ch: string, key: { name: string }) => {
-          if (key.name === "right") this.next();
-          if (key.name === "left") this.prev();
-          if (key.name === "home") this.home();
-          if (key.name === "end") this.end();
+          if (key.name === "right") void this.next();
+          if (key.name === "left") void this.prev();
+          if (key.name === "home") void this.home();
+          if (key.name === "end") void this.end();
         },
       );
     }
@@ -189,7 +203,7 @@ export class Carousel {
    */
   stop(): void {
     if (this.intervalId) {
-      clearInterval(this.intervalId);
+      clearTimeout(this.intervalId);
       this.intervalId = null;
     }
   }

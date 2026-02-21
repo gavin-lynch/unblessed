@@ -110,6 +110,32 @@ export class DrawilleCanvas {
   /** Current font background color */
   fontBg: CanvasColor = "normal";
 
+  debugStats(): {
+    width: number;
+    height: number;
+    cellCount: number;
+    nonZeroCells: number;
+    colorCells: number;
+    textCells: number;
+  } {
+    let nonZeroCells = 0;
+    let colorCells = 0;
+    let textCells = 0;
+    for (let i = 0; i < this.content.length; i++) {
+      if (this.content[i] !== 0) nonZeroCells++;
+      if (this.colors[i] !== null) colorCells++;
+      if (this.chars[i] !== null) textCells++;
+    }
+    return {
+      width: this.width,
+      height: this.height,
+      cellCount: this.content.length,
+      nonZeroCells,
+      colorCells,
+      textCells,
+    };
+  }
+
   constructor(width: number, height: number) {
     // Ensure dimensions are valid for braille mapping
     if (width % 2 !== 0) {

@@ -1,11 +1,11 @@
-// Quick test to compare x256 vs colors.match
+// Quick test to compare x256 vs colors.match (Node script - run with node)
+/* eslint-env node */
 const x256 = require("x256");
 
 // Simple color matching algorithm (similar to what colors.match does)
-function simpleMatch(r, g, b) {
+function _simpleMatch(r, g, b) {
   // This is a simplified version - colors.match uses a more complex algorithm
-  // But let's see if x256 and a simple approach differ
-  const vcolors = []; // 256 color palette would go here
+  // 256 color palette would go here (reserved for future use)
   // For now, just return a simple calculation
   return Math.floor(((r + g + b) / 3 / 256) * 255);
 }

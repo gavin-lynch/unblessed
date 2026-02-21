@@ -208,7 +208,6 @@ export function ContribWidgetWrapper({
         isAttachedRef.current = false;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boxRef.current, screen, ...deps]);
 
   // Separate effect to update data when widget is already attached
@@ -227,7 +226,6 @@ export function ContribWidgetWrapper({
         console.warn("setData failed on update:", err);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetOptions.data, isAttachedRef.current]);
 
   return <Box {...boxProps} ref={boxRef} />;
