@@ -27,6 +27,7 @@ import type {
   MouseEvent,
   Padding,
   RenderCoords,
+  ScreenColorMode,
   ScrollbarConfig,
   Style,
   TextWrapMode,
@@ -72,6 +73,8 @@ class Element extends Node {
   shadow?: boolean;
   /** Element style configuration (colors, attributes, hover/focus effects) */
   style: Style;
+  /** Per-element color mode override */
+  colorMode?: ScreenColorMode;
   hidden: boolean;
   fixed: boolean;
   align: string;
@@ -171,6 +174,7 @@ class Element extends Node {
     this.shadow = options.shadow;
 
     this.style = options.style;
+    this.colorMode = options.colorMode;
 
     if (!this.style) {
       this.style = {};
@@ -376,6 +380,16 @@ class Element extends Node {
 
     if (typeof fg === "function") fg = fg(this);
     if (typeof bg === "function") bg = bg(this);
+
+    const modeOverride = this.colorMode;
+    const effectiveMode =
+      modeOverride && modeOverride !== "auto"
+        ? modeOverride
+        : this.screen?.getEffectiveColorMode?.();
+    if (effectiveMode === "mono") {
+      fg = "normal";
+      bg = "normal";
+    }
 
     // return (this.uid << 24)
     //   | ((this.dockBorders ? 32 : 0) << 18)
@@ -2569,6 +2583,7 @@ class Element extends Node {
             parsed.params,
             { attr, tcBg: truecolorBg, tcFg: truecolorFg },
             dattr,
+            this.colorMode,
           );
           attr = next.attr;
           truecolorBg = next.tcBg;

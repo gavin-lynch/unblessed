@@ -6,7 +6,7 @@
  * Shows line charts, bar charts, gauges, donut, sparkline, table, log, LCD, and map.
  */
 
-import { Screen } from "@unblessed/node";
+import { Box, Screen } from "@unblessed/node";
 import { Grid } from "../src/layout/grid.js";
 import { Bar } from "../src/widgets/bar.js";
 import { Donut } from "../src/widgets/donut.js";
@@ -16,13 +16,12 @@ import { Line } from "../src/widgets/line.js";
 import { Log } from "../src/widgets/log.js";
 import { WorldMap } from "../src/widgets/map.js";
 import { Sparkline } from "../src/widgets/sparkline.js";
-import { Table } from "../src/widgets/table.js";
 
 const screen = new Screen({
   smartCSR: true,
   color: {
-    mode: "256",
-    allowTruecolorFromContent: false,
+    mode: "truecolor",
+    allowTruecolorFromContent: true,
     preferForStyle: "fidelity",
     preferForContent: "fidelity",
   },
@@ -38,7 +37,8 @@ const grid = new Grid({ rows: 12, cols: 12, screen: screen });
  * - yPadding: padding from the top (default: 2)
  */
 const donut = grid.set(8, 8, 4, 2, (opts) => new Donut(opts), {
-  label: "Percent Donut",
+  label: "Truecolor - Percent Donut",
+  colorMode: "truecolor",
   radius: 16,
   arcWidth: 4,
   yPadding: 2,
@@ -46,25 +46,29 @@ const donut = grid.set(8, 8, 4, 2, (opts) => new Donut(opts), {
 });
 
 const gauge = grid.set(8, 10, 2, 2, (opts) => new Gauge(opts), {
-  label: "Storage",
+  label: "16 - Storage",
+  colorMode: "16",
   data: [80, 20],
   padding: { top: 2, left: 0, right: 0, bottom: 0 },
 });
 
 const gauge_two = grid.set(2, 9, 2, 3, (opts) => new Gauge(opts), {
-  label: "Deployment Progress",
+  label: "256 - Deployment Progress",
+  colorMode: "256",
   data: 80,
   padding: { top: 2, left: 0, right: 0, bottom: 0 },
 });
 
 const sparkline = grid.set(10, 10, 2, 2, (opts) => new Sparkline(opts), {
-  label: "Throughput (bits/sec)",
+  label: "16 - Throughput (bits/sec)",
+  colorMode: "16",
   tags: true,
   style: { fg: "blue", titleFg: "white" },
 });
 
 const bar = grid.set(4, 6, 4, 3, (opts) => new Bar(opts), {
-  label: "Server Utilization (%)",
+  label: "16 - Server Utilization (%)",
+  colorMode: "16",
   barWidth: 4,
   barSpacing: 6,
   xOffset: 2,
@@ -74,12 +78,10 @@ const bar = grid.set(4, 6, 4, 3, (opts) => new Bar(opts), {
   labelColor: "white",
 });
 
-const table = grid.set(4, 9, 4, 3, (opts) => new Table(opts), {
-  keys: true,
-  fg: "green",
-  label: "Active Processes",
-  columnSpacing: 1,
-  columnWidth: [24, 10, 10],
+const truecolorGrid = grid.set(4, 9, 4, 3, (opts) => new Box(opts), {
+  label: "Truecolor - Active Processes",
+  colorMode: "truecolor",
+  tags: false,
 });
 
 /**
@@ -94,7 +96,8 @@ const table = grid.set(4, 9, 4, 3, (opts) => new Table(opts), {
  * - color: display color (default: "white")
  */
 const lcdLineOne = grid.set(0, 9, 2, 3, (opts) => new LCD(opts), {
-  label: "LCD Test",
+  label: "256 - LCD Test",
+  colorMode: "256",
   segmentWidth: 0.06,
   segmentInterval: 0.11,
   strokeWidth: 0.1,
@@ -110,7 +113,8 @@ const errorsLine = grid.set(0, 6, 4, 3, (opts) => new Line(opts), {
     text: "white",
     baseline: "black",
   },
-  label: "Errors Rate",
+  label: "Mono - Errors Rate",
+  colorMode: "mono",
   maxY: 60,
   showLegend: true,
 });
@@ -118,20 +122,103 @@ const errorsLine = grid.set(0, 6, 4, 3, (opts) => new Line(opts), {
 const transactionsLine = grid.set(0, 0, 6, 6, (opts) => new Line(opts), {
   showNthLabel: 5,
   maxY: 100,
-  label: "Total Transactions",
+  label: "Truecolor - Total Transactions",
+  colorMode: "truecolor",
   showLegend: true,
   legend: { width: 10 },
 });
 
 const map = grid.set(6, 0, 6, 6, (opts) => new WorldMap(opts), {
-  label: "Servers Location",
+  label: "256 - Servers Location",
+  colorMode: "256",
 });
 
 const log = grid.set(8, 6, 4, 2, (opts) => new Log(opts), {
   fg: "green",
   selectedFg: "green",
-  label: "Server Log",
+  label: "16 - Server Log",
+  colorMode: "16",
 });
+
+function clamp8(value: number): number {
+  if (value < 0) return 0;
+  if (value > 255) return 255;
+  return value | 0;
+}
+
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+function mixColor(
+  a: [number, number, number],
+  b: [number, number, number],
+  t: number,
+): [number, number, number] {
+  return [
+    clamp8(lerp(a[0], b[0], t)),
+    clamp8(lerp(a[1], b[1], t)),
+    clamp8(lerp(a[2], b[2], t)),
+  ];
+}
+
+function buildTruecolorGrid(width: number, height: number): string {
+  if (width <= 0 || height <= 0) return "";
+  const tl: [number, number, number] = [15, 30, 60];
+  const tr: [number, number, number] = [10, 120, 200];
+  const bl: [number, number, number] = [180, 70, 40];
+  const br: [number, number, number] = [230, 210, 120];
+
+  const label = "ACTIVE PROCESSES";
+  const labelY = Math.max(0, Math.floor(height / 2));
+  const labelX = Math.max(0, Math.floor(width / 2 - label.length / 2));
+
+  const rows: string[] = [];
+  for (let y = 0; y < height; y++) {
+    const ty = height > 1 ? y / (height - 1) : 0;
+    const left = mixColor(tl, bl, ty);
+    const right = mixColor(tr, br, ty);
+    let row = "";
+    let lastBg: [number, number, number] | null = null;
+    let lastFg: [number, number, number] | "default" = "default";
+
+    for (let x = 0; x < width; x++) {
+      const tx = width > 1 ? x / (width - 1) : 0;
+      const rgb = mixColor(left, right, tx);
+      const [r, g, b] = rgb;
+      if (!lastBg || lastBg[0] !== r || lastBg[1] !== g || lastBg[2] !== b) {
+        row += `\x1b[48;2;${r};${g};${b}m`;
+        lastBg = [r, g, b];
+      }
+
+      if (y === labelY && x >= labelX && x < labelX + label.length) {
+        if (lastFg === "default") {
+          row += "\x1b[38;2;250;250;250m";
+          lastFg = [250, 250, 250];
+        }
+        row += label[x - labelX];
+      } else {
+        if (lastFg !== "default") {
+          row += "\x1b[39m";
+          lastFg = "default";
+        }
+        row += " ";
+      }
+    }
+
+    row += "\x1b[0m";
+    rows.push(row);
+  }
+
+  return rows.join("\n");
+}
+
+function renderTruecolorGrid(): void {
+  const borderSize = truecolorGrid.border ? 2 : 0;
+  const width = Math.max(1, truecolorGrid.width - borderSize);
+  const height = Math.max(1, truecolorGrid.height - borderSize);
+  truecolorGrid.setContent(buildTruecolorGrid(width, height));
+}
 
 // Dummy data
 const servers = ["US1", "US2", "EU1", "AU1", "AS1", "JP1"];
@@ -178,27 +265,7 @@ function fillBar() {
 fillBar();
 setInterval(fillBar, 2000);
 
-// Set dummy data for table
-function generateTable() {
-  const data: (string | number)[][] = [];
-
-  for (let i = 0; i < 30; i++) {
-    const row: (string | number)[] = [];
-    row.push(commands[Math.round(Math.random() * (commands.length - 1))]);
-    row.push(Math.round(Math.random() * 5));
-    row.push(Math.round(Math.random() * 100));
-    data.push(row);
-  }
-
-  table.setData({
-    headers: ["Process", "Cpu (%)", "Memory"],
-    data: data,
-  });
-  screen.render();
-}
-generateTable();
-table.focus();
-setInterval(generateTable, 3000);
+renderTruecolorGrid();
 
 // Set log dummy data
 setInterval(() => {
@@ -417,12 +484,12 @@ screen.on("resize", () => {
   gauge_two.emit("attach");
   sparkline.emit("attach");
   bar.emit("attach");
-  table.emit("attach");
   lcdLineOne.emit("attach");
   errorsLine.emit("attach");
   transactionsLine.emit("attach");
   map.emit("attach");
   log.emit("attach");
+  renderTruecolorGrid();
   screen.render();
 });
 

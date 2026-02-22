@@ -4,7 +4,10 @@
 
 import type { BufferType, ReadableType, WritableType } from "../runtime.js";
 import type { Node } from "../widgets/node.js";
-import type { ScreenColorPolicyOptions } from "./color-policy.js";
+import type {
+  ScreenColorMode,
+  ScreenColorPolicyOptions,
+} from "./color-policy.js";
 import type {
   Alignment,
   Border,
@@ -116,6 +119,11 @@ export interface ElementOptions
   extends NodeOptions,
     ScrollableOptions,
     AnimatableOptions {
+  /**
+   * Per-element color mode override.
+   * Defaults to the screen's color policy when omitted.
+   */
+  colorMode?: ScreenColorMode;
   /**
    * Parse tags in content (e.g. {bold}text{/bold}).
    */
@@ -1080,6 +1088,13 @@ export interface DialogOptions extends BoxOptions {
   hidden?: boolean;
 }
 
+export interface TableData {
+  /** Column headers */
+  headers: string[];
+  /** Data rows */
+  data: (string | number)[][];
+}
+
 export interface TableOptions extends BoxOptions {
   /**
    * Array of array of strings representing rows (same as data).
@@ -1087,9 +1102,10 @@ export interface TableOptions extends BoxOptions {
   rows?: string[][];
 
   /**
-   * Array of array of strings representing rows (same as rows).
+   * Array of array of strings representing rows (same as rows),
+   * or structured table data with headers.
    */
-  data?: string[][];
+  data?: string[][] | TableData;
 
   /**
    * Spaces to attempt to pad on the sides of each cell. 2 by default: one space on each side
@@ -1106,6 +1122,46 @@ export interface TableOptions extends BoxOptions {
    * Fill cell borders with the adjacent background color.
    */
   fillCellBorders?: boolean;
+
+  /**
+   * Width of each column in characters (data-table mode).
+   */
+  columnWidth?: number[];
+
+  /**
+   * Spacing between columns (data-table mode, default: 10).
+   */
+  columnSpacing?: number;
+
+  /**
+   * Selected row foreground color (data-table mode).
+   */
+  selectedFg?: string;
+
+  /**
+   * Selected row background color (data-table mode).
+   */
+  selectedBg?: string;
+
+  /**
+   * Enable keyboard navigation (data-table mode).
+   */
+  keys?: boolean;
+
+  /**
+   * Enable vi keys (data-table mode).
+   */
+  vi?: boolean;
+
+  /**
+   * Enable mouse support (data-table mode).
+   */
+  mouse?: boolean;
+
+  /**
+   * Enable interactive selection (data-table mode, default: true).
+   */
+  interactive?: boolean;
 }
 
 export interface TerminalOptions extends BoxOptions {

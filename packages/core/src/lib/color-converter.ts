@@ -7,14 +7,33 @@
 
 import {
   detectColorCapabilities,
-  getOptimalColorMode,
   type ColorCapabilities,
 } from "./color-capabilities.js";
-import type { Color, ColorInput, ColorMode } from "./color-types.js";
+import type {
+  Color,
+  ColorInput,
+  ColorMode,
+  ColorTargetMode,
+} from "./color-types.js";
 import colors from "./colors.js";
 
 // Re-export ColorInput for convenience
 export type { ColorInput } from "./color-types.js";
+
+export interface ColorResolveOptions {
+  targetMode?: ColorTargetMode;
+  capabilities?: ColorCapabilities;
+}
+
+export interface ResolvedColor {
+  mode: ColorMode | "8" | "none";
+  value: number | [number, number, number] | null;
+  original: ColorInput;
+  paletteIndex?: number;
+}
+
+const PALETTE_CACHE_LIMIT = 512;
+const paletteIndexCache = new Map<string, number>();
 
 /**
  * Clamp and round RGB values to integers 0-255
@@ -25,6 +44,89 @@ function clampRGB(r: number, g: number, b: number): [number, number, number] {
     Math.max(0, Math.min(255, Math.round(g))),
     Math.max(0, Math.min(255, Math.round(b))),
   ];
+}
+
+function resolveTargetMode(
+  targetMode: ColorTargetMode | undefined,
+  capabilities: ColorCapabilities,
+): ColorMode | "8" | "none" {
+  if (targetMode === "none" || targetMode === "8") return targetMode;
+  if (targetMode && targetMode !== "auto") return targetMode;
+
+  if (capabilities.supportsTruecolor) return "truecolor";
+  if (capabilities.supports256) return "256";
+  return "16";
+}
+
+function resolveRgbFromInput(
+  input: ColorInput,
+): [number, number, number] | null {
+  if (Array.isArray(input) && input.length === 3) {
+    return clampRGB(input[0] as number, input[1] as number, input[2] as number);
+  }
+
+  if (typeof input === "string") {
+    if (input.startsWith("#")) {
+      const rgb = colors.hexToRGB(input);
+      return clampRGB(rgb[0] as number, rgb[1] as number, rgb[2] as number);
+    }
+
+    const idx = colors.convert(input);
+    if (idx !== 0x1ff) {
+      const rgb = colors.vcolors[idx] as [number, number, number] | undefined;
+      if (rgb) return clampRGB(rgb[0], rgb[1], rgb[2]);
+    }
+  }
+
+  if (typeof input === "number") {
+    if (input >= 0 && input < colors.vcolors.length) {
+      const rgb = colors.vcolors[input] as [number, number, number] | undefined;
+      if (rgb) return clampRGB(rgb[0], rgb[1], rgb[2]);
+    }
+  }
+
+  return null;
+}
+
+function resolvePaletteIndex(input: ColorInput): number | null {
+  if (typeof input === "number") {
+    return input >= 0 && input < 256 ? input : null;
+  }
+
+  if (typeof input === "string") {
+    if (input.startsWith("#")) {
+      const rgb = resolveRgbFromInput(input);
+      if (!rgb) return null;
+      const key = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+      const cached = paletteIndexCache.get(key);
+      if (cached != null) return cached;
+      const idx = colors.match(rgb);
+      paletteIndexCache.set(key, idx);
+      if (paletteIndexCache.size > PALETTE_CACHE_LIMIT) {
+        paletteIndexCache.clear();
+      }
+      return idx;
+    }
+
+    const idx = colors.convert(input);
+    return idx !== 0x1ff ? idx : null;
+  }
+
+  if (Array.isArray(input) && input.length === 3) {
+    const rgb = resolveRgbFromInput(input);
+    if (!rgb) return null;
+    const key = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+    const cached = paletteIndexCache.get(key);
+    if (cached != null) return cached;
+    const idx = colors.match(rgb);
+    paletteIndexCache.set(key, idx);
+    if (paletteIndexCache.size > PALETTE_CACHE_LIMIT) {
+      paletteIndexCache.clear();
+    }
+    return idx;
+  }
+
+  return null;
 }
 
 /**
@@ -42,7 +144,9 @@ export function normalizeColor(
   capabilities?: ColorCapabilities,
 ): Color {
   const caps = capabilities || detectColorCapabilities();
-  const optimalMode = preferredMode || getOptimalColorMode();
+  const optimalMode =
+    preferredMode ||
+    (caps.supportsTruecolor ? "truecolor" : caps.supports256 ? "256" : "16");
 
   // Handle RGB arrays/tuples
   if (Array.isArray(input) && input.length === 3) {
@@ -149,6 +253,70 @@ export function normalizeColor(
 }
 
 /**
+ * Resolve a color input into an explicit output mode.
+ * Supports explicit downgrade and compatibility profiles.
+ */
+export function resolveColor(
+  input: ColorInput,
+  options: ColorResolveOptions = {},
+): ResolvedColor {
+  if (
+    input === ("default" as any) ||
+    input === ("normal" as any) ||
+    input === ("bg" as any) ||
+    input === ("fg" as any)
+  ) {
+    return { mode: "none", value: null, original: input };
+  }
+
+  const caps = options.capabilities || detectColorCapabilities();
+  const target = resolveTargetMode(options.targetMode, caps);
+
+  if (target === "none") {
+    return { mode: "none", value: null, original: input };
+  }
+
+  if (target === "truecolor") {
+    const rgb = resolveRgbFromInput(input);
+    if (rgb) {
+      return { mode: "truecolor", value: rgb, original: input };
+    }
+
+    const idx = resolvePaletteIndex(input);
+    if (idx != null) {
+      const paletteRgb = colors.vcolors[idx] as
+        | [number, number, number]
+        | undefined;
+      if (paletteRgb) {
+        return {
+          mode: "truecolor",
+          value: clampRGB(paletteRgb[0], paletteRgb[1], paletteRgb[2]),
+          original: input,
+          paletteIndex: idx,
+        };
+      }
+    }
+
+    return { mode: "16", value: 0, original: input };
+  }
+
+  const index = resolvePaletteIndex(input);
+  const safeIndex = index ?? 0;
+
+  if (target === "256") {
+    return { mode: "256", value: safeIndex, original: input };
+  }
+
+  if (target === "8") {
+    const reduced = colors.reduce(safeIndex, 8);
+    return { mode: "8", value: reduced, original: input };
+  }
+
+  const reduced = colors.reduce(safeIndex, 16);
+  return { mode: "16", value: reduced, original: input };
+}
+
+/**
  * Convert color to 256-color index
  * Uses colors.match() algorithm (core's standard)
  *
@@ -181,52 +349,8 @@ export function to256Color(color: ColorInput): number {
  * @returns RGB array [r, g, b]
  */
 export function toRGB(color: ColorInput): [number, number, number] {
-  if (Array.isArray(color) && color.length === 3) {
-    return clampRGB(color[0] as number, color[1] as number, color[2] as number);
-  }
-  if (typeof color === "string" && color.startsWith("#")) {
-    return colors.hexToRGB(color) as [number, number, number];
-  }
-  // For color names and numbers, convert to RGB via color palette
-  // This is approximate - we'd need the actual RGB values from the palette
-  // For now, return a default
-  if (typeof color === "string" || typeof color === "number") {
-    const index = to256Color(color);
-    // Approximate RGB from 256-color index
-    // This is a simplified conversion
-    if (index < 16) {
-      // Basic 16 colors - return approximate RGB
-      const basicColors: [number, number, number][] = [
-        [0, 0, 0], // black
-        [128, 0, 0], // red
-        [0, 128, 0], // green
-        [128, 128, 0], // yellow
-        [0, 0, 128], // blue
-        [128, 0, 128], // magenta
-        [0, 128, 128], // cyan
-        [192, 192, 192], // white
-        [128, 128, 128], // bright black
-        [255, 0, 0], // bright red
-        [0, 255, 0], // bright green
-        [255, 255, 0], // bright yellow
-        [0, 0, 255], // bright blue
-        [255, 0, 255], // bright magenta
-        [0, 255, 255], // bright cyan
-        [255, 255, 255], // bright white
-      ];
-      return basicColors[index] || [0, 0, 0];
-    }
-    // For 256-color, use standard palette conversion
-    // This is approximate - full conversion would require palette lookup
-    const r = ((index - 16) / 36) % 6;
-    const g = ((index - 16) / 6) % 6;
-    const b = (index - 16) % 6;
-    return [
-      r === 0 ? 0 : Math.round(55 + r * 40),
-      g === 0 ? 0 : Math.round(55 + g * 40),
-      b === 0 ? 0 : Math.round(55 + b * 40),
-    ];
-  }
+  const rgb = resolveRgbFromInput(color);
+  if (rgb) return rgb;
   return [0, 0, 0];
 }
 
@@ -242,33 +366,38 @@ export function toRGB(color: ColorInput): [number, number, number] {
 export function toAnsiCode(
   color: ColorInput,
   type: "fg" | "bg",
-  capabilities?: ColorCapabilities,
+  options?: ColorCapabilities | ColorResolveOptions,
 ): string {
   // Handle "normal"/"default" as explicit resets.
   if (color === ("normal" as any) || color === ("default" as any)) {
     return type === "fg" ? "\x1b[39m" : "\x1b[49m";
   }
 
-  const normalized = normalizeColor(color, undefined, capabilities);
+  const resolved = resolveColor(color, normalizeOptions(options));
 
   // Truecolor mode
-  if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
-    const [r, g, b] = normalized.value;
+  if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+    const [r, g, b] = resolved.value;
     return type === "fg"
       ? `\x1b[38;2;${r};${g};${b}m`
       : `\x1b[48;2;${r};${g};${b}m`;
   }
 
   // 256-color mode
-  if (normalized.mode === "256" && typeof normalized.value === "number") {
+  if (resolved.mode === "256" && typeof resolved.value === "number") {
     return type === "fg"
-      ? `\x1b[38;5;${normalized.value}m`
-      : `\x1b[48;5;${normalized.value}m`;
+      ? `\x1b[38;5;${resolved.value}m`
+      : `\x1b[48;5;${resolved.value}m`;
+  }
+
+  if (resolved.mode === "8" && typeof resolved.value === "number") {
+    const code = resolved.value;
+    return type === "fg" ? `\x1b[3${code}m` : `\x1b[4${code}m`;
   }
 
   // 16-color mode
-  if (normalized.mode === "16" && typeof normalized.value === "number") {
-    const code = normalized.value;
+  if (resolved.mode === "16" && typeof resolved.value === "number") {
+    const code = resolved.value;
     if (code < 8) {
       // Standard colors
       return type === "fg" ? `\x1b[3${code}m` : `\x1b[4${code}m`;
@@ -294,24 +423,24 @@ export function toAnsiCode(
 export function toCellColor(
   color: ColorInput,
   type: "fg" | "bg",
-  capabilities?: ColorCapabilities,
+  options?: ColorCapabilities | ColorResolveOptions,
 ): {
   attr: number; // Packed attribute (for 16/256-color)
   truecolor: [number, number, number] | null; // RGB array or null
 } {
-  const normalized = normalizeColor(color, undefined, capabilities);
+  const resolved = resolveColor(color, normalizeOptions(options));
 
   // Truecolor mode
-  if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
+  if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
     return {
       attr: type === "fg" ? 0x1ff << 9 : 0x1ff, // Default attr (truecolor takes precedence)
-      truecolor: normalized.value,
+      truecolor: resolved.value,
     };
   }
 
   // 256-color or 16-color mode
-  if (typeof normalized.value === "number") {
-    const index = normalized.value;
+  if (typeof resolved.value === "number") {
+    const index = resolved.value;
     return {
       attr: type === "fg" ? (index & 0x1ff) << 9 : index & 0x1ff, // Pack into attr
       truecolor: null,
@@ -323,4 +452,14 @@ export function toCellColor(
     attr: type === "fg" ? 0x1ff << 9 : 0x1ff,
     truecolor: null,
   };
+}
+
+function normalizeOptions(
+  options?: ColorCapabilities | ColorResolveOptions,
+): ColorResolveOptions {
+  if (!options) return {};
+  if ((options as ColorCapabilities).supportsTruecolor !== undefined) {
+    return { capabilities: options as ColorCapabilities };
+  }
+  return options as ColorResolveOptions;
 }

@@ -9,6 +9,7 @@
  */
 
 import { toAnsiCode } from "../color-converter.js";
+import type { ColorTargetMode } from "../color-types.js";
 import { type CanvasColor } from "./drawille.js";
 
 /**
@@ -33,8 +34,15 @@ export class AnsiTermCanvas {
   /** Current font background color */
   fontBg: CanvasColor = "normal";
 
+  /** Target color mode override */
+  targetMode?: ColorTargetMode;
+
   private _canvasAnsi(color: CanvasColor, type: "fg" | "bg"): string {
-    return toAnsiCode(color, type);
+    return toAnsiCode(
+      color,
+      type,
+      this.targetMode ? { targetMode: this.targetMode } : undefined,
+    );
   }
 
   constructor(width: number, height: number) {
@@ -119,13 +127,15 @@ export class AnsiTermCanvas {
       "bg",
     );
     const fg = this._canvasAnsi(this.fontFg, "fg");
-    const reset = "\x1b[39m\x1b[49m";
+    const fgCode = fg === "\x1b[39m" ? "" : fg;
+    const bgCode = bg === "\x1b[49m" ? "" : bg;
+    const reset = fgCode || bgCode ? "\x1b[39m\x1b[49m" : "";
 
     for (let i = 0; i < str.length; i++) {
       if (coord + i < this.content.length) {
         const char = str[i];
         const suffix = i === str.length - 1 ? reset : "";
-        this.content[coord + i] = fg + bg + char + suffix;
+        this.content[coord + i] = fgCode + bgCode + char + suffix;
       }
     }
   }
@@ -136,9 +146,11 @@ export class AnsiTermCanvas {
   frame(delimiter: string = "\n"): string {
     const result: string[] = [];
     const resetAll = "\x1b[39m\x1b[49m";
+    let anyColors = false;
 
     for (let y = 0; y < this.height; y++) {
       const rowStart = y * this.width;
+      let rowHadColors = false;
 
       for (let x = 0; x < this.width; x++) {
         const i = rowStart + x;
@@ -148,7 +160,7 @@ export class AnsiTermCanvas {
         const prevHadColors = prevCell !== null && prevCell.includes("\x1b[");
 
         if (cell === null) {
-          if (prevHadColors) {
+          if (prevHadColors && rowHadColors) {
             result.push(resetAll);
           }
           result.push(" ");
@@ -156,6 +168,10 @@ export class AnsiTermCanvas {
         }
 
         const cellHasColors = cell.includes("\x1b[");
+        if (cellHasColors) {
+          rowHadColors = true;
+          anyColors = true;
+        }
         if (prevHadColors && !cellHasColors) {
           result.push(resetAll);
         }
@@ -163,11 +179,15 @@ export class AnsiTermCanvas {
         result.push(cell);
       }
 
-      result.push(resetAll);
+      if (rowHadColors) {
+        result.push(resetAll);
+      }
       result.push(delimiter);
     }
 
-    result.push(resetAll);
+    if (anyColors) {
+      result.push(resetAll);
+    }
     result.push(delimiter);
 
     return result.join("");

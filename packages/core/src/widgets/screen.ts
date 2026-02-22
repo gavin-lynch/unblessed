@@ -21,6 +21,7 @@ import type {
   KeyEvent,
   MouseEvent,
   RenderCoords,
+  ScreenColorMode,
   ScreenColorPolicy,
   ScreenColorPolicyOptions,
   ScreenOptions,
@@ -167,10 +168,12 @@ class Screen extends Node {
 
   // ===== Color policy + caches =====
   private _colorPolicy!: ScreenColorPolicy;
-  private _effectiveColorMode: ColorMode = "256";
+  private _effectiveColorMode: ColorMode | "mono" = "256";
   private _colorSupports256: boolean = true;
   private _colorSupportsTruecolor: boolean = false;
   private _rgbCache: Map<string, Truecolor> = new Map();
+  private _paletteCache: Map<string, number> = new Map();
+  private static readonly PALETTE_CACHE_LIMIT = 512;
 
   constructor(options: ScreenOptions = {}) {
     // In tests/headless environments, Program may not have a meaningful TTY size.
@@ -1159,48 +1162,46 @@ class Screen extends Node {
     };
   }
 
-  private _recomputeColorProfile(): void {
-    // Palette support comes from terminfo/tput (authoritative for 16 vs 256).
-    this._colorSupports256 = (this.tput?.colors ?? 256) >= 256;
-
-    // Truecolor support is primarily detected from env (and may be extended to terminfo
-    // setrgbf/setrgbb later).
-    resetCapabilitiesCache();
-    const caps = detectColorCapabilities();
-    this._colorSupportsTruecolor = caps.supportsTruecolor;
-
-    const requested = this._colorPolicy.mode;
+  private _resolveColorMode(requested: ScreenColorMode): ColorMode | "mono" {
     const fallback = (): ColorMode => {
       if (this._colorSupportsTruecolor) return "truecolor";
       if (this._colorSupports256) return "256";
       return "16";
     };
 
-    if (requested === "auto") {
-      this._effectiveColorMode = fallback();
-      return;
-    }
-
+    if (requested === "mono") return "mono";
+    if (requested === "auto") return fallback();
     if (requested === "truecolor") {
-      this._effectiveColorMode = this._colorSupportsTruecolor
-        ? "truecolor"
-        : fallback();
-      return;
+      return this._colorSupportsTruecolor ? "truecolor" : fallback();
     }
-
     if (requested === "256") {
-      this._effectiveColorMode = this._colorSupports256 ? "256" : "16";
-      return;
+      return this._colorSupports256 ? "256" : "16";
     }
 
-    this._effectiveColorMode = "16";
+    return "16";
+  }
+
+  private _recomputeColorProfile(): void {
+    // Palette support comes from terminfo/tput, but allow env-based detection
+    // to upgrade to 256 when terminfo is conservative.
+    resetCapabilitiesCache();
+    const caps = detectColorCapabilities();
+    this._colorSupports256 =
+      (this.tput?.colors ?? 256) >= 256 || caps.supports256;
+
+    // Truecolor support is primarily detected from env (and may be extended to terminfo
+    // setrgbf/setrgbb later).
+    this._colorSupportsTruecolor = caps.supportsTruecolor;
+
+    const requested = this._colorPolicy.mode;
+    this._effectiveColorMode = this._resolveColorMode(requested);
   }
 
   getColorPolicy(): ScreenColorPolicy {
     return this._colorPolicy;
   }
 
-  getEffectiveColorMode(): ColorMode {
+  getEffectiveColorMode(): ColorMode | "mono" {
     return this._effectiveColorMode;
   }
 
@@ -1268,15 +1269,30 @@ class Screen extends Node {
   }
 
   private _paletteIndexForRgb(rgb: Truecolor): number {
-    return colors.match(rgb);
+    const key = `${rgb[0]},${rgb[1]},${rgb[2]}`;
+    const cached = this._paletteCache.get(key);
+    if (cached != null) return cached;
+    const idx = colors.match(rgb);
+    this._paletteCache.set(key, idx);
+    if (this._paletteCache.size > Screen.PALETTE_CACHE_LIMIT) {
+      this._paletteCache.clear();
+    }
+    return idx;
   }
 
   resolveColor(
     input: ColorInput | undefined,
     channel: "fg" | "bg",
     source: "style" | "content" = "style",
+    modeOverride?: ScreenColorMode,
   ): { attrPart: number; tc: Truecolor | null } {
     const defPart = channel === "fg" ? 0x1ff << 9 : 0x1ff;
+    const effectiveMode = modeOverride
+      ? this._resolveColorMode(modeOverride)
+      : this._effectiveColorMode;
+    if (effectiveMode === "mono") {
+      return { attrPart: defPart, tc: null };
+    }
     if (
       input == null ||
       input === ("default" as any) ||
@@ -1300,7 +1316,7 @@ class Screen extends Node {
     }
 
     // RGB/hex inputs: choose whether to keep as truecolor.
-    if (this._effectiveColorMode !== "truecolor") {
+    if (effectiveMode !== "truecolor") {
       // No truecolor in this mode.
       const idx = this._paletteIndexForRgb(rgb);
       const part = channel === "fg" ? (idx & 0x1ff) << 9 : idx & 0x1ff;
@@ -1353,8 +1369,9 @@ class Screen extends Node {
     if (typeof fg === "function") fg = fg(ctx);
     if (typeof bg === "function") bg = bg(ctx);
 
-    const fgResolved = this.resolveColor(fg as any, "fg", source);
-    const bgResolved = this.resolveColor(bg as any, "bg", source);
+    const modeOverride = ctx?.colorMode as ScreenColorMode | undefined;
+    const fgResolved = this.resolveColor(fg as any, "fg", source, modeOverride);
+    const bgResolved = this.resolveColor(bg as any, "bg", source, modeOverride);
 
     const flags =
       ((invisible ? 16 : 0) << 18) |
@@ -1415,6 +1432,7 @@ class Screen extends Node {
     params: number[],
     state: { attr: number; tcBg: Truecolor | null; tcFg: Truecolor | null },
     defAttr: number,
+    modeOverride?: ScreenColorMode,
   ): { attr: number; tcBg: Truecolor | null; tcFg: Truecolor | null } {
     let flags = (state.attr >> 18) & 0x1ff;
     let fg = (state.attr >> 9) & 0x1ff;
@@ -1426,6 +1444,16 @@ class Screen extends Node {
 
     let tcBg = state.tcBg;
     let tcFg = state.tcFg;
+    const effectiveMode = modeOverride
+      ? this._resolveColorMode(modeOverride)
+      : this._effectiveColorMode;
+    const allowColor = effectiveMode !== "mono";
+    if (!allowColor) {
+      fg = defFg;
+      bg = defBg;
+      tcBg = null;
+      tcFg = null;
+    }
 
     const setFg = (idx: number) => {
       fg = idx & 0x1ff;
@@ -1495,6 +1523,7 @@ class Screen extends Node {
             params[i + 1] === 5 &&
             typeof params[i + 2] === "number"
           ) {
+            if (!allowColor) break;
             setFg(params[i + 2] as number);
             tcFg = null;
             i += 2;
@@ -1505,6 +1534,7 @@ class Screen extends Node {
             params[i + 1] === 5 &&
             typeof params[i + 2] === "number"
           ) {
+            if (!allowColor) break;
             setBg(params[i + 2] as number);
             tcBg = null;
             i += 2;
@@ -1519,13 +1549,17 @@ class Screen extends Node {
             typeof params[i + 3] === "number" &&
             typeof params[i + 4] === "number"
           ) {
+            if (!allowColor) {
+              i += 4;
+              break;
+            }
             const r = this._clamp8(params[i + 2] as number);
             const g = this._clamp8(params[i + 3] as number);
             const b = this._clamp8(params[i + 4] as number);
             const rgb = this._getCachedRgb([r, g, b]);
 
             const allow =
-              this._effectiveColorMode === "truecolor" &&
+              effectiveMode === "truecolor" &&
               this._colorPolicy.allowTruecolorFromContent;
 
             if (allow) {
@@ -1563,21 +1597,25 @@ class Screen extends Node {
 
           // 16-color ranges.
           if (c >= 30 && c <= 37) {
+            if (!allowColor) break;
             setFg(c - 30);
             tcFg = null;
             break;
           }
           if (c >= 90 && c <= 97) {
+            if (!allowColor) break;
             setFg(c - 90 + 8);
             tcFg = null;
             break;
           }
           if (c >= 40 && c <= 47) {
+            if (!allowColor) break;
             setBg(c - 40);
             tcBg = null;
             break;
           }
           if (c >= 100 && c <= 107) {
+            if (!allowColor) break;
             setBg(c - 100 + 8);
             tcBg = null;
             break;
@@ -3546,6 +3584,12 @@ class Screen extends Node {
     let data: number;
     let attr: number;
 
+    let termFlags = (this.dattr >> 18) & 0x1ff;
+    let termAttrBg = this.dattr & 0x1ff;
+    let termAttrFg = (this.dattr >> 9) & 0x1ff;
+    let termTruecolorBg: Truecolor | null = null;
+    let termTruecolorFg: Truecolor | null = null;
+
     const sdattr = this.dattr;
 
     if (term) {
@@ -3567,8 +3611,106 @@ class Screen extends Node {
 
         data = line[x][0];
         ch = line[x][1];
+        const truecolorBg = line[x][2] as Truecolor | null;
+        const truecolorFg = line[x][3] as Truecolor | null;
+        const hasTruecolorBg = truecolorBg !== null;
+        const hasTruecolorFg = truecolorFg !== null;
+
+        if (hasTruecolorBg || hasTruecolorFg) {
+          const desiredFlags = (data >> 18) & 0x1ff;
+          const desiredAttrBg = data & 0x1ff;
+          const desiredAttrFg = (data >> 9) & 0x1ff;
+          const desiredTcBg = truecolorBg;
+          const desiredTcFg = truecolorFg;
+
+          const needsUpdate =
+            desiredFlags !== termFlags ||
+            !sameTruecolor(desiredTcBg, termTruecolorBg) ||
+            !sameTruecolor(desiredTcFg, termTruecolorFg) ||
+            (!desiredTcBg && desiredAttrBg !== termAttrBg) ||
+            (!desiredTcFg && desiredAttrFg !== termAttrFg);
+
+          if (needsUpdate) {
+            out += "\x1b[m";
+            attr = this.dattr;
+            termAttrFg = (this.dattr >> 9) & 0x1ff;
+            termAttrBg = this.dattr & 0x1ff;
+
+            const parts: string[] = [];
+            if (desiredFlags & 1) parts.push("1");
+            if (desiredFlags & 32) parts.push("2");
+            if (desiredFlags & 2) parts.push("4");
+            if (desiredFlags & 4) parts.push("5");
+            if (desiredFlags & 8) parts.push("7");
+            if (desiredFlags & 16) parts.push("8");
+            if (desiredTcBg) {
+              parts.push(
+                `48;2;${desiredTcBg[0]};${desiredTcBg[1]};${desiredTcBg[2]}`,
+              );
+            }
+            if (desiredTcFg) {
+              parts.push(
+                `38;2;${desiredTcFg[0]};${desiredTcFg[1]};${desiredTcFg[2]}`,
+              );
+            }
+            if (!desiredTcBg || !desiredTcFg) {
+              if (!desiredTcBg && desiredAttrBg !== 0x1ff) {
+                let bg = this._reduceColor(desiredAttrBg);
+                if (bg < 16) {
+                  if (bg < 8) {
+                    bg += 40;
+                  } else {
+                    bg -= 8;
+                    bg += 100;
+                  }
+                  parts.push(String(bg));
+                } else {
+                  parts.push(`48;5;${bg}`);
+                }
+                termAttrBg = desiredAttrBg;
+              }
+              if (!desiredTcFg && desiredAttrFg !== 0x1ff) {
+                let fg = this._reduceColor(desiredAttrFg);
+                if (fg < 16) {
+                  if (fg < 8) {
+                    fg += 30;
+                  } else {
+                    fg -= 8;
+                    fg += 90;
+                  }
+                  parts.push(String(fg));
+                } else {
+                  parts.push(`38;5;${fg}`);
+                }
+                termAttrFg = desiredAttrFg;
+              }
+            }
+            if (parts.length) {
+              out += `\x1b[${parts.join(";")}m`;
+            }
+
+            termFlags = desiredFlags;
+            termTruecolorBg = desiredTcBg;
+            termTruecolorFg = desiredTcFg;
+            if (desiredTcBg) termAttrBg = desiredAttrBg;
+            if (desiredTcFg) termAttrFg = desiredAttrFg;
+          }
+
+          out += ch;
+          attr = data;
+          continue;
+        }
 
         if (data !== attr) {
+          if (termTruecolorBg || termTruecolorFg) {
+            out += "\x1b[m";
+            termTruecolorBg = null;
+            termTruecolorFg = null;
+            termFlags = (this.dattr >> 18) & 0x1ff;
+            termAttrBg = this.dattr & 0x1ff;
+            termAttrFg = (this.dattr >> 9) & 0x1ff;
+            attr = this.dattr;
+          }
           if (attr !== this.dattr) {
             out += "\x1b[m";
           }
@@ -3596,7 +3738,7 @@ class Screen extends Node {
         attr = data;
       }
 
-      if (attr !== this.dattr) {
+      if (attr !== this.dattr || termTruecolorBg || termTruecolorFg) {
         out += "\x1b[m";
       }
 

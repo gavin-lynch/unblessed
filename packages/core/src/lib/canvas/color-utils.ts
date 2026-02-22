@@ -8,7 +8,7 @@ import {
   detectColorCapabilities,
   type ColorCapabilities,
 } from "../color-capabilities.js";
-import { normalizeColor, type ColorInput } from "../color-converter.js";
+import { resolveColor, type ColorInput } from "../color-converter.js";
 import type { AnsiTermCanvas } from "./ansi-term.js";
 import type { DrawilleCanvas } from "./drawille.js";
 
@@ -27,35 +27,32 @@ export function setCanvasColor(
   type: "stroke" | "fill" | "fontFg" | "fontBg",
   capabilities?: ColorCapabilities,
 ): void {
-  const normalized = normalizeColor(color, undefined, capabilities);
+  const resolved = resolveColor(color, { capabilities });
 
   // Set appropriate canvas property
   if (type === "stroke" || type === "fill") {
     // For stroke/fill, preserve RGB arrays for truecolor
-    if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
-      canvas.color = normalized.value;
-    } else if (
-      normalized.mode === "256" &&
-      typeof normalized.value === "number"
-    ) {
+    if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+      canvas.color = resolved.value;
+    } else if (resolved.mode === "256" && typeof resolved.value === "number") {
       // For 256-color, we need to convert back to RGB for canvas
       // Canvas expects RGB arrays for truecolor, or we use ANSI codes
       // For now, use the original input if it was an array
-      canvas.color = normalized.original as ColorInput;
+      canvas.color = resolved.original as ColorInput;
     } else {
-      canvas.color = normalized.original as ColorInput;
+      canvas.color = resolved.original as ColorInput;
     }
   } else if (type === "fontFg") {
-    if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
-      canvas.fontFg = normalized.value;
+    if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+      canvas.fontFg = resolved.value;
     } else {
-      canvas.fontFg = normalized.original as ColorInput;
+      canvas.fontFg = resolved.original as ColorInput;
     }
   } else if (type === "fontBg") {
-    if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
-      canvas.fontBg = normalized.value;
+    if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+      canvas.fontBg = resolved.value;
     } else {
-      canvas.fontBg = normalized.original as ColorInput;
+      canvas.fontBg = resolved.original as ColorInput;
     }
   }
 }
@@ -85,7 +82,7 @@ export function canvasColorToCell(
   truecolorFg: [number, number, number] | null;
 } {
   const caps = capabilities || detectColorCapabilities();
-  const fg = normalizeColor(color, undefined, caps);
+  const fg = resolveColor(color, { capabilities: caps });
 
   const truecolorFg =
     fg.mode === "truecolor" && Array.isArray(fg.value) ? fg.value : null;

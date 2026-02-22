@@ -7,7 +7,7 @@
 
 import type { ColorMode } from "../lib/color-types.js";
 
-export type ScreenColorMode = "auto" | ColorMode;
+export type ScreenColorMode = "auto" | ColorMode | "mono";
 
 export type ScreenColorPreference = "fidelity" | "compact";
 

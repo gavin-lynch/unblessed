@@ -43,7 +43,7 @@ export interface WrapOptions {
  * ANSI escape code regex - matches SGR (Select Graphic Rendition) codes
  * Format: ESC [ <params> m
  */
-const ANSI_REGEX = /\x1b\[[^m]*m/g;
+const ANSI_REGEX = new RegExp("\\x1b\\[[^m]*m", "g");
 
 /**
  * Strip all ANSI escape codes from text
@@ -78,17 +78,18 @@ function findAnsiCodes(
   text: string,
 ): Array<{ start: number; end: number; code: string }> {
   const codes: Array<{ start: number; end: number; code: string }> = [];
-  let match: RegExpExecArray | null;
-
   // Reset regex state
   ANSI_REGEX.lastIndex = 0;
 
-  while ((match = ANSI_REGEX.exec(text)) !== null) {
+  let match: RegExpExecArray | null = ANSI_REGEX.exec(text);
+  while (match !== null) {
     codes.push({
       start: match.index,
       end: match.index + match[0].length,
       code: match[0],
     });
+
+    match = ANSI_REGEX.exec(text);
   }
 
   return codes;
@@ -134,10 +135,12 @@ export function getActiveAnsiCodes(text: string, position: number): string {
       }
       // Bold
       else if (param === 1) state.bold = true;
-      else if (param === 22) delete state.bold;
+      else if (param === 22) {
+        delete state.bold;
+        delete state.dim;
+      }
       // Dim
       else if (param === 2) state.dim = true;
-      else if (param === 22) delete state.dim;
       // Italic
       else if (param === 3) state.italic = true;
       else if (param === 23) delete state.italic;
@@ -412,4 +415,39 @@ export function needsWrapping(
   fullUnicode: boolean = false,
 ): boolean {
   return measureVisualWidth(text, fullUnicode) > width;
+}
+
+/**
+ * Truncate each line to a visible width, preserving ANSI codes.
+ */
+export function truncateAnsiLines(frame: string, maxWidth: number): string {
+  const lines = frame.split("\n");
+  const truncatedLines = lines.map((line) => {
+    const visibleChars = stripAnsi(line).length;
+    if (visibleChars <= maxWidth) return line;
+
+    let result = "";
+    let visibleCount = 0;
+    let i = 0;
+
+    while (i < line.length && visibleCount < maxWidth) {
+      if (line[i] === "\x1b" && line[i + 1] === "[") {
+        const end = line.indexOf("m", i);
+        if (end !== -1) {
+          result += line.substring(i, end + 1);
+          i = end + 1;
+          continue;
+        }
+      }
+
+      result += line[i];
+      visibleCount++;
+      i++;
+    }
+
+    result += "\x1b[39m\x1b[49m";
+    return result;
+  });
+
+  return truncatedLines.join("\n");
 }

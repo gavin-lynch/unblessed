@@ -29,6 +29,7 @@ export { default as colors } from "./lib/colors.js";
 export * from "./lib/events.js";
 export * from "./lib/helpers.js";
 export * from "./lib/image-renderer.js";
+export * from "./lib/text-utils.js";
 export { default as unicode } from "./lib/unicode.js";
 
 // Re-export mixins
@@ -69,23 +70,39 @@ export * from "./widgets/tree.js";
 export * from "./widgets/form.js";
 
 // Re-export layout widgets
+export * from "./layout/carousel.js";
+export * from "./layout/grid.js";
 export * from "./widgets/layout.js";
 export * from "./widgets/table.js";
 
 // Re-export UI widgets
+export * from "./widgets/bar.js";
 export * from "./widgets/dialog.js";
+export * from "./widgets/diff.js";
+export * from "./widgets/donut.js";
+export * from "./widgets/gauge-list.js";
+export * from "./widgets/gauge.js";
+export * from "./widgets/lcd.js";
+export * from "./widgets/linechart.js";
 export * from "./widgets/loading.js";
+export * from "./widgets/log-list.js";
 export * from "./widgets/log.js";
+export * from "./widgets/markdown.js";
 export * from "./widgets/message.js";
 export * from "./widgets/progressbar.js";
 export * from "./widgets/prompt.js";
 export * from "./widgets/question.js";
+export * from "./widgets/sparkline.js";
+export * from "./widgets/stacked-bar.js";
 export * from "./widgets/static.js";
+export * from "./widgets/tabs.js";
 
 // Re-export special widgets
 export * from "./widgets/ansiimage.js";
 export * from "./widgets/bigtext.js";
 export * from "./widgets/filemanager.js";
 export * from "./widgets/image.js";
+export * from "./widgets/map.js";
 export * from "./widgets/overlayimage.js";
+export * from "./widgets/picture.js";
 export { default as Screen } from "./widgets/screen.js";

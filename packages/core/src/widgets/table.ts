@@ -6,9 +6,13 @@
  * Modules
  */
 
-import type { StyleListTable, TableOptions } from "../types";
+import { stripAnsi, truncateAnsiLines } from "../lib/text-utils.js";
+import type { StyleListTable, TableData, TableOptions } from "../types";
+import type { ScreenColorMode } from "../types/color-policy.js";
+import type { ListOptions } from "../types/options.js";
 import Box from "./box.js";
 import { createCell, sameTruecolor, type Cell } from "./cell.js";
+import List from "./list.js";
 
 /**
  * Table
@@ -16,39 +20,129 @@ import { createCell, sameTruecolor, type Cell } from "./cell.js";
 
 class Table extends Box {
   override type = "table";
+  declare options: TableOptions;
   declare style: StyleListTable;
   pad: number;
   rows: any[][] = []; // Initialize to empty array
   _maxes!: number[]; // Set by _calculateMaxes() method
+  private _dataTableMode = false;
+  private _dataTableList?: List;
+  private _dataTableData?: TableData;
 
   constructor(options: TableOptions = {}) {
-    options.shrink = true;
-    options.style = options.style || {};
-    options.style.border = options.style.border || {};
-    options.style.header = options.style.header || {};
-    options.style.cell = options.style.cell || {};
-    options.align = options.align || "center";
+    const dataTableMode = Table._isDataTableOptions(options);
 
-    // Regular tables do not get custom height (this would
-    // require extra padding). Maybe add in the future.
-    delete options.height;
+    if (dataTableMode) {
+      if (Array.isArray((options as any).columnSpacing)) {
+        throw new Error(
+          "Error: columnSpacing cannot be an array.\n" +
+            "Note: From release 2.0.0 use property columnWidth instead of columnSpacing.\n" +
+            "Please refer to the README or to https://github.com/yaronn/blessed-contrib/issues/39",
+        );
+      }
+
+      if (!options.columnWidth) {
+        throw new Error(
+          "Error: A table must get columnWidth as a property. Please refer to the README.",
+        );
+      }
+
+      options.columnSpacing = options.columnSpacing ?? 10;
+      const isMono = options.colorMode === ("mono" as ScreenColorMode);
+      if (isMono) {
+        options.selectedFg = "";
+        options.selectedBg = "";
+        options.fg = "";
+        options.bg = "";
+      } else {
+        options.selectedFg = options.selectedFg || "white";
+        options.selectedBg = options.selectedBg || "blue";
+        options.fg = options.fg || "green";
+        options.bg = options.bg || "";
+      }
+      options.interactive = options.interactive !== false;
+    } else {
+      options.shrink = true;
+      options.style = options.style || {};
+      options.style.border = options.style.border || {};
+      options.style.header = options.style.header || {};
+      options.style.cell = options.style.cell || {};
+      options.align = options.align || "center";
+
+      // Regular tables do not get custom height (this would
+      // require extra padding). Maybe add in the future.
+      delete options.height;
+    }
 
     super(options);
 
     this.pad = options.pad != null ? options.pad : 2;
+    this._dataTableMode = dataTableMode;
 
-    this.setData(options.rows || options.data || []);
+    if (dataTableMode) {
+      this._dataTableList = new List({
+        top: 2,
+        width: 0,
+        left: 1,
+        style: {
+          selected: {
+            fg: options.selectedFg,
+            bg: options.selectedBg,
+          },
+          item: {
+            fg: options.fg,
+            bg: options.bg,
+          },
+        },
+        keys: options.keys,
+        vi: options.vi,
+        mouse: options.mouse,
+        tags: true,
+        interactive: options.interactive,
+      } as ListOptions);
 
-    this.on("attach", () => {
-      this.setContent("");
-      this.setData(this.rows);
-    });
+      this.append(this._dataTableList);
 
-    this.on("resize", () => {
-      this.setContent("");
-      this.setData(this.rows);
-      this.screen.render();
-    });
+      this.on("attach", () => {
+        if (Table._isTableData(this.options.data)) {
+          this.setData(this.options.data);
+        }
+      });
+
+      this.on("resize", () => {
+        if (this._dataTableData) {
+          this.setData(this._dataTableData);
+        }
+        this.screen.render();
+      });
+    } else {
+      this.setData(options.rows || options.data || []);
+
+      this.on("attach", () => {
+        this.setContent("");
+        this.setData(this.rows);
+      });
+
+      this.on("resize", () => {
+        this.setContent("");
+        this.setData(this.rows);
+        this.screen.render();
+      });
+    }
+  }
+
+  private static _isTableData(value: unknown): value is TableData {
+    return (
+      !!value &&
+      typeof value === "object" &&
+      Array.isArray((value as TableData).headers) &&
+      Array.isArray((value as TableData).data)
+    );
+  }
+
+  private static _isDataTableOptions(options: TableOptions): boolean {
+    if (Array.isArray(options.columnWidth)) return true;
+    return Table._isTableData(options.data);
   }
 
   _calculateMaxes(): number[] | undefined {
@@ -83,16 +177,18 @@ class Table extends Box {
       const missing = this.width - total;
       const w = (missing / maxes.length) | 0;
       const wr = missing % maxes.length;
-      return (this._maxes = maxes.map((max, i) => {
+      this._maxes = maxes.map((max, i) => {
         if (i === maxes.length - 1) {
           return max + w + wr;
         }
         return max + w;
-      }));
+      });
+      return this._maxes;
     } else {
-      return (this._maxes = maxes.map((max) => {
+      this._maxes = maxes.map((max) => {
         return max + this.pad;
-      }));
+      });
+      return this._maxes;
     }
   }
 
@@ -109,11 +205,20 @@ class Table extends Box {
    *   ['Bob', '25', 'SF']
    * ]);
    */
-  setData(rows: any[][]): void {
+  setData(rows: any[][] | TableData): void {
+    if (this._dataTableMode) {
+      if (!Table._isTableData(rows)) {
+        throw new Error("Data table mode requires { headers, data }.");
+      }
+      this._setDataTable(rows);
+      return;
+    }
+
     let text = "";
     const align = this.align;
 
-    this.rows = rows || [];
+    const rowData = Array.isArray(rows) ? rows : [];
+    this.rows = rowData;
 
     this._calculateMaxes();
 
@@ -169,6 +274,58 @@ class Table extends Box {
     this.align = savedAlign;
   }
 
+  private _setDataTable(table: TableData): void {
+    if (!this._dataTableList) return;
+    this._dataTableData = table;
+
+    const borderSize = this.border ? 2 : 0;
+    const leftOffset =
+      typeof this._dataTableList.left === "number"
+        ? this._dataTableList.left
+        : 0;
+    const maxWidth = Math.max(0, this.width - borderSize - leftOffset);
+
+    const dataToString = (d: (string | number)[]): string => {
+      let str = "";
+
+      d.forEach((r, i) => {
+        const colsize = this.options.columnWidth?.[i] || 10;
+        const rStr = String(r);
+        const strip = stripAnsi(rStr);
+        const ansiLen = rStr.length - strip.length;
+        const isLast = i === d.length - 1;
+        let spaceLength = colsize - strip.length;
+        if (!isLast) {
+          spaceLength += this.options.columnSpacing!;
+        }
+
+        const truncated = rStr.substring(0, colsize + ansiLen);
+
+        if (spaceLength < 0) {
+          spaceLength = 0;
+        }
+
+        const spaces = " ".repeat(spaceLength);
+        str += truncated + spaces;
+      });
+
+      return str;
+    };
+
+    const formatted: string[] = [];
+
+    table.data.forEach((d) => {
+      const str = dataToString(d);
+      formatted.push(maxWidth > 0 ? truncateAnsiLines(str, maxWidth) : str);
+    });
+
+    const header = dataToString(table.headers);
+    const headerLine =
+      maxWidth > 0 ? truncateAnsiLines(header, maxWidth) : header;
+    this.setContent(`\x1b[1m${headerLine}\x1b[22m`);
+    this._dataTableList.setItems(formatted);
+  }
+
   /**
    * Set the rows in the table (alias for setData).
    * Replaces all existing rows with the provided data.
@@ -183,7 +340,52 @@ class Table extends Box {
     return this.setData;
   }
 
+  /**
+   * Get selected row index (data-table mode).
+   */
+  getSelectedIndex(): number {
+    return this._dataTableList?.selected ?? -1;
+  }
+
+  /**
+   * Get selected row data (data-table mode).
+   */
+  getSelectedItem(): string | undefined {
+    if (!this._dataTableList) return undefined;
+    return this._dataTableList.ritems[this._dataTableList.selected];
+  }
+
+  /**
+   * Select a row by index (data-table mode).
+   */
+  select(index: number): void {
+    this._dataTableList?.select(index);
+  }
+
   override render(): any {
+    if (this._dataTableMode) {
+      const borderSize = this.border ? 2 : 0;
+      if (this._dataTableList) {
+        const leftOffset =
+          typeof this._dataTableList.left === "number"
+            ? this._dataTableList.left
+            : 0;
+        const topOffset =
+          typeof this._dataTableList.top === "number"
+            ? this._dataTableList.top
+            : 0;
+        this._dataTableList.width = Math.max(
+          0,
+          this.width - borderSize - leftOffset,
+        );
+        this._dataTableList.height = Math.max(
+          0,
+          this.height - borderSize - topOffset,
+        );
+      }
+      return super.render();
+    }
+
     const coords = super.render();
     if (!coords) return;
 

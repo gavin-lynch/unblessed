@@ -12,6 +12,59 @@ This document summarizes what should move from `packages/contrib` into `packages
 - `packages/core/src/lib/*`
 - `packages/blessed/src/*`
 
+## Priority Order
+
+1. **Color system refactor (core-first)**
+   - This is a foundational refactor and must land before widget migration.
+   - Canonical plan lives in `packages/core/COLOR_SYSTEM_REFACTOR.md`.
+2. **Core layout essentials**
+   - Grid and carousel are structural and should land before or alongside widget moves.
+3. **Widget migrations and compatibility shims**
+   - Move dependency-light widgets into core, then provide contrib/blessed compatibility wrappers.
+
+## Completed (Current Refactor)
+
+- Truecolor output restored in core screenshot rendering (`screen.screenshot()` now emits `38;2`/`48;2`).
+- Color capability detection hardened (beyond `COLORTERM`/`getColorDepth`) to avoid false negatives.
+- Core chart widgets updated to use unified color resolution (compat mode removed).
+- Contrib color helpers now wrap core `resolveColor` directly (no compat pipeline).
+- Truecolor proof examples added/updated:
+  - `packages/contrib/examples/truecolor.ts` (static visual proof)
+  - `packages/contrib/examples/truecolor-proof.ts`
+  - `packages/contrib/examples/dashboard-truecolor-dump.ts`
+- Dashboard proof: bar widget label prefixed with `Truecolor -` and forced RGB colors.
+- Unified core `Table` to support data-table mode (headers + scrollable rows).
+- Moved contrib log widget into core as `LogList` (contrib wrapper preserved).
+
+## Known Gaps / Regressions
+
+- Dashboard output still deviates from pre-refactor visuals (root cause pending).
+- Parity verification still requires deterministic dumps and comparison.
+
+## Planned Work (Concrete Steps)
+
+1. **Layout helpers into core**
+   - Move `Grid` and `Carousel` to `packages/core`.
+   - Keep contrib wrappers to preserve API shape.
+2. **Dependency-light widget migrations**
+   - Move `bar`, `stacked-bar`, `donut`, `gauge`, `gauge-list`, `sparkline`, `lcd`, `tabs` into core.
+3. **Name conflict resolution**
+   - Contrib `line` (chart) → core `LineChart`.
+   - Contrib `log` → core `LogList`.
+4. **Shared utils into core**
+   - `mergeRecursive`, `abbreviateNumber`, `getInnerBoxSize`, `truncateAnsiLines` (merge with `text-utils.ts`).
+5. **Compatibility shims**
+   - Preserve contrib exports and blessed-contrib naming while core types move/rename.
+6. **Runtime alignment**
+   - Ensure migrated code uses runtime injection and core utilities only.
+
+## Validation / Proof
+
+- Visual proof: `pnpm exec tsx packages/contrib/examples/truecolor.ts`
+- Dashboard run: `pnpm exec tsx packages/contrib/examples/dashboard.ts`
+- Dump proof: `pnpm exec tsx packages/contrib/examples/dashboard-truecolor-dump.ts`
+- Inspect dumps: `packages/contrib/examples/out/*`
+
 ## What Should Move Into Core
 
 These are dependency-light widgets and layout helpers that are platform-agnostic and fit core patterns. If moved, keep core naming conventions and patterns.
@@ -48,6 +101,7 @@ Notes:
   - Downgrade to 256/16/8/no-color deterministically.
   - Produce output that matches legacy blessed/blessed-contrib control sequences when requested by the compatibility layer.
   - Allow the compat layer to explicitly request non-truecolor output so the resulting control characters are identical to legacy output.
+  - Detailed plan: `packages/core/COLOR_SYSTEM_REFACTOR.md`.
 
 ## What Should Stay In Contrib (Compatibility Layer)
 
@@ -62,7 +116,7 @@ These widgets rely on optional external dependencies, node-centric behaviors, or
 
 ### Compatibility Color Utilities
 
-- `packages/contrib/src/color-utils.ts` (x256 parity for blessed-contrib)
+- `packages/contrib/src/color-utils.ts` (compat wrappers over core `resolveColor`)
 - `packages/contrib/src/utils.ts` wrappers: `getColorCode`, `toColorTag`
 
 These should remain in contrib so the blessed-contrib API surface stays intact and consistent.
@@ -79,12 +133,12 @@ These are currently overlapping names with different behavior in core vs contrib
 - `table`
   - Core: `packages/core/src/widgets/table.ts` (blessed-style fixed table)
   - Contrib: `packages/contrib/src/widgets/table.ts` (scrollable/list-backed table)
-  - Recommendation: move as a distinct core widget (`DataTable`, `TableList`, etc.) and keep contrib name.
+  - Status: unified core `Table` supports data-table mode; contrib wrapper points to core `Table`.
 
 - `log`
   - Core: `packages/core/src/widgets/log.ts` (ScrollableText-based)
   - Contrib: `packages/contrib/src/widgets/log.ts` (List-based logger)
-  - Recommendation: keep contrib name as compat; consider a distinct core name if merged.
+  - Status: list-based logger moved to core as `LogList` with contrib wrapper.
 
 ## Refactor Requirements for Core-Idiomatic Integration
 

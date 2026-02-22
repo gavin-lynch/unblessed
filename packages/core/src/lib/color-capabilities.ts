@@ -38,16 +38,42 @@ export function detectColorCapabilities(): ColorCapabilities {
   const runtime = getRuntime();
   const env = runtime.process.env;
 
+  const stdout = runtime.process.stdout as
+    | { getColorDepth?: () => number }
+    | undefined;
+  const colorDepth = stdout?.getColorDepth ? stdout.getColorDepth() : 0;
+
   // Check COLORTERM for truecolor support
   const colorTerm = env.COLORTERM || "";
-  const supportsTruecolor =
+  const termProgram = env.TERM_PROGRAM || "";
+  const term = env.TERM || "";
+  const programSuggestsTruecolor =
+    termProgram === "iTerm.app" ||
+    termProgram === "WezTerm" ||
+    termProgram === "Apple_Terminal" ||
+    termProgram === "vscode" ||
+    termProgram === "Hyper" ||
+    termProgram === "WarpTerminal" ||
+    termProgram === "kitty" ||
+    termProgram === "alacritty";
+  const envSuggestsTruecolor =
     colorTerm.includes("truecolor") ||
     colorTerm.includes("24bit") ||
-    colorTerm === "24-bit";
+    colorTerm === "24-bit" ||
+    term.includes("truecolor") ||
+    term.includes("direct") ||
+    !!env.ITERM_SESSION_ID ||
+    !!env.WEZTERM_EXECUTABLE ||
+    !!env.KITTY_WINDOW_ID ||
+    !!env.ALACRITTY_LOG ||
+    !!env.VTE_VERSION ||
+    !!env.WT_SESSION ||
+    programSuggestsTruecolor;
+  const supportsTruecolor = colorDepth >= 24 || envSuggestsTruecolor;
 
   // Check TERM for 256-color support
-  const term = env.TERM || "";
   const supports256 =
+    colorDepth >= 8 ||
     term.includes("256") ||
     term.includes("xterm") ||
     term.includes("screen") ||
