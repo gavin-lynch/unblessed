@@ -1,19 +1,22 @@
 /**
  * color-utils.ts - Contrib color utilities
  *
- * Wraps core color system with blessed-contrib compatibility.
- * Uses x256 for 256-color conversion to match blessed-contrib behavior.
+ * Wraps core color system for contrib widgets.
  */
 
 import {
-  normalizeColor,
+  resolveColor,
   type ColorCapabilities,
   type ColorInput,
 } from "@unblessed/core";
-import x256 from "x256";
+
+export interface ColorResolveOptions {
+  targetMode?: "auto" | "truecolor" | "256" | "16" | "8" | "none";
+  capabilities?: ColorCapabilities;
+}
 
 /**
- * Get color code (blessed-contrib compatible)
+ * Get color code
  * Preserves RGB arrays for truecolor, uses x256 for 256-color fallback
  *
  * @param color - Color input
@@ -23,45 +26,31 @@ import x256 from "x256";
 export function getColorCode(
   color: ColorInput,
   capabilities?: ColorCapabilities,
+  options: ColorResolveOptions = {},
 ): string | number | number[] {
-  const normalized = normalizeColor(color, undefined, capabilities);
+  const resolved = resolveColor(color, {
+    ...options,
+    capabilities,
+  });
 
-  // Preserve RGB arrays for truecolor
-  if (normalized.mode === "truecolor" && Array.isArray(normalized.value)) {
-    return normalized.value;
+  if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+    return resolved.value;
   }
 
-  // For 256-color, use x256 if input was RGB array (blessed-contrib compatibility)
-  if (Array.isArray(normalized.original) && normalized.original.length === 3) {
-    const [r, g, b] = normalized.original;
-    if (
-      typeof r === "number" &&
-      typeof g === "number" &&
-      typeof b === "number"
-    ) {
-      // Clamp to integers
-      const rInt = Math.max(0, Math.min(255, Math.round(r)));
-      const gInt = Math.max(0, Math.min(255, Math.round(g)));
-      const bInt = Math.max(0, Math.min(255, Math.round(b)));
-      // Use x256 for 256-color conversion (blessed-contrib compatibility)
-      return x256(rInt, gInt, bInt);
-    }
+  if (resolved.mode === "none") {
+    return "default";
   }
 
-  // Return normalized value
-  if (typeof normalized.value === "number") {
-    return normalized.value;
-  }
-  if (typeof normalized.value === "string") {
-    return normalized.value;
+  if (typeof resolved.value === "number") {
+    return resolved.value;
   }
 
-  return normalized.original;
+  return resolved.original;
 }
 
 /**
  * Convert to blessed tag format
- * Uses x256 for 256-color (blessed-contrib compatibility)
+ * Uses x256 for 256-color fallback
  *
  * @param color - Color input
  * @param capabilities - Terminal capabilities (auto-detected if not provided)
@@ -70,33 +59,24 @@ export function getColorCode(
 export function toColorTag(
   color: ColorInput,
   capabilities?: ColorCapabilities,
+  options: ColorResolveOptions = {},
 ): string {
-  const normalized = normalizeColor(color, undefined, capabilities);
+  const resolved = resolveColor(color, {
+    ...options,
+    capabilities,
+  });
 
-  // For RGB arrays, use x256 for 256-color (blessed-contrib compatibility)
-  if (Array.isArray(normalized.original) && normalized.original.length === 3) {
-    const [r, g, b] = normalized.original;
-    if (
-      typeof r === "number" &&
-      typeof g === "number" &&
-      typeof b === "number"
-    ) {
-      const rInt = Math.max(0, Math.min(255, Math.round(r)));
-      const gInt = Math.max(0, Math.min(255, Math.round(g)));
-      const bInt = Math.max(0, Math.min(255, Math.round(b)));
-      return String(x256(rInt, gInt, bInt));
-    }
+  if (resolved.mode === "none") {
+    return "default";
   }
 
-  // For numbers, return as string
-  if (typeof normalized.value === "number") {
-    return String(normalized.value);
+  if (resolved.mode === "truecolor" && Array.isArray(resolved.value)) {
+    return String(resolved.value.join(","));
   }
 
-  // For strings, return as-is
-  if (typeof normalized.value === "string") {
-    return normalized.value;
+  if (typeof resolved.value === "number") {
+    return String(resolved.value);
   }
 
-  return String(normalized.original);
+  return String(resolved.original);
 }

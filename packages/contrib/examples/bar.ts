@@ -17,6 +17,9 @@ const bar = new Bar({
   xOffset: 0,
   maxHeight: 9,
   height: "40%",
+  barBgColor: [64, 140, 255],
+  barFgColor: [10, 10, 10],
+  labelColor: [220, 220, 220],
   parent: screen,
 });
 

@@ -17,6 +17,7 @@ import {
   DrawilleCanvas,
   type CanvasConstructor,
 } from "../lib/canvas/index.js";
+import type { ColorTargetMode } from "../lib/color-types.js";
 import { stripAnsi } from "../lib/text-utils.js";
 import type { BoxOptions } from "../types/index.js";
 import { Box } from "./box.js";
@@ -166,6 +167,7 @@ export class CanvasWidget extends Box {
       this.canvasType,
     );
     this.ctx = this._canvas.getContext();
+    this._applyCanvasTargetMode();
 
     const dataToSet =
       this._lastData ?? (this.options as CanvasWidgetOptions).data;
@@ -202,6 +204,7 @@ export class CanvasWidget extends Box {
         this.canvasType,
       );
       this.ctx = this._canvas.getContext();
+      this._applyCanvasTargetMode();
 
       const dataToSet =
         this._lastData ?? (this.options as CanvasWidgetOptions).data;
@@ -274,8 +277,32 @@ export class CanvasWidget extends Box {
    * Converts the canvas buffer to content and renders as a Box.
    */
   override render(): any {
+    this._applyCanvasTargetMode();
     this.setContent(this.getFrameFromCanvas(), true, false);
     return super.render();
+  }
+
+  private _applyCanvasTargetMode(): void {
+    if (!this.ctx) return;
+    const mode = this.getCanvasTargetMode();
+    const innerCanvas = this.ctx._canvas as unknown as {
+      targetMode?: ColorTargetMode;
+    };
+    if (innerCanvas) innerCanvas.targetMode = mode;
+  }
+
+  protected getCanvasTargetMode(): ColorTargetMode {
+    const screenMode =
+      this.screen?.getEffectiveColorMode?.() ??
+      this.screen?.getColorPolicy?.().mode ??
+      "auto";
+    const widgetMode =
+      this.colorMode ??
+      (this.options as CanvasWidgetOptions).colorMode ??
+      "auto";
+    const requested = widgetMode === "auto" ? screenMode : widgetMode;
+    if (requested === "mono") return "none";
+    return requested as ColorTargetMode;
   }
 
   /**

@@ -20,6 +20,17 @@ export type ColorInput =
 export type ColorMode = "16" | "256" | "truecolor";
 
 /**
+ * Target mode for color output.
+ * - "auto" selects the best supported mode at runtime.
+ * - "8" and "none" allow explicit downgrade for compatibility output.
+ */
+export type ColorTargetMode = "auto" | ColorMode | "8" | "none";
+
+/**
+ * Compatibility profiles for deterministic legacy output.
+ */
+
+/**
  * Normalized color representation
  * Internal format used throughout the system
  */

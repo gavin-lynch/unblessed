@@ -11,7 +11,7 @@
  */
 
 import { toAnsiCode } from "../color-converter.js";
-import type { ColorInput } from "../color-types.js";
+import type { ColorInput, ColorTargetMode } from "../color-types.js";
 
 /**
  * Braille dot mapping (2×4 grid)
@@ -59,7 +59,7 @@ export const COLOR_NAMES: Record<string, number> = {
  * @deprecated Use toAnsiCode() from color-converter.ts instead
  */
 export function getFgCode(color: ColorInput): string {
-  return toAnsiCode(color, "fg");
+  return toAnsiCode(color, "fg", { targetMode: inferCanvasMode(color) });
 }
 
 /**
@@ -70,7 +70,14 @@ export function getFgCode(color: ColorInput): string {
  * @deprecated Use toAnsiCode() from color-converter.ts instead
  */
 export function getBgCode(color: ColorInput): string {
-  return toAnsiCode(color, "bg");
+  return toAnsiCode(color, "bg", { targetMode: inferCanvasMode(color) });
+}
+
+function inferCanvasMode(color: ColorInput): "16" | "256" {
+  if (Array.isArray(color)) return "256";
+  if (typeof color === "number") return "256";
+  if (typeof color === "string" && color.startsWith("#")) return "256";
+  return "16";
 }
 
 /**
@@ -109,6 +116,17 @@ export class DrawilleCanvas {
 
   /** Current font background color */
   fontBg: CanvasColor = "normal";
+
+  /** Target color mode override */
+  targetMode?: ColorTargetMode;
+
+  private _toAnsi(color: CanvasColor, type: "fg" | "bg"): string {
+    return toAnsiCode(
+      color,
+      type,
+      this.targetMode ? { targetMode: this.targetMode } : undefined,
+    );
+  }
 
   debugStats(): {
     width: number;
@@ -180,7 +198,7 @@ export class DrawilleCanvas {
 
     this.content[coord] |= mask;
     const color = colorOverride !== undefined ? colorOverride : this.color;
-    this.colors[coord] = toAnsiCode(color, "fg");
+    this.colors[coord] = this._toAnsi(color, "fg");
     this.chars[coord] = null;
   }
 
@@ -239,8 +257,8 @@ export class DrawilleCanvas {
   writeText(str: string, x: number, y: number): void {
     const coord = this.getCoord(x, y);
 
-    const bg = toAnsiCode(this.fontBg, "bg");
-    const fg = toAnsiCode(this.fontFg, "fg");
+    const bg = this._toAnsi(this.fontBg, "bg");
+    const fg = this._toAnsi(this.fontFg, "fg");
 
     for (let i = 0; i < str.length; i++) {
       if (coord + i < this.chars.length) {

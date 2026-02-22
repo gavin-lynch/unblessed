@@ -3,7 +3,7 @@
  * Provides helpers for generating color arrays for animated borders
  */
 
-import colors from "./colors.js";
+import { toRGB } from "./color-converter.js";
 
 /**
  * Convert HSL to RGB color values
@@ -95,32 +95,8 @@ export function generateGradient(
   to: string | number,
   length: number,
 ): string[] {
-  // Convert colors to RGB arrays
-  let fromRgb: number[];
-  let toRgb: number[];
-
-  if (typeof from === "string") {
-    if (from.startsWith("#")) {
-      fromRgb = colors.hexToRGB(from);
-    } else {
-      // Named color, convert to number first
-      const colorNum = colors.convert(from);
-      fromRgb = colors.vcolors[colorNum] || [0, 0, 0];
-    }
-  } else {
-    fromRgb = colors.vcolors[from] || [0, 0, 0];
-  }
-
-  if (typeof to === "string") {
-    if (to.startsWith("#")) {
-      toRgb = colors.hexToRGB(to);
-    } else {
-      const colorNum = colors.convert(to);
-      toRgb = colors.vcolors[colorNum] || [0, 0, 0];
-    }
-  } else {
-    toRgb = colors.vcolors[to] || [0, 0, 0];
-  }
+  const fromRgb = toRGB(from);
+  const toRgb = toRGB(to);
 
   const gradient: string[] = [];
 
