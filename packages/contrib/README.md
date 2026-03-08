@@ -2,7 +2,7 @@
 
 Dashboard widgets and charts for `@unblessed/core` - a complete port of [blessed-contrib](https://github.com/yaronn/blessed-contrib).
 
-![Contrib dashboard with truecolor](../../example-contrib-with-truecolor.png)
+![Contrib dashboard with truecolor](./images/example-contrib-with-truecolor.png)
 
 ## Installation
 
@@ -29,15 +29,15 @@ locally and on GitHub.
 
 ### Markdown Widget
 
-![Markdown widget](../../example-markdown-widget.png)
+![Markdown widget](./images/example-markdown-widget.png)
 
 ### Diff Widget
 
-![Diff widget](../../example-diff-widget.png)
+![Diff widget](./images/example-diff-widget.png)
 
 ### Theme Example
 
-![Themed example](../../example-themed.png)
+![Themed example](./images/example-themed.png)
 
 ### Optional Dependencies
 

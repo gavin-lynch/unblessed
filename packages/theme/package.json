@@ -1,0 +1,61 @@
+{
+  "name": "@unblessed/theme",
+  "description": "Theme tokens and utility classes for unblessed widgets",
+  "version": "1.0.0-alpha.23",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.cjs",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.cts",
+    "dist/**/*.map",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vdeantoni/unblessed.git",
+    "directory": "packages/theme"
+  },
+  "homepage": "https://github.com/vdeantoni/unblessed/tree/alpha/packages/theme",
+  "bugs": {
+    "url": "https://github.com/vdeantoni/unblessed/issues"
+  },
+  "keywords": [
+    "terminal",
+    "tui",
+    "theme",
+    "tokens",
+    "utilities",
+    "unblessed"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:check": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.2"
+  }
+}
