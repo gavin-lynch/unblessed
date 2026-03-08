@@ -6,6 +6,7 @@
  * platform-specific functionality.
  */
 
+export * from "./perf-hooks.js";
 export { getRuntime, setRuntime } from "./runtime-context.js";
 export * from "./runtime.js";
 
@@ -29,6 +30,7 @@ export { default as colors } from "./lib/colors.js";
 export * from "./lib/events.js";
 export * from "./lib/helpers.js";
 export * from "./lib/image-renderer.js";
+export * from "./lib/string-builder.js";
 export * from "./lib/text-utils.js";
 export { default as unicode } from "./lib/unicode.js";
 

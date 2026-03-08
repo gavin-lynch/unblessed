@@ -1,0 +1,18 @@
+{
+  "label": "256 - Deployment Progress",
+  "colorMode": "256",
+  "widgetColorMode": "256",
+  "optionsColorMode": "256",
+  "color_markers": 5,
+  "has_color_cells": true,
+  "truecolor_markers": 0,
+  "has_truecolor_cells": false,
+  "color_sample": {
+    "x": 1,
+    "y": 2,
+    "ch": " ",
+    "fg": 511,
+    "bg": 5
+  },
+  "truecolor_sample": null
+}

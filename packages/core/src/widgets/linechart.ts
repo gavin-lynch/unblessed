@@ -295,10 +295,10 @@ export class LineChart extends CanvasWidget {
       tags: true,
       border: {
         type: "line",
-        fg: 0,
+        fg: 7,
       },
       style: {
-        fg: "blue",
+        fg: "white",
       },
     });
 

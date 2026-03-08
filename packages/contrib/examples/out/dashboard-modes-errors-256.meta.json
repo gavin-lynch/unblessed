@@ -1,0 +1,18 @@
+{
+  "label": "256 - Errors Rate",
+  "colorMode": "256",
+  "widgetColorMode": "256",
+  "optionsColorMode": "256",
+  "color_markers": 49,
+  "has_color_cells": true,
+  "truecolor_markers": 0,
+  "has_truecolor_cells": false,
+  "color_sample": {
+    "x": 5,
+    "y": 1,
+    "ch": "⡇",
+    "fg": 0,
+    "bg": 511
+  },
+  "truecolor_sample": null
+}

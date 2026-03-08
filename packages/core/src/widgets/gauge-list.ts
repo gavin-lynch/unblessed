@@ -28,7 +28,7 @@ export interface GaugeListOptions extends BoxOptions {
 }
 
 export class GaugeList extends CanvasWidget {
-  override type = "gauge";
+  override type = "gauge-list";
   declare options: GaugeListOptions;
   gauges: GaugeListItem[] = [];
   private static readonly INDEX_PADDING = 3;

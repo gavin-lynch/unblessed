@@ -1,0 +1,18 @@
+{
+  "label": "16 - Throughput (bits/sec)",
+  "colorMode": "16",
+  "widgetColorMode": "16",
+  "optionsColorMode": "16",
+  "color_markers": 25,
+  "has_color_cells": true,
+  "truecolor_markers": 0,
+  "has_truecolor_cells": false,
+  "color_sample": {
+    "x": 0,
+    "y": 0,
+    "ch": " ",
+    "fg": 4,
+    "bg": 511
+  },
+  "truecolor_sample": null
+}

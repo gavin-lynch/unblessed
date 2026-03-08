@@ -2,52 +2,46 @@
  * listbar.ts - listbar element for blessed
  */
 
-/**
- * Modules
- */
-
 import helpers from "../lib/helpers.js";
 import type { KeyEvent, ListbarOptions, ListElementStyle } from "../types";
 import Box from "./box.js";
 
-/**
- * Listbar / HorizontalList
- */
+type ListbarCommand = {
+  text?: string;
+  prefix?: string;
+  keys?: string[];
+  callback?: () => void;
+  element?: Box;
+  _?: {
+    width?: number;
+  };
+};
 
 class Listbar extends Box {
   override type = "listbar";
   declare style: ListElementStyle;
-  override items: any[] = [];
-  ritems: any[] = [];
-  commands: any[] = [];
-  leftBase: number = 0;
-  leftOffset: number = 0;
+  override items: Box[] = [];
+  commands: ListbarCommand[] = [];
+  leftBase = 0;
+  selectedIndex = 0;
   mouse: boolean;
-  override _: any = {};
+  override _: Record<string, Box> = {};
 
   get selected() {
-    return this.leftBase + this.leftOffset;
+    return this.selectedIndex;
   }
 
   constructor(options: ListbarOptions = {}) {
     super(options);
 
     this.items = [];
-    this.ritems = [];
     this.commands = [];
-
     this.leftBase = 0;
-    this.leftOffset = 0;
-
+    this.selectedIndex = 0;
     this.mouse = options.mouse || false;
 
-    if (!this.style.selected) {
-      this.style.selected = {};
-    }
-
-    if (!this.style.item) {
-      this.style.item = {};
-    }
+    if (!this.style.selected) this.style.selected = {};
+    if (!this.style.item) this.style.item = {};
 
     if (options.commands || options.items) {
       this.setItems(options.commands || options.items);
@@ -62,7 +56,6 @@ class Listbar extends Box {
         ) {
           this.moveLeft();
           this.screen.render();
-          // Stop propagation if we're in a form.
           if (key.name === "tab") return false;
           return undefined;
         }
@@ -73,20 +66,14 @@ class Listbar extends Box {
         ) {
           this.moveRight();
           this.screen.render();
-          // Stop propagation if we're in a form.
           if (key.name === "tab") return false;
           return undefined;
         }
-        if (
-          key.name === "enter" ||
-          (options.vi && key.name === "k" && !key.shift)
-        ) {
+        if (key.name === "enter" || (options.vi && key.name === "k")) {
           this.emit("action", this.items[this.selected], this.selected);
           this.emit("select", this.items[this.selected], this.selected);
-          const item = this.items[this.selected];
-          if (item._.cmd.callback) {
-            item._.cmd.callback();
-          }
+          const cmd = this.commands[this.selected];
+          cmd?.callback?.();
           this.screen.render();
           return undefined;
         }
@@ -106,6 +93,7 @@ class Listbar extends Box {
           if (!~i) i = 9;
           return this.selectTab(i);
         }
+        return undefined;
       });
     }
 
@@ -114,184 +102,107 @@ class Listbar extends Box {
     });
   }
 
-  /**
-   * Set the commands/buttons on the bar.
-   * Can accept array of commands or object with command names as keys.
-   *
-   * @param commands - Array or object of commands
-   * @example
-   * // Array format
-   * listbar.setItems([
-   *   { text: 'File', callback: () => {} },
-   *   { text: 'Edit', callback: () => {} }
-   * ]);
-   * // Object format
-   * listbar.setItems({
-   *   File: () => {},
-   *   Edit: () => {}
-   * });
-   */
   setItems(commands: any) {
-    if (!Array.isArray(commands)) {
-      commands = Object.keys(commands).reduce(
-        (obj: any[], key: string, i: number) => {
-          let cmd = commands[key];
-          let cb: any;
+    const normalized = this.normalizeCommands(commands);
 
-          if (typeof cmd === "function") {
-            cb = cmd;
-            cmd = { callback: cb };
-          }
-
-          if (cmd.text == null) cmd.text = key;
-          if (cmd.prefix == null) cmd.prefix = ++i + "";
-
-          if (cmd.text == null && cmd.callback) {
-            cmd.text = cmd.callback.name;
-          }
-
-          obj.push(cmd);
-
-          return obj;
-        },
-        [],
-      );
-    }
-
-    this.items.forEach((el: any) => {
-      el.detach();
-    });
-
+    this.items.forEach((el) => el.detach());
     this.items = [];
-    this.ritems = [];
     this.commands = [];
+    this.leftBase = 0;
+    this.selectedIndex = 0;
 
-    commands.forEach((cmd: any) => {
-      this.add(cmd);
+    normalized.forEach((cmd) => {
+      this.appendItem(cmd);
     });
 
     this.emit("set items");
   }
 
-  appendItem(item: any, callback?: any) {
-    const prev = this.items[this.items.length - 1];
-    let drawn: number;
-    let cmd: any;
-    let title: string;
-    let len: number;
+  add(item: any, callback?: any) {
+    return this.appendItem(this.normalizeCommand(item, callback));
+  }
 
-    if (!this.parent) {
-      drawn = 0;
-    } else {
-      drawn = prev ? prev.aleft + prev.width : 0;
-      if (!this.screen.autoPadding) {
-        drawn += this.ileft;
-      }
-    }
+  addItem(item: any, callback?: any) {
+    return this.appendItem(this.normalizeCommand(item, callback));
+  }
 
-    if (typeof item === "object") {
-      cmd = item;
-      if (cmd.prefix == null) cmd.prefix = this.items.length + 1 + "";
-    }
+  appendItem(command: ListbarCommand) {
+    const index = this.items.length;
+    const cmd = { ...command } as ListbarCommand;
 
-    if (typeof item === "string") {
-      cmd = {
-        prefix: this.items.length + 1 + "",
-        text: item,
-        callback: callback,
-      };
-    }
+    if (cmd.prefix == null) cmd.prefix = String(index + 1);
+    if (cmd.keys && cmd.keys[0]) cmd.prefix = cmd.keys[0];
 
-    if (typeof item === "function") {
-      cmd = {
-        prefix: this.items.length + 1 + "",
-        text: item.name,
-        callback: item,
-      };
-    }
+    const prefixTag = helpers.generateTags(
+      this.style.prefix || { fg: "lightblack" },
+    );
+    const title =
+      (cmd.prefix ? prefixTag.open + cmd.prefix + prefixTag.close + ":" : "") +
+      (cmd.text ?? "");
 
-    if (cmd.keys && cmd.keys[0]) {
-      cmd.prefix = cmd.keys[0];
-    }
+    const visibleTitle = helpers.dropUnicode(helpers.stripTags(title));
+    const width = Math.max(1, visibleTitle.length + 2);
 
-    const t = helpers.generateTags(this.style.prefix || { fg: "lightblack" });
-
-    title =
-      (cmd.prefix != null ? t.open + cmd.prefix + t.close + ":" : "") +
-      cmd.text;
-
-    len = ((cmd.prefix != null ? cmd.prefix + ":" : "") + cmd.text).length;
-
-    const options: any = {
+    const el = new Box({
       screen: this.screen,
       top: 0,
-      left: drawn + 1,
+      left: 0,
       height: 1,
       content: title,
-      width: len + 2,
+      width,
       align: "center",
-      autoFocus: false,
       tags: true,
       mouse: true,
       style: helpers.merge({}, this.style.item),
       noOverflow: true,
-    };
-
-    if (!this.screen.autoPadding) {
-      options.top += this.itop;
-      options.left += this.ileft;
-    }
+    });
 
     ["bg", "fg", "bold", "underline", "blink", "inverse", "invisible"].forEach(
       (name) => {
-        options.style[name] = () => {
-          let attr =
-            this.items[this.selected] === el
-              ? this.style.selected[name]
-              : this.style.item[name];
+        (el.style as any)[name] = () => {
+          const isSelected = this.items[this.selected] === el;
+          let attr = isSelected
+            ? this.style.selected[name]
+            : this.style.item[name];
           if (typeof attr === "function") attr = attr(el);
           return attr;
         };
       },
     );
 
-    const el = new Box(options);
+    if (!this.screen.autoPadding) {
+      el.top += this.itop;
+      el.left += this.ileft;
+    }
 
-    this._[cmd.text] = el;
     cmd.element = el;
+    cmd._ = { width };
     (el as any)._ = { cmd };
 
-    this.ritems.push(cmd.text);
     this.items.push(el);
     this.commands.push(cmd);
     this.append(el);
+    this._[cmd.text ?? String(index)] = el;
 
-    if (cmd.callback) {
-      if (cmd.keys) {
-        this.screen.key(cmd.keys, () => {
-          this.emit("action", el, this.selected);
-          this.emit("select", el, this.selected);
-          if ((el as any)._.cmd.callback) {
-            (el as any)._.cmd.callback();
-          }
-          this.select(el);
-          this.screen.render();
-        });
-      }
+    if (cmd.callback && cmd.keys) {
+      this.screen.key(cmd.keys, () => {
+        this.emit("action", el, this.selected);
+        this.emit("select", el, this.selected);
+        cmd.callback?.();
+        this.select(el);
+        this.screen.render();
+      });
     }
 
     if (this.items.length === 1) {
       this.select(0);
     }
 
-    // XXX May be affected by new element.options.mouse option.
     if (this.mouse) {
       el.on("click", () => {
         this.emit("action", el, this.selected);
         this.emit("select", el, this.selected);
-        if ((el as any)._.cmd.callback) {
-          (el as any)._.cmd.callback();
-        }
+        cmd.callback?.();
         this.select(el);
         this.screen.render();
       });
@@ -301,210 +212,141 @@ class Listbar extends Box {
   }
 
   override render() {
+    const lpos = this._getCoords();
+    if (!lpos) return super.render();
+
+    const available = Math.max(0, lpos.xl - lpos.xi - this.iwidth);
     let drawn = 0;
+    let index = this.leftBase;
 
-    if (!this.screen.autoPadding) {
-      drawn += this.ileft;
-    }
-
-    this.items.forEach((el: any, i: number) => {
+    this.items.forEach((el, i) => {
       if (i < this.leftBase) {
         el.hide();
-      } else {
-        el.rleft = drawn + 1;
-        drawn += el.width + 2;
-        el.show();
       }
     });
+
+    while (index < this.items.length) {
+      const el = this.items[index];
+      const width = (this.commands[index]?._?.width ?? el.width) + 1;
+
+      if (drawn + width > available && drawn > 0) {
+        el.hide();
+        index++;
+        continue;
+      }
+
+      el.rleft = drawn + 1;
+      el.show();
+      drawn += width;
+      index++;
+    }
 
     return super.render();
   }
 
-  /**
-   * Select an item on the bar based on offset.
-   *
-   * @param offset - Index or element to select
-   * @example
-   * listbar.select(0); // Select first item
-   * listbar.select(itemElement); // Select by element
-   */
   select(offset: any) {
     if (typeof offset !== "number") {
       offset = this.items.indexOf(offset);
     }
 
-    if (offset < 0) {
-      offset = 0;
-    } else if (offset >= this.items.length) {
-      offset = this.items.length - 1;
-    }
+    if (offset < 0) offset = 0;
+    if (offset >= this.items.length) offset = this.items.length - 1;
 
-    if (!this.parent) {
-      this.emit("select item", this.items[offset], offset);
-      return;
-    }
-
-    const lpos = this._getCoords();
-    if (!lpos) return;
-
-    const width = lpos.xl - lpos.xi - this.iwidth;
-    let drawn = 0;
-    let visible = 0;
-    let el: any;
-
-    el = this.items[offset];
-    if (!el) return;
-
-    this.items.forEach((el: any, i: number) => {
-      if (i < this.leftBase) return;
-
-      const lpos = el._getCoords();
-      if (!lpos) return;
-
-      if (lpos.xl - lpos.xi <= 0) return;
-
-      drawn += lpos.xl - lpos.xi + 2;
-
-      if (drawn <= width) visible++;
-    });
-
-    let diff = offset - (this.leftBase + this.leftOffset);
-    if (offset > this.leftBase + this.leftOffset) {
-      if (offset > this.leftBase + visible - 1) {
-        this.leftOffset = 0;
-        this.leftBase = offset;
-      } else {
-        this.leftOffset += diff;
-      }
-    } else if (offset < this.leftBase + this.leftOffset) {
-      diff = -diff;
-      if (offset < this.leftBase) {
-        this.leftOffset = 0;
-        this.leftBase = offset;
-      } else {
-        this.leftOffset -= diff;
-      }
-    }
-
-    // XXX Move `action` and `select` events here.
-    this.emit("select item", el, offset);
+    this.ensureVisible(offset);
+    this.selectedIndex = offset;
+    this.emit("select item", this.items[offset], offset);
   }
 
-  /**
-   * Remove an item from the bar.
-   *
-   * @param child - Index or element to remove
-   * @example
-   * listbar.removeItem(0);
-   * listbar.removeItem(itemElement);
-   */
   removeItem(child: any) {
     const i = typeof child !== "number" ? this.items.indexOf(child) : child;
-
     if (~i && this.items[i]) {
-      child = this.items.splice(i, 1)[0];
-      this.ritems.splice(i, 1);
+      const el = this.items.splice(i, 1)[0];
       this.commands.splice(i, 1);
-      this.remove(child);
-      if (i === this.selected) {
-        this.select(i - 1);
-      }
+      this.remove(el);
+      if (i === this.selected) this.select(i - 1);
     }
-
     this.emit("remove item");
   }
 
-  /**
-   * Move relatively across the bar (select by offset).
-   *
-   * @param offset - Number of items to move (positive or negative)
-   * @example
-   * listbar.move(1); // Move right one item
-   * listbar.move(-1); // Move left one item
-   */
   move(offset: number) {
     this.select(this.selected + offset);
   }
 
-  /**
-   * Move left on the bar.
-   *
-   * @param offset - Number of items to move left (Default: 1)
-   * @example
-   * listbar.moveLeft();
-   * listbar.moveLeft(2);
-   */
-  moveLeft(offset?: number) {
-    this.move(-(offset || 1));
+  moveLeft(offset = 1) {
+    this.move(-offset);
   }
 
-  /**
-   * Move right on the bar.
-   *
-   * @param offset - Number of items to move right (Default: 1)
-   * @example
-   * listbar.moveRight();
-   * listbar.moveRight(2);
-   */
-  moveRight(offset?: number) {
-    this.move(offset || 1);
+  moveRight(offset = 1) {
+    this.move(offset);
   }
 
-  /**
-   * Select a button and execute its callback.
-   *
-   * @param index - Index of the tab to select
-   * @example
-   * listbar.selectTab(0); // Select and activate first item
-   */
   selectTab(index: number) {
     const item = this.items[index];
+    const cmd = this.commands[index];
     if (item) {
-      if ((item as any)._.cmd.callback) {
-        (item as any)._.cmd.callback();
-      }
+      cmd?.callback?.();
       this.select(index);
       this.screen.render();
     }
     this.emit("select tab", item, index);
   }
 
-  /**
-   * Add/append an item to the bar.
-   *
-   * @param item - Command object, string, or function
-   * @param callback - Optional callback for string/function items
-   * @example
-   * // Add object
-   * listbar.add({ text: 'Help', callback: () => {} });
-   * // Add string with callback
-   * listbar.add('Help', () => {});
-   * // Add function (uses function name as text)
-   * listbar.add(function help() {});
-   */
-  add(item: any, callback?: any) {
-    return this.appendItem(item, callback);
+  private normalizeCommands(commands: any): ListbarCommand[] {
+    if (Array.isArray(commands)) {
+      return commands.map((cmd) => this.normalizeCommand(cmd));
+    }
+
+    return Object.keys(commands).map((key, index) => {
+      let cmd = commands[key];
+      if (typeof cmd === "function") {
+        cmd = { callback: cmd };
+      }
+      if (cmd.text == null) cmd.text = key;
+      if (cmd.prefix == null) cmd.prefix = String(index + 1);
+      if (cmd.text == null && cmd.callback) cmd.text = cmd.callback.name;
+      return cmd as ListbarCommand;
+    });
   }
 
-  /**
-   * Add an item to the bar (alias for appendItem).
-   *
-   * @param item - Command object, string, or function
-   * @param callback - Optional callback for string/function items
-   * @example
-   * listbar.addItem('File', () => {});
-   */
-  addItem(item: any, callback?: any) {
-    return this.appendItem(item, callback);
+  private normalizeCommand(item: any, callback?: any): ListbarCommand {
+    if (typeof item === "function") {
+      return { text: item.name, callback: item };
+    }
+    if (typeof item === "string") {
+      return { text: item, callback };
+    }
+    return item as ListbarCommand;
+  }
+
+  private ensureVisible(index: number) {
+    const lpos = this._getCoords();
+    if (!lpos) return;
+
+    const available = Math.max(0, lpos.xl - lpos.xi - this.iwidth);
+    if (!available) return;
+
+    if (index < this.leftBase) {
+      this.leftBase = index;
+      return;
+    }
+
+    let drawn = 0;
+    for (let i = this.leftBase; i < this.items.length; i++) {
+      const width = (this.commands[i]?._?.width ?? this.items[i].width) + 1;
+      if (drawn + width > available) {
+        if (index >= i) {
+          this.leftBase = index;
+        }
+        break;
+      }
+      if (i === index) break;
+      drawn += width;
+    }
   }
 }
 
 Listbar.prototype.add = Listbar.prototype.appendItem;
 Listbar.prototype.addItem = Listbar.prototype.appendItem;
-
-/**
- * Expose
- */
 
 export default Listbar;
 export { Listbar };

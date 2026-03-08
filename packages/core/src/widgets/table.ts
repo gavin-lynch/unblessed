@@ -97,7 +97,7 @@ class Table extends Box {
         keys: options.keys,
         vi: options.vi,
         mouse: options.mouse,
-        tags: true,
+        tags: options.tags ?? true,
         interactive: options.interactive,
       } as ListOptions);
 
@@ -338,6 +338,14 @@ class Table extends Box {
    */
   get setRows(): (rows: any[][]) => void {
     return this.setData;
+  }
+
+  override focus(): void {
+    if (this._dataTableMode && this._dataTableList) {
+      this._dataTableList.focus();
+      return;
+    }
+    super.focus();
   }
 
   /**

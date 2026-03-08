@@ -4,6 +4,7 @@
  * Displays simple Unicode sparklines.
  */
 
+import { resolveColor } from "../lib/color-converter.js";
 import { getInnerBoxSize } from "../lib/helpers.js";
 import type { BoxOptions } from "../types/options.js";
 import { Box } from "./box.js";
@@ -70,13 +71,14 @@ export class Sparkline extends Box {
 
     for (let i = 0; i < titles.length; i++) {
       const titleFg = this.options.style?.titleFg || "white";
+      const titleTag = this._resolveTitleTag(titleFg);
       res +=
         "{bold}{" +
-        titleFg +
+        titleTag +
         "-fg}" +
         titles[i] +
         ":{/" +
-        titleFg +
+        titleTag +
         "-fg}{/bold}\r\n";
       res += generateSparkline(datasets[i], maxWidth) + "\r\n\r\n";
     }
@@ -100,6 +102,15 @@ export class Sparkline extends Box {
         ],
       },
     };
+  }
+
+  private _resolveTitleTag(color: string): string {
+    const mode = this.screen?.getEffectiveColorMode?.() ?? "auto";
+    const resolved = resolveColor(color, { targetMode: mode });
+    if (resolved.mode === "none") return "default";
+    if (typeof resolved.value === "number") return String(resolved.value);
+    if (Array.isArray(resolved.value)) return resolved.value.join(",");
+    return color;
   }
 }
 

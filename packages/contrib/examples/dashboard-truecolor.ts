@@ -109,9 +109,11 @@ const lcdLineOne = grid.set(0, 9, 2, 3, (opts) => new LCD(opts), {
 
 const errorsLine = grid.set(0, 6, 4, 3, (opts) => new Line(opts), {
   style: {
-    line: [220, 80, 80],
-    text: "white",
-    baseline: "black",
+    line: "default",
+    text: "default",
+    baseline: "default",
+    border: { fg: "white" },
+    label: { fg: "white" },
   },
   label: "Mono - Errors Rate",
   colorMode: "mono",
@@ -412,7 +414,7 @@ const transactionsData1 = {
 
 const errorsData = {
   title: "server 1",
-  style: { line: "red" },
+  style: { line: "default" },
   x: ["00:00", "00:05", "00:10", "00:15", "00:20", "00:25"],
   y: [30, 50, 70, 40, 50, 20],
 };
