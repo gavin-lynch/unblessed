@@ -51,27 +51,28 @@ npm install @unblessed/node@alpha
 **Use when:** Building new Node.js terminal applications (recommended).
 
 **Example:**
+
 ```typescript
-import { Screen, Box } from '@unblessed/node';
+import { Screen, Box } from "@unblessed/node";
 
 const screen = new Screen({ smartCSR: true });
 
 const box = new Box({
   parent: screen,
-  top: 'center',
-  left: 'center',
-  width: '50%',
-  height: '50%',
-  content: 'Hello World!',
-  border: { type: 'line' },
+  top: "center",
+  left: "center",
+  width: "50%",
+  height: "50%",
+  content: "Hello World!",
+  border: { type: "line" },
   style: {
-    fg: 'white',
-    bg: 'blue',
-    border: { fg: '#f0f0f0' }
-  }
+    fg: "white",
+    bg: "blue",
+    border: { fg: "#f0f0f0" },
+  },
 });
 
-screen.key(['escape', 'q'], () => process.exit(0));
+screen.key(["escape", "q"], () => process.exit(0));
 screen.render();
 ```
 
@@ -86,19 +87,20 @@ npm install @unblessed/browser@alpha xterm
 **Use when:** Building terminal UIs in the browser.
 
 **Example:**
+
 ```typescript
-import { Terminal } from 'xterm';
-import { Screen, Box } from '@unblessed/browser';
+import { Terminal } from "xterm";
+import { Screen, Box } from "@unblessed/browser";
 
 const term = new Terminal();
-term.open(document.getElementById('terminal'));
+term.open(document.getElementById("terminal"));
 
 const screen = new Screen({ terminal: term });
 
 const box = new Box({
   parent: screen,
-  content: 'Hello from the browser!',
-  border: { type: 'line' }
+  content: "Hello from the browser!",
+  border: { type: "line" },
 });
 
 screen.render();
@@ -117,13 +119,14 @@ npm install @unblessed/blessed@alpha
 **Use when:** Migrating from blessed or need exact API compatibility.
 
 **Example:**
+
 ```javascript
-const blessed = require('@unblessed/blessed');
+const blessed = require("@unblessed/blessed");
 
 const screen = blessed.screen({ smartCSR: true });
 const box = blessed.box({
   parent: screen,
-  content: 'Same API as blessed!'
+  content: "Same API as blessed!",
 });
 
 screen.render();
@@ -150,12 +153,15 @@ npm install @unblessed/react@alpha react
 **Use when:** Building terminal UIs with React and JSX.
 
 **Example:**
+
 ```tsx
-import { render, Box, Text } from '@unblessed/react';
+import { render, Box, Text } from "@unblessed/react";
 
 const App = () => (
   <Box flexDirection="column" padding={1}>
-    <Text bold color="cyan">Hello from React!</Text>
+    <Text bold color="cyan">
+      Hello from React!
+    </Text>
     <Box borderStyle="single" padding={1} marginTop={1}>
       <Text>Flexbox layouts work automatically!</Text>
     </Box>
@@ -175,6 +181,16 @@ npm install @unblessed/vrt@alpha
 
 **Use when:** Testing terminal UI snapshots.
 
+### [@unblessed/perf](packages/perf)
+
+Performance instrumentation tools for render timing and FPS tracking.
+
+```bash
+npm install @unblessed/perf@alpha
+```
+
+**Use when:** Profiling render performance or collecting FPS stats.
+
 ## 🚀 Quick Start
 
 ### For New Projects
@@ -186,30 +202,30 @@ npm install @unblessed/node@alpha
 ```
 
 ```typescript
-import { Screen, Box, List } from '@unblessed/node';
+import { Screen, Box, List } from "@unblessed/node";
 
 const screen = new Screen({
   smartCSR: true,
-  title: 'My App'
+  title: "My App",
 });
 
 const list = new List({
   parent: screen,
-  border: { type: 'line' },
-  width: '50%',
-  height: '50%',
-  top: 'center',
-  left: 'center',
+  border: { type: "line" },
+  width: "50%",
+  height: "50%",
+  top: "center",
+  left: "center",
   keys: true,
   vi: true,
   style: {
-    selected: { bg: 'blue' }
-  }
+    selected: { bg: "blue" },
+  },
 });
 
-list.setItems(['Option 1', 'Option 2', 'Option 3']);
+list.setItems(["Option 1", "Option 2", "Option 3"]);
 
-screen.key(['escape', 'q'], () => process.exit(0));
+screen.key(["escape", "q"], () => process.exit(0));
 screen.render();
 ```
 
@@ -274,6 +290,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 **Current Version:** `1.0.0-alpha.21`
 
 **🔗 Links:**
+
 - 📚 [Documentation](https://unblessed.dev)
 - 📦 [npm Registry](https://www.npmjs.com/package/@unblessed/node)
 - 🐙 [GitHub](https://github.com/vdeantoni/unblessed)
@@ -316,21 +333,25 @@ See [CLAUDE.md](CLAUDE.md) for the complete modernization roadmap.
 As an alpha release, please be aware of the following:
 
 **Stability:**
+
 - API may change between alpha versions
 - Some edge cases may not be fully tested
 - Performance optimizations are ongoing
 
 **Testing:**
+
 - @unblessed/blessed integration tests in progress
 - Some complex blessed examples may need adjustments
 - Browser package E2E tests cover common scenarios but not all edge cases
 
 **Documentation:**
+
 - Migration guide from blessed is being written
 - Some advanced features may lack documentation
 - API documentation is primarily via TypeScript definitions
 
 **Platform Support:**
+
 - Node.js >= 22.0.0 required (modern LTS versions coming soon)
 - Browser support tested on Chrome, Firefox, Safari
 - Terminal compatibility verified on iTerm2, Alacritty, Windows Terminal
@@ -340,18 +361,21 @@ As an alpha release, please be aware of the following:
 We need your help to make unblessed production-ready! Please test and report:
 
 **What to Test:**
+
 - Migration from existing blessed applications
 - Your favorite blessed widgets and features
 - Browser terminal UIs with XTerm.js
 - Performance with large UIs or rapid updates
 
 **How to Report Issues:**
+
 - [Open an issue](https://github.com/vdeantoni/unblessed/issues) on GitHub
 - Include your environment (Node version, OS, terminal emulator)
 - Provide minimal reproduction code
 - Check existing issues first
 
 **What We're Looking For:**
+
 - API ergonomics and developer experience feedback
 - Breaking changes from blessed behavior
 - Performance bottlenecks
@@ -363,21 +387,27 @@ We need your help to make unblessed production-ready! Please test and report:
 unblessed includes 27+ widgets for building rich terminal UIs:
 
 **Core Widgets:**
+
 - Screen, Box, Text, Line, Element
 
 **Scrollable:**
+
 - ScrollableBox, ScrollableText
 
 **Lists:**
+
 - List, Listbar, ListTable, FileManager
 
 **Forms:**
+
 - Form, Input, Textarea, Textbox, Button, Checkbox, RadioSet, RadioButton
 
 **UI Elements:**
+
 - ProgressBar, Loading, Log, Message, Prompt, Question
 
 **Special:**
+
 - BigText, Table, Layout, Terminal, Image, ANSIImage, OverlayImage, Video
 
 ## 💻 Development
