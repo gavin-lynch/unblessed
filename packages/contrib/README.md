@@ -2,6 +2,8 @@
 
 Dashboard widgets and charts for `@unblessed/core` - a complete port of [blessed-contrib](https://github.com/yaronn/blessed-contrib).
 
+![Contrib dashboard with truecolor](../../example-contrib-with-truecolor.png)
+
 ## Installation
 
 ```bash
@@ -19,6 +21,23 @@ pnpm add @unblessed/contrib
 - **Layouts**: Grid, Carousel
 - **Full TypeScript support** with comprehensive type definitions
 - **100% compatible** with blessed-contrib API
+
+## Showcase
+
+These screenshots are tracked in-repo with relative paths so they render both
+locally and on GitHub.
+
+### Markdown Widget
+
+![Markdown widget](../../example-markdown-widget.png)
+
+### Diff Widget
+
+![Diff widget](../../example-diff-widget.png)
+
+### Theme Example
+
+![Themed example](../../example-themed.png)
 
 ### Optional Dependencies
 

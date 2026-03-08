@@ -6,6 +6,11 @@
   "author": "Vinicius De Antoni <vdeantoni@gmail.com>",
   "license": "MIT",
   "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ],
   "packageManager": "pnpm@10.28.2",
   "repository": {
     "type": "git",
@@ -41,11 +46,18 @@
     "test:ui": "turbo run test:ui",
     "test:coverage": "turbo run test:coverage",
     "bench": "turbo run bench",
+    "perf:overlay": "bun run packages/contrib/examples/perf-overlay.ts",
+    "perf:truecolor": "bun run packages/contrib/examples/truecolor-animated.ts",
     "lint": "turbo lint",
     "lint:check": "turbo lint:check",
     "format": "turbo format",
     "format:check": "turbo format:check",
     "prepare": "husky"
+  },
+  "dependencies": {
+    "@unblessed/core": "workspace:*",
+    "@unblessed/node": "workspace:*",
+    "@unblessed/theme": "workspace:*"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

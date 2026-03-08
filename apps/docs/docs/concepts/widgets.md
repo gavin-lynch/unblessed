@@ -477,7 +477,7 @@ const box = new Box({
 **Available tags**:
 
 - Style: `{bold}`, `{underline}`, `{blink}`, `{inverse}`
-- Colors: `{red-fg}`, `{blue-bg}`, `{#ff0000-fg}`
+- Colors: `{red-fg}`, `{blue-bg}`, `{#ff0000-fg}`, `{255,110,90-fg}`
 - Alignment: `{left}`, `{center}`, `{right}`
 - Reset: `{/bold}`, `{/red-fg}`, `{/}`
 
