@@ -1,0 +1,18 @@
+{
+  "label": "16 - Server Utilization (%)",
+  "colorMode": "16",
+  "widgetColorMode": "16",
+  "optionsColorMode": "16",
+  "color_markers": 92,
+  "has_color_cells": true,
+  "truecolor_markers": 0,
+  "has_truecolor_cells": false,
+  "color_sample": {
+    "x": 30,
+    "y": 3,
+    "ch": " ",
+    "fg": 511,
+    "bg": 4
+  },
+  "truecolor_sample": null
+}

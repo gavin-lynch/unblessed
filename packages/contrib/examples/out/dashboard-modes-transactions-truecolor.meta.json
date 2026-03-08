@@ -1,0 +1,28 @@
+{
+  "label": "Truecolor - Total Transactions",
+  "colorMode": "truecolor",
+  "widgetColorMode": "truecolor",
+  "optionsColorMode": "truecolor",
+  "color_markers": 55,
+  "has_color_cells": true,
+  "truecolor_markers": 46,
+  "has_truecolor_cells": true,
+  "color_sample": {
+    "x": 5,
+    "y": 1,
+    "ch": "⡇",
+    "fg": 0,
+    "bg": 511
+  },
+  "truecolor_sample": {
+    "x": 5,
+    "y": 1,
+    "ch": "⡇",
+    "tcBg": null,
+    "tcFg": [
+      0,
+      0,
+      0
+    ]
+  }
+}

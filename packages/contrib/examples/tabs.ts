@@ -10,6 +10,7 @@ import { Screen } from "@unblessed/node";
 import { Line, Table, Tabs } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });
+screen.enableMouse();
 screen.title = "Tabs Example";
 
 const backdrop = new Box({

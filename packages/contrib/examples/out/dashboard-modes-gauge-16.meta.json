@@ -1,0 +1,18 @@
+{
+  "label": "16 - Storage",
+  "colorMode": "16",
+  "widgetColorMode": "16",
+  "optionsColorMode": "16",
+  "color_markers": 10,
+  "has_color_cells": true,
+  "truecolor_markers": 0,
+  "has_truecolor_cells": false,
+  "color_sample": {
+    "x": 1,
+    "y": 2,
+    "ch": " ",
+    "fg": 511,
+    "bg": 2
+  },
+  "truecolor_sample": null
+}

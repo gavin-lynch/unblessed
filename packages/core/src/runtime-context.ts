@@ -47,10 +47,9 @@ export function getRuntime(): Runtime {
   if (!runtime) {
     throw new Error(
       "Runtime not initialized. " +
-        "Call initNode() from @unblessed/node or initBrowser() from @unblessed/browser first.\n\n" +
+        "Import @unblessed/node (Node.js) or @unblessed/browser (browser) before creating widgets.\n\n" +
         "Example:\n" +
-        "  import { initNode, Screen } from '@unblessed/node';\n" +
-        "  initNode();\n" +
+        "  import { Screen } from '@unblessed/node';\n" +
         "  const screen = new Screen();",
     );
   }

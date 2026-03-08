@@ -22,6 +22,7 @@ const header = new Box({
   height: 3,
   content: "{center}{bold}{cyan-fg}System Dashboard{/cyan-fg}{/bold}{/center}",
   tags: true,
+  colorMode: "16",
   style: {
     fg: "white",
     bg: "blue",
@@ -35,6 +36,7 @@ const sidebar = new Box({
   left: 0,
   width: 20,
   height: "100%-3",
+  colorMode: "mono",
   border: {
     type: "line",
   },
@@ -67,6 +69,7 @@ const content = new Box({
   left: 20,
   width: "100%-20",
   height: "100%-3",
+  colorMode: "256",
   border: {
     type: "line",
   },

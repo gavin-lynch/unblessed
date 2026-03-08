@@ -4,6 +4,7 @@
 
 import { AnsiTermCanvas } from "../lib/canvas/index.js";
 import { resolveColor } from "../lib/color-converter.js";
+import type { ColorTargetMode } from "../lib/color-types.js";
 import { abbreviateNumber, getInnerBoxSize } from "../lib/helpers.js";
 import type { BoxOptions } from "../types/options.js";
 import { Box } from "./box.js";
@@ -32,7 +33,7 @@ export interface StackedBarOptions extends BoxOptions {
 }
 
 export class StackedBar extends CanvasWidget {
-  override type = "bar";
+  override type = "stacked-bar";
   declare options: StackedBarOptions;
   private static readonly BAR_TOP_PADDING = 2;
   private static readonly BORDER_PADDING = 2;
@@ -288,6 +289,10 @@ export class StackedBar extends CanvasWidget {
     if (typeof resolved.value === "number") return resolved.value;
     if (Array.isArray(resolved.value)) return resolved.value;
     return color;
+  }
+
+  protected override getCanvasTargetMode(): ColorTargetMode {
+    return super.getCanvasTargetMode();
   }
 }
 

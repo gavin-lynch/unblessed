@@ -16,6 +16,7 @@ import helpers from "../lib/helpers.js";
 import Program from "../lib/program.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers";
 import unicode from "../lib/unicode.js";
+import { getRenderObserver } from "../perf-hooks.js";
 import { getRuntime } from "../runtime-context.js";
 import type {
   KeyEvent,
@@ -999,6 +1000,9 @@ class Screen extends Node {
       return;
     }
 
+    const renderObserver = getRenderObserver();
+    renderObserver?.renderStart?.(this, Date.now());
+
     this.emit("prerender");
 
     this._borderStops = {};
@@ -1034,6 +1038,8 @@ class Screen extends Node {
     this.renders++;
 
     this.emit("render");
+
+    renderObserver?.renderEnd?.(this, Date.now());
   }
 
   /**

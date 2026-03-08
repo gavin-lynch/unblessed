@@ -3,6 +3,8 @@
  */
 
 import { AnsiTermCanvas } from "../lib/canvas/index.js";
+import { resolveColor } from "../lib/color-converter.js";
+import type { ColorTargetMode } from "../lib/color-types.js";
 import { getInnerBoxSize } from "../lib/helpers.js";
 import type { BoxOptions } from "../types/options.js";
 import { CanvasWidget } from "./canvas.js";
@@ -82,7 +84,9 @@ export class Bar extends CanvasWidget {
     for (let i = 0; i < barData.data.length; i++) {
       const h = Math.round(barY * (barData.data[i] / max));
 
-      const barColor = (this.options.barBgColor ?? "blue") as any;
+      const barColor = this.resolveCompatColor(
+        this.options.barBgColor ?? "blue",
+      ) as any;
       const barWidth = this.options.barWidth! + 1;
 
       if (barData.data[i] > 0) {
@@ -93,20 +97,40 @@ export class Bar extends CanvasWidget {
       }
 
       if (this.options.showText) {
-        c._canvas.fontBg = barColor;
-        c.fillStyle = (this.options.barFgColor ?? "white") as any;
+        c._canvas.fontBg = barData.data[i] > 0 ? barColor : "normal";
+        c.fillStyle = this.resolveCompatColor(
+          this.options.barFgColor ?? "white",
+        ) as any;
         c.fillText(barData.data[i].toString(), x + 1, valueRow);
         c._canvas.fontBg = "normal";
       }
 
       c.strokeStyle = "normal";
-      c.fillStyle = (this.options.labelColor ?? "white") as any;
+      c.fillStyle = this.resolveCompatColor(
+        this.options.labelColor ?? "white",
+      ) as any;
       if (this.options.showText) {
         c.fillText(barData.titles[i], x + 1, labelRow);
       }
 
       x += this.options.barSpacing! + 1;
     }
+  }
+
+  private resolveCompatColor(
+    color: string | number | number[],
+  ): string | number | number[] {
+    const resolved = resolveColor(color, {
+      targetMode: this.getCanvasTargetMode(),
+    });
+    if (resolved.mode === "none") return "normal";
+    if (typeof resolved.value === "number") return resolved.value;
+    if (Array.isArray(resolved.value)) return resolved.value;
+    return color;
+  }
+
+  protected override getCanvasTargetMode(): ColorTargetMode {
+    return super.getCanvasTargetMode();
   }
 
   getOptionsPrototype(): BarOptions {

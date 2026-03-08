@@ -1,0 +1,28 @@
+{
+  "label": "Truecolor - Percent Donut",
+  "colorMode": "truecolor",
+  "widgetColorMode": "truecolor",
+  "optionsColorMode": "truecolor",
+  "color_markers": 26,
+  "has_color_cells": true,
+  "truecolor_markers": 26,
+  "has_truecolor_cells": true,
+  "color_sample": {
+    "x": 20,
+    "y": 7,
+    "ch": "⣀",
+    "fg": 0,
+    "bg": 511
+  },
+  "truecolor_sample": {
+    "x": 20,
+    "y": 7,
+    "ch": "⣀",
+    "tcBg": null,
+    "tcFg": [
+      0,
+      0,
+      0
+    ]
+  }
+}

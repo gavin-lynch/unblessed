@@ -1,0 +1,7 @@
+truecolor_markers=123
+length=9035
+truecolor_cells=50
+cols=120
+rows=40
+lines=40
+line0=120

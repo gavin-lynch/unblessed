@@ -6,6 +6,7 @@
  * Modules
  */
 
+import { getRenderObserver } from "../perf-hooks.js";
 import type { KeyEvent } from "../types/events.js";
 import colors from "./colors.js";
 import { EventEmitterBase } from "./event-emitter-base.js";
@@ -1884,6 +1885,8 @@ class Program extends EventEmitterBase {
   }
 
   _owrite(text: string) {
+    const renderObserver = getRenderObserver();
+    renderObserver?.outputFlush?.(text.length, Date.now());
     return this.write(text);
   }
 
@@ -2811,6 +2814,23 @@ class Program extends EventEmitterBase {
       param = parts[0] || "normal";
     } else {
       param = param || "normal";
+      m = /^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s+(fg|bg)$/.exec(param);
+      if (m) {
+        const r = Math.max(0, Math.min(255, parseInt(m[1]!, 10)));
+        const g = Math.max(0, Math.min(255, parseInt(m[2]!, 10)));
+        const b = Math.max(0, Math.min(255, parseInt(m[3]!, 10)));
+        const channel = m[4];
+
+        if (val === false) {
+          return this._attr(`default ${channel}`);
+        }
+
+        if (channel === "fg") {
+          return `\x1b[38;2;${r};${g};${b}m`;
+        }
+        return `\x1b[48;2;${r};${g};${b}m`;
+      }
+
       parts = param.split(/\s*[,;]\s*/);
     }
 
@@ -2975,6 +2995,23 @@ class Program extends EventEmitterBase {
         // 256-color fg and bg
         if (param[0] === "#") {
           param = param.replace(/#(?:[0-9a-f]{3}){1,2}/i, colors.match);
+        }
+
+        m = /^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s+(fg|bg)$/.exec(param);
+        if (m) {
+          const r = Math.max(0, Math.min(255, parseInt(m[1]!, 10)));
+          const g = Math.max(0, Math.min(255, parseInt(m[2]!, 10)));
+          const b = Math.max(0, Math.min(255, parseInt(m[3]!, 10)));
+          const channel = m[4];
+
+          if (val === false) {
+            return this._attr(`default ${channel}`);
+          }
+
+          if (channel === "fg") {
+            return `\x1b[38;2;${r};${g};${b}m`;
+          }
+          return `\x1b[48;2;${r};${g};${b}m`;
         }
 
         m = /^(-?\d+) (fg|bg)$/.exec(param);

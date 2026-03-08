@@ -126,6 +126,17 @@ This document outlines a comprehensive refactoring plan to unify color handling 
               └───────────────────────┘
 ```
 
+### Color Mode Policy (Per-Widget Overrides + Fallbacks)
+
+Color Mode is a core rendering policy with per-widget overrides and deterministic
+fallback rules. The screen selects an effective mode based on terminal
+capabilities, and each widget can override it to `Monocolor`, `16`, `256`, or
+`Truecolor`. When a widget requests a mode the terminal cannot support, the
+renderer falls back in a fixed order (truecolor → 256 → 16 → mono) while
+preserving the best available fidelity. This allows a single screen to render
+multiple color modes simultaneously, with each widget resolved against its own
+mode and downgraded only when required.
+
 ### Core Components
 
 #### 1. **Color Type System** (`packages/core/src/lib/color-types.ts`)
