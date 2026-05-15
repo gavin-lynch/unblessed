@@ -12,11 +12,7 @@
         "ch": "⣀",
         "attr": 3071,
         "tcBg": null,
-        "tcFg": [
-          205,
-          0,
-          205
-        ]
+        "tcFg": [205, 0, 205]
       },
       "hasTruecolor": true
     },
@@ -28,11 +24,7 @@
         "y": 29,
         "ch": " ",
         "attr": 261637,
-        "tcBg": [
-          205,
-          0,
-          205
-        ],
+        "tcBg": [205, 0, 205],
         "tcFg": null
       },
       "hasTruecolor": true
@@ -45,11 +37,7 @@
         "y": 9,
         "ch": " ",
         "attr": 261637,
-        "tcBg": [
-          205,
-          0,
-          205
-        ],
+        "tcBg": [205, 0, 205],
         "tcFg": null
       },
       "hasTruecolor": true
@@ -75,11 +63,7 @@
         "y": 17,
         "ch": " ",
         "attr": 261636,
-        "tcBg": [
-          0,
-          0,
-          238
-        ],
+        "tcBg": [0, 0, 238],
         "tcFg": null
       },
       "hasTruecolor": true
@@ -106,11 +90,7 @@
         "ch": "⠤",
         "attr": 4095,
         "tcBg": null,
-        "tcFg": [
-          229,
-          229,
-          229
-        ]
+        "tcFg": [229, 229, 229]
       },
       "hasTruecolor": true
     },
@@ -123,11 +103,7 @@
         "ch": "⡇",
         "attr": 511,
         "tcBg": null,
-        "tcFg": [
-          0,
-          0,
-          0
-        ]
+        "tcFg": [0, 0, 0]
       },
       "hasTruecolor": true
     },
@@ -140,11 +116,7 @@
         "ch": "⡇",
         "attr": 511,
         "tcBg": null,
-        "tcFg": [
-          0,
-          0,
-          0
-        ]
+        "tcFg": [0, 0, 0]
       },
       "hasTruecolor": true
     },
@@ -157,11 +129,7 @@
         "ch": "⣀",
         "attr": 1535,
         "tcBg": null,
-        "tcFg": [
-          0,
-          205,
-          0
-        ]
+        "tcFg": [0, 205, 0]
       },
       "hasTruecolor": true
     },
