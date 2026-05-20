@@ -17,7 +17,21 @@
  * ```
  */
 
+import path from "path";
+import { fileURLToPath } from "url";
 import type { Plugin, UserConfig } from "vite";
+
+const vitePluginDir = path.dirname(fileURLToPath(import.meta.url));
+const browserStubPath = (...segments: string[]) =>
+  path.join(vitePluginDir, "..", "stubs", ...segments);
+
+/** Resolves beside compiled `dist/vite-plugin/` → `dist/stubs/…`. */
+export const MARKED_TERMINAL_BROWSER_STUB = browserStubPath(
+  "marked-terminal-browser.js",
+);
+export const PICTURE_TUBER_BROWSER_STUB = browserStubPath(
+  "picture-tuber-browser.js",
+);
 
 export interface BlessedBrowserPluginOptions {
   /**
@@ -40,6 +54,7 @@ export default function blessedBrowserPlugin(
         ? {
             include: [
               "@unblessed/core",
+              "@unblessed/contrib",
               "@unblessed/react",
               "react",
               "buffer",
@@ -55,6 +70,15 @@ export default function blessedBrowserPlugin(
         : undefined;
 
       return {
+        resolve: {
+          alias: {
+            // Core statically imports marked-terminal for the Markdown widget; the real package
+            // is Node-only (supports-color/hyperlinks, tty…). Alias to a noop for browser demos.
+            "marked-terminal": MARKED_TERMINAL_BROWSER_STUB,
+            // Core statically imports picture-tuber for the Picture widget; it pulls charm + Node stream/png stack.
+            "picture-tuber": PICTURE_TUBER_BROWSER_STUB,
+          },
+        },
         optimizeDeps: optimizeDepsConfig,
       };
     },

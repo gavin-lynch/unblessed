@@ -3,7 +3,17 @@ import { defineConfig } from "vite";
 import blessedBrowser from "./dist/vite-plugin/index.js";
 
 export default defineConfig({
+  root: resolve(__dirname, "example"),
   plugins: [blessedBrowser()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "example/index.html"),
+        tree: resolve(__dirname, "example/tree.html"),
+        charm: resolve(__dirname, "example/charm.html"),
+      },
+    },
+  },
   server: {
     port: 8080,
   },
@@ -22,6 +32,8 @@ export default defineConfig({
         "../core/dist/data/fonts/ter-u14b.json",
       ),
       "@unblessed/core": resolve(__dirname, "../core/dist/index.js"),
+      "@unblessed/theme": resolve(__dirname, "../theme/dist/index.js"),
+      "@unblessed/contrib": resolve(__dirname, "../contrib/dist/index.js"),
     },
   },
 });

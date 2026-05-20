@@ -7,6 +7,8 @@ export default defineConfig([
     // Entry point
     entry: {
       index: "src/index.ts",
+      "stubs/marked-terminal-browser": "src/stubs/marked-terminal-browser.ts",
+      "stubs/picture-tuber-browser": "src/stubs/picture-tuber-browser.ts",
     },
 
     // Output formats - browser-friendly
