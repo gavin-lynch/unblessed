@@ -1,9 +1,9 @@
 {
   "name": "@unblessed/root",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Unblessed TUI library monorepo",
-  "author": "Vinicius De Antoni <vdeantoni@gmail.com>",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>, Vinicius De Antoni <vdeantoni@gmail.com>",
   "license": "MIT",
   "type": "module",
   "workspaces": [
