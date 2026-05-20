@@ -109,6 +109,21 @@ screen.render();
 </html>
 ```
 
+### Contrib dashboard demo
+
+This package includes a full-screen **truecolor dashboard** (browser port of
+[`packages/contrib/examples/dashboard-truecolor.ts`](../contrib/examples/dashboard-truecolor.ts))
+under `example/`. It uses `@unblessed/contrib` charts in a `Grid`, xterm.js with `xterm-addon-fit`, and an
+explicit `setRuntime(new BrowserRuntime())` before constructing widgets.
+
+From the monorepo root (with `pnpm build` run at least once for `dist/` outputs):
+
+```bash
+pnpm --filter @unblessed/browser dev
+```
+
+Then open [http://localhost:8080](http://localhost:8080). For the **Tree** widget demo, open [http://localhost:8080/tree.html](http://localhost:8080/tree.html). For the **Lip Gloss (charm)** demo, open [http://localhost:8080/charm.html](http://localhost:8080/charm.html). See `example/README.md` for details.
+
 ## API Reference
 
 ### `Screen`
@@ -350,10 +365,23 @@ setInterval(() => {
 
 ### Vite
 
+The optional **`@unblessed/browser/vite-plugin`** configures common `optimizeDeps` settings and resolves **`marked-terminal`** and **`picture-tuber`** to **browser stubs**. `@unblessed/core` still imports both up front (**Markdown** and **Picture** widgets). The real packages pull Node-only transitive modules (`supports-hyperlinks`, `supports-color`, `stream`/`charm`, PNG/native bits, …) that break Vite browser bundles (`process is not defined`, **`Stream is not a constructor`**, etc.). Without the stubs, optimized dependency chunks fail during pre-bundle / page load.
+
+Markdown and Picture widgets are **not** fully supported behind these stubs: `marked-terminal` is a noop class; **`picture-tuber`** fails intentionally so Picture falls back to its placeholder if used. Swap the aliases if you ship real browser-safe implementations later.
+
 ```typescript
 // vite.config.ts
 import { defineConfig } from "vite";
+import tuiBrowser from "@unblessed/browser/vite-plugin";
 
+export default defineConfig({
+  plugins: [tuiBrowser()],
+});
+```
+
+Manual tuning example (combine with `tuiBrowser()` as needed):
+
+```typescript
 export default defineConfig({
   optimizeDeps: {
     exclude: ["@unblessed/browser", "@unblessed/core"],
@@ -366,7 +394,6 @@ export default defineConfig({
     },
   },
 });
-```
 
 ### Webpack
 
