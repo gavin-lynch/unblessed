@@ -3,13 +3,8 @@
 /**
  * Post-processing script to fix MDX issues in TypeDoc-generated markdown files.
  *
- * This script fixes curly braces in documentation that would cause MDX compilation errors.
- * MDX interprets {variable} as JavaScript expressions, so we need to escape them.
- *
- * Fixes:
- * - Wraps {word} patterns in backticks to make them inline code: `{word}`
- * - Skips patterns already in code blocks or backticks
- * - Preserves markdown formatting
+ * MDX interprets `{...}` as JavaScript expressions. This script escapes curly
+ * braces in prose sections while leaving fenced code blocks unchanged.
  */
 
 import fs from "fs";
@@ -19,37 +14,30 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Directory containing generated docs
 const DOCS_DIR = path.join(__dirname, "../docs/api/generated");
 
 /**
- * Fix MDX issues in a markdown file
+ * Escape `{` and `}` outside fenced code blocks for MDX compatibility.
  */
+function escapeBracesOutsideCodeBlocks(content) {
+  const parts = content.split(/(```[\s\S]*?```)/g);
+
+  return parts
+    .map((part) => {
+      if (part.startsWith("```")) {
+        return part;
+      }
+
+      return part.replace(/(?<!\\)\{/g, "\\{").replace(/(?<!\\)\}/g, "\\}");
+    })
+    .join("");
+}
+
 function fixMdxInFile(filePath) {
-  let content = fs.readFileSync(filePath, "utf8");
-  let modified = false;
+  const content = fs.readFileSync(filePath, "utf8");
+  const newContent = escapeBracesOutsideCodeBlocks(content);
 
-  // Pattern to find {word} not already in backticks or code blocks
-  // Negative lookbehind: not preceded by backtick or backslash
-  // Negative lookahead: not followed by backtick
-  const pattern = /(?<!`|\\)\{(\w+)\}(?!`)/g;
-
-  // Replace {word} with `{word}` (inline code)
-  const newContent = content.replace(pattern, (match, word) => {
-    // Check if we're inside a code block by counting backticks before this position
-    const beforeMatch = content.substring(0, content.indexOf(match));
-    const codeBlockCount = (beforeMatch.match(/```/g) || []).length;
-
-    // If odd number of triple backticks, we're inside a code block - skip
-    if (codeBlockCount % 2 === 1) {
-      return match;
-    }
-
-    modified = true;
-    return `\`{${word}}\``;
-  });
-
-  if (modified) {
+  if (newContent !== content) {
     fs.writeFileSync(filePath, newContent, "utf8");
     console.log(`✓ Fixed: ${path.relative(DOCS_DIR, filePath)}`);
     return true;
@@ -58,9 +46,6 @@ function fixMdxInFile(filePath) {
   return false;
 }
 
-/**
- * Recursively process all .md files in a directory
- */
 function processDirectory(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   let fixedCount = 0;
@@ -80,7 +65,6 @@ function processDirectory(dir) {
   return fixedCount;
 }
 
-// Main execution
 console.log("🔧 Fixing MDX issues in generated documentation...\n");
 
 if (!fs.existsSync(DOCS_DIR)) {

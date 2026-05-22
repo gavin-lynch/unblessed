@@ -105,6 +105,18 @@ class Element extends Node {
 }
 ```
 
+### CursedWind (`className`)
+
+Every `Element` accepts a `className` string with Tailwind-like utilities for colors, borders, padding, alignment, and layout. See the dedicated [CursedWind guide](./cursedwind) for the full class list and examples.
+
+```typescript
+const box = new Box({
+  parent: screen,
+  content: "Styled with classes",
+  className: "bg-blue fg-white bold border-line border-cyan p-2 text-center",
+});
+```
+
 ## Core Widgets
 
 ### Box

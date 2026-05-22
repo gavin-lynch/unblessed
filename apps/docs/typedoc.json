@@ -4,6 +4,7 @@
   "entryPoints": [
     "../../packages/core/src/widgets",
     "../../packages/core/src/lib/program.ts",
+    "../../packages/core/src/lib/cursedwind.ts",
     "../../packages/core/src/runtime.ts"
   ],
   "entryPointStrategy": "expand",
@@ -12,6 +13,7 @@
   "flattenOutputFiles": true,
   "fileExtension": ".md",
   "tsconfig": "../../packages/core/tsconfig.json",
+  "exclude": ["**/widgets/_*.ts"],
   "excludePrivate": true,
   "excludeProtected": false,
   "excludeInternal": true,
@@ -20,7 +22,7 @@
   "cleanOutputDir": true,
   "includeVersion": false,
   "disableSources": false,
-  "sourceLinkTemplate": "https://github.com/vdeantoni/unblessed/blob/alpha/{path}#L{line}",
+  "sourceLinkTemplate": "https://github.com/gavin-lynch/unblessed/blob/main/{path}#L{line}",
   "githubPages": false,
   "hideBreadcrumbs": true,
   "hidePageHeader": true,

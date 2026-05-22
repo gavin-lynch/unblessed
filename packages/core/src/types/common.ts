@@ -272,6 +272,18 @@ export interface Cursor {
 }
 
 /**
+ * Wrapped content array with line-mapping metadata.
+ * Produced by text wrapping and used by scrollable elements.
+ */
+export interface WrappedContent extends Array<string> {
+  rtof: number[];
+  ftor: number[][];
+  fake: string[];
+  real: string[];
+  mwidth: number;
+}
+
+/**
  * Image data structure for ANSIImage and OverlayImage widgets.
  */
 export interface ImageData {

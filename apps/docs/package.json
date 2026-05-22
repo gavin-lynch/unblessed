@@ -7,7 +7,7 @@
     "docusaurus": "docusaurus",
     "dev": "docusaurus start --port 4000",
     "build": "docusaurus build",
-    "build:api": "typedoc --options typedoc.json && node scripts/fix-mdx.mjs && pnpm format",
+    "build:api": "typedoc --options typedoc.json && node scripts/fix-mdx.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clean": "docusaurus clear && rimraf build .docusaurus",
@@ -20,7 +20,9 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "assert": "^2.1.0",
     "@babel/standalone": "^7.28.5",
+    "buffer": "^6.0.3",
     "@docusaurus/core": "3.9.2",
     "@docusaurus/faster": "^3.9.2",
     "@docusaurus/plugin-google-gtag": "^3.9.2",
@@ -36,9 +38,13 @@
     "@xterm/addon-fit": "^0.10.0",
     "clsx": "^2.0.0",
     "docusaurus-plugin-image-zoom": "^3.0.1",
+    "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.4.1",
+    "process": "^0.11.10",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5",
     "xterm": "^5.3.0"
   },
   "devDependencies": {

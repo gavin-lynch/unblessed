@@ -135,6 +135,24 @@ export interface ElementOptions
   parseTags?: boolean;
 
   /**
+   * Tailwind-style utility classes for terminal styling (CursedWind).
+   *
+   * Space-separated class names are parsed into style, border, padding, layout,
+   * and position options. Works on any widget that extends {@link Element}.
+   *
+   * @example
+   * ```typescript
+   * const box = new Box({
+   *   parent: screen,
+   *   className: "bg-blue fg-white bold border-line border-cyan p-2 text-center",
+   * });
+   * ```
+   *
+   * @see {@link https://unblessed-docs.vercel.app/docs/concepts/cursedwind | CursedWind guide}
+   */
+  className?: string;
+
+  /**
    * Foreground color.
    */
   fg?: string;

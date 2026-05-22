@@ -12,6 +12,8 @@ export default [
       "node_modules/**",
       "coverage/**",
       ".turbo/**",
+      "plugins/**",
+      "docs/api/generated/**",
     ],
   },
 

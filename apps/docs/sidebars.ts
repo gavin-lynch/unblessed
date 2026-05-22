@@ -20,6 +20,7 @@ const sidebars: SidebarsConfig = {
         "concepts/architecture",
         "concepts/runtime-system",
         "concepts/widgets",
+        "concepts/cursedwind",
         "concepts/rendering",
         "concepts/events",
       ],
@@ -35,6 +36,16 @@ const sidebars: SidebarsConfig = {
       items: [
         "api/generated/widgets.screen.Class.Screen",
         "api/generated/lib.program.Class.Program",
+        {
+          type: "category",
+          label: "CursedWind",
+          items: [
+            "api/generated/lib.cursedwind.Function.parseClassName",
+            "api/generated/lib.cursedwind.Function.applyClassName",
+            "api/generated/lib.cursedwind.Function.mergeClassNameOptions",
+            "api/generated/lib.cursedwind.Interface.ParsedClassName",
+          ],
+        },
         {
           type: "category",
           label: "Widgets",

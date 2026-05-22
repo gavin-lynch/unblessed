@@ -15,6 +15,7 @@ unblessed is a complete modernization of the popular [blessed](https://github.co
 - **TypeScript-First**: Built from the ground up with TypeScript in strict mode
 - **Cross-Platform**: Run your TUI apps in Node.js AND browsers with XTerm.js
 - **100% Compatible**: Drop-in replacement for blessed via `@unblessed/blessed`
+- **CursedWind**: Tailwind-style `className` utilities for terminal styling (`bg-blue`, `p-2`, `border-round`, …)
 - **Modern Tooling**: ESM + CJS builds, comprehensive tests, semantic versioning
 - **Modular**: Install only what you need
 
@@ -48,4 +49,5 @@ screen.render();
 
 - [Installation](./installation) - Get started with unblessed
 - [Quick Start](./quick-start) - Build your first TUI app
+- [CursedWind](../concepts/cursedwind) - Style widgets with Tailwind-like class names
 - [Migration from blessed](./migration-from-blessed) - Convert existing blessed apps

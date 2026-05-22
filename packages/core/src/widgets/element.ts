@@ -8,6 +8,7 @@
 
 import { getBorderChars } from "../lib/border-styles.js";
 import colors from "../lib/colors.js";
+import { applyClassName } from "../lib/cursedwind.js";
 import helpers from "../lib/helpers.js";
 import { getEnvVar, getNextTick } from "../lib/runtime-helpers.js";
 import { truncateText } from "../lib/text-utils.js";
@@ -32,6 +33,7 @@ import type {
   Style,
   TextWrapMode,
   TrackConfig,
+  WrappedContent,
 } from "../types";
 import {
   createCell,
@@ -46,17 +48,6 @@ const nextTick = getNextTick();
 /**
  * Element
  */
-
-/**
- * Wrapped content array with metadata
- */
-interface WrappedContent extends Array<string> {
-  rtof: number[];
-  ftor: number[][];
-  fake: string[];
-  real: string[];
-  mwidth: number;
-}
 
 class Element extends Node {
   override type = "element";
@@ -141,6 +132,10 @@ class Element extends Node {
   }
 
   constructor(options: ElementOptions = {}) {
+    if (options.className) {
+      options = applyClassName(options);
+    }
+
     super(options);
 
     this.name = options.name;

@@ -691,14 +691,12 @@ export function parseClassName(className: string): ParsedClassName {
           }
           Object.assign(result.tree!.depth[treeParsed.depth], treeParsed.style);
         } else {
-          // Handle other tree styles
-          if (!result.tree![treeParsed.key]) {
-            result.tree![treeParsed.key] = {};
+          // Handle other tree styles (line, indicator, expanded, etc.)
+          const key = treeParsed.key as Exclude<keyof ParsedTreeStyle, "depth">;
+          if (!result.tree![key]) {
+            result.tree![key] = {};
           }
-          Object.assign(
-            result.tree![treeParsed.key] as Partial<Style>,
-            treeParsed.style,
-          );
+          Object.assign(result.tree![key], treeParsed.style);
         }
         continue;
       }
