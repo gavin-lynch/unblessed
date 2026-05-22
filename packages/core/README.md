@@ -577,9 +577,9 @@ MIT
 
 ## Contributing
 
-Contributions are welcome! Please see the [main repository](https://github.com/vdeantoni/unblessed) for contribution guidelines.
+Contributions are welcome! Please see the [main repository](https://github.com/gavin-lynch/unblessed) for contribution guidelines.
 
 ## Support
 
-- GitHub Issues: https://github.com/vdeantoni/unblessed/issues
-- Documentation: https://github.com/vdeantoni/unblessed/tree/master/packages/core
+- GitHub Issues: https://github.com/gavin-lynch/unblessed/issues
+- Documentation: https://github.com/gavin-lynch/unblessed/tree/master/packages/core

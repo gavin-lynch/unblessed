@@ -35,7 +35,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Release Status:**
 - ✅ Automated releases via semantic-release on `alpha` branch
 - ✅ Published to npm with provenance
-- ✅ Documentation site: https://unblessed.dev
+- ✅ Documentation site: https://unblessed-docs.vercel.app
 - ✅ All packages use `workspace:^` for peerDependencies (auto-synced)
 
 ## Development Commands
@@ -531,7 +531,7 @@ pnpm --filter benchmarks bench
 
 ### Current (Alpha Release)
 - 🚀 Version 1.0.0-alpha.21 published to npm
-- 📚 Documentation site live at https://unblessed.dev
+- 📚 Documentation site live at https://unblessed-docs.vercel.app
 - 🔄 CI/CD fully automated (GitHub Actions + semantic-release)
 - 📦 All packages available: core, node, browser, blessed, layout, react, vrt
 

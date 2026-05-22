@@ -1,6 +1,6 @@
 # Interface: StringDecoderAPI
 
-Defined in: [packages/core/src/runtime.ts:296](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L296)
+Defined in: [packages/core/src/runtime.ts:296](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L296)
 
 String decoder interface
 Subset of Node.js string_decoder module
@@ -11,4 +11,4 @@ Subset of Node.js string_decoder module
 
 > **StringDecoder**: _typeof_ `StringDecoder`
 
-Defined in: [packages/core/src/runtime.ts:297](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L297)
+Defined in: [packages/core/src/runtime.ts:297](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L297)

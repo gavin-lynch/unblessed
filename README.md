@@ -2,6 +2,8 @@
 
 > A modern, platform-agnostic terminal UI library for Node.js and browsers
 
+**Maintained by [Gavin Brady Lynch](https://github.com/gavin-lynch)** · [Repository](https://github.com/gavin-lynch/unblessed) · [Documentation](https://unblessed-docs.vercel.app)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22-green.svg)](https://nodejs.org/)
@@ -291,9 +293,9 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 
 **🔗 Links:**
 
-- 📚 [Documentation](https://unblessed.dev)
+- 📚 [Documentation](https://unblessed-docs.vercel.app)
 - 📦 [npm Registry](https://www.npmjs.com/package/@unblessed/node)
-- 🐙 [GitHub](https://github.com/vdeantoni/unblessed)
+- 🐙 [GitHub](https://github.com/gavin-lynch/unblessed)
 
 ### ✅ Completed
 
@@ -369,7 +371,7 @@ We need your help to make unblessed production-ready! Please test and report:
 
 **How to Report Issues:**
 
-- [Open an issue](https://github.com/vdeantoni/unblessed/issues) on GitHub
+- [Open an issue](https://github.com/gavin-lynch/unblessed/issues) on GitHub
 - Include your environment (Node version, OS, terminal emulator)
 - Provide minimal reproduction code
 - Check existing issues first
@@ -421,7 +423,7 @@ unblessed includes 27+ widgets for building rich terminal UIs:
 
 ```bash
 # Clone the repository
-git clone https://github.com/vdeantoni/unblessed.git
+git clone https://github.com/gavin-lynch/unblessed.git
 cd unblessed
 
 # Install dependencies
@@ -475,7 +477,7 @@ See [CLAUDE.md](CLAUDE.md) for detailed architecture and development guidelines.
 
 ## 📜 License
 
-MIT © [Vinicius De Antoni](https://github.com/vdeantoni)
+MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 Based on the original [blessed](https://github.com/chjj/blessed) library by Christopher Jeffrey.
 
@@ -487,7 +489,7 @@ Based on the original [blessed](https://github.com/chjj/blessed) library by Chri
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/vdeantoni/unblessed)
+- [GitHub Repository](https://github.com/gavin-lynch/unblessed)
 - [npm: @unblessed/node](https://www.npmjs.com/package/@unblessed/node)
 - [npm: @unblessed/browser](https://www.npmjs.com/package/@unblessed/browser)
 - [npm: @unblessed/blessed](https://www.npmjs.com/package/@unblessed/blessed)
@@ -497,8 +499,8 @@ Based on the original [blessed](https://github.com/chjj/blessed) library by Chri
 
 ## ⚡ Quick Links for Alpha Testers
 
-- **Report Issues:** [GitHub Issues](https://github.com/vdeantoni/unblessed/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)
+- **Report Issues:** [GitHub Issues](https://github.com/gavin-lynch/unblessed/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md) _(will be generated on release)_
 - **Roadmap:** [CLAUDE.md](CLAUDE.md#current-status)
 

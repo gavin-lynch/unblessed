@@ -19,7 +19,9 @@ export default function pictureTuberBrowserStub(_opts?: { cols?: number }) {
       queueMicrotask(() => {
         emitter.emit(
           "error",
-          new Error("picture-tuber is unavailable in browser builds (stub module)"),
+          new Error(
+            "picture-tuber is unavailable in browser builds (stub module)",
+          ),
         );
       });
     },

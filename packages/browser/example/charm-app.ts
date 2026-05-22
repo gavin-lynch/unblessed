@@ -6,15 +6,10 @@
  * tabs, stacked labels, dialog, lists, color grid, and cards.
  */
 
-import {
-  Box,
-  BrowserRuntime,
-  Screen,
-  setRuntime,
-} from "@unblessed/browser";
+import { Box, BrowserRuntime, Screen, setRuntime } from "@unblessed/browser";
 import { createTheme } from "@unblessed/theme";
-import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
 
 import "xterm/css/xterm.css";
 

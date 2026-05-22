@@ -381,7 +381,7 @@ export default defineConfig({
 
 Manual tuning example (combine with `tuiBrowser()` as needed):
 
-```typescript
+````typescript
 export default defineConfig({
   optimizeDeps: {
     exclude: ["@unblessed/browser", "@unblessed/core"],
@@ -409,7 +409,7 @@ module.exports = {
     },
   },
 };
-```
+````
 
 ## Architecture
 
@@ -467,11 +467,11 @@ new Screen({ terminal: term, mouse: true });
 
 ## Contributing
 
-See the main [unblessed repository](https://github.com/vdeantoni/unblessed) for contribution guidelines.
+See the main [unblessed repository](https://github.com/gavin-lynch/unblessed) for contribution guidelines.
 
 ## License
 
-MIT © [Vinicius De Antoni](https://github.com/vdeantoni)
+MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 

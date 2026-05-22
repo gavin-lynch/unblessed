@@ -1,0 +1,17 @@
+{
+  "name": "unblessed",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
+  "copyrightHolder": "Gavin Brady Lynch and contributors",
+  "github": {
+    "owner": "gavin-lynch",
+    "repo": "unblessed",
+    "defaultBranch": "main"
+  },
+  "npm": {
+    "scope": "@unblessed"
+  },
+  "docs": {
+    "url": "https://unblessed-docs.vercel.app",
+    "editPath": "apps/docs"
+  }
+}

@@ -2,7 +2,7 @@
   "name": "@unblessed/browser",
   "description": "Browser runtime adapter for @unblessed/core TUI library with xterm.js integration",
   "version": "1.0.0-alpha.23",
-  "author": "Vinicius De Antoni <vdeantoni@gmail.com>",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {
     "access": "public",
@@ -36,12 +36,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/vdeantoni/unblessed.git",
+    "url": "https://github.com/gavin-lynch/unblessed.git",
     "directory": "packages/browser"
   },
-  "homepage": "https://github.com/vdeantoni/unblessed",
+  "homepage": "https://github.com/gavin-lynch/unblessed/tree/main/packages/browser",
   "bugs": {
-    "url": "https://github.com/vdeantoni/unblessed/issues"
+    "url": "https://github.com/gavin-lynch/unblessed/issues"
   },
   "keywords": [
     "blessed",

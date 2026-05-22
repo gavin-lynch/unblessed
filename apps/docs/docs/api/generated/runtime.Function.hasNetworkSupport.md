@@ -1,8 +1,8 @@
 # Function: hasNetworkSupport()
 
-> **hasNetworkSupport**(`runtime`): `runtime is Runtime & { networking: NetworkingAPI }`
+> **hasNetworkSupport**(`runtime`): `runtime is Runtime & \{ networking: NetworkingAPI \}`
 
-Defined in: [packages/core/src/runtime.ts:501](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L501)
+Defined in: [packages/core/src/runtime.ts:501](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L501)
 
 Check if runtime has networking support
 
@@ -16,7 +16,7 @@ Runtime instance to check
 
 ## Returns
 
-`runtime is Runtime & { networking: NetworkingAPI }`
+`runtime is Runtime & \{ networking: NetworkingAPI \}`
 
 True if networking support is available
 

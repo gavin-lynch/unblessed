@@ -382,7 +382,7 @@ node --version
 
 ## License
 
-MIT © [Vinicius De Antoni](https://github.com/vdeantoni)
+MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 

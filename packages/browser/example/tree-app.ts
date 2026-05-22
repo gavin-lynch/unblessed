@@ -11,11 +11,11 @@ import {
   setRuntime,
   Tree,
   TreePresets,
-  type TreeNode,
   UnicodeIcons,
+  type TreeNode,
 } from "@unblessed/browser";
-import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
 
 import "xterm/css/xterm.css";
 

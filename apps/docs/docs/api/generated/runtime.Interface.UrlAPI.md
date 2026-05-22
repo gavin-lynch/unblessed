@@ -1,6 +1,6 @@
 # Interface: UrlAPI
 
-Defined in: [packages/core/src/runtime.ts:273](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L273)
+Defined in: [packages/core/src/runtime.ts:273](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L273)
 
 URL operations interface
 Subset of Node.js url module
@@ -11,7 +11,7 @@ Subset of Node.js url module
 
 > **parse**: \{(`urlString`): `UrlWithStringQuery`; (`urlString`, `parseQueryString`, `slashesDenoteHost?`): `UrlWithStringQuery`; (`urlString`, `parseQueryString`, `slashesDenoteHost?`): `UrlWithParsedQuery`; (`urlString`, `parseQueryString`, `slashesDenoteHost?`): `Url`; \}
 
-Defined in: [packages/core/src/runtime.ts:274](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L274)
+Defined in: [packages/core/src/runtime.ts:274](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L274)
 
 #### Call Signature
 
@@ -83,7 +83,7 @@ on the returned URL object will be an unparsed, undecoded string.
 `boolean`
 
 If `true`, the first token after the literal string `//` and preceding the next `/` will be interpreted as the `host`. For instance, given `//foo/bar`, the
-result would be `{host: 'foo', pathname: '/bar'}` rather than `{pathname: '//foo/bar'}`.
+result would be `\{host: 'foo', pathname: '/bar'\}` rather than `\{pathname: '//foo/bar'\}`.
 
 ##### Returns
 
@@ -132,7 +132,7 @@ on the returned URL object will be an unparsed, undecoded string.
 `boolean`
 
 If `true`, the first token after the literal string `//` and preceding the next `/` will be interpreted as the `host`. For instance, given `//foo/bar`, the
-result would be `{host: 'foo', pathname: '/bar'}` rather than `{pathname: '//foo/bar'}`.
+result would be `\{host: 'foo', pathname: '/bar'\}` rather than `\{pathname: '//foo/bar'\}`.
 
 ##### Returns
 
@@ -181,7 +181,7 @@ on the returned URL object will be an unparsed, undecoded string.
 `boolean`
 
 If `true`, the first token after the literal string `//` and preceding the next `/` will be interpreted as the `host`. For instance, given `//foo/bar`, the
-result would be `{host: 'foo', pathname: '/bar'}` rather than `{pathname: '//foo/bar'}`.
+result would be `\{host: 'foo', pathname: '/bar'\}` rather than `\{pathname: '//foo/bar'\}`.
 
 ##### Returns
 
@@ -201,7 +201,7 @@ Use the WHATWG URL API instead.
 
 > **format**: \{(`urlObject`, `options?`): `string`; (`urlObject`): `string`; \}
 
-Defined in: [packages/core/src/runtime.ts:275](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L275)
+Defined in: [packages/core/src/runtime.ts:275](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L275)
 
 #### Call Signature
 
@@ -379,7 +379,7 @@ Use the WHATWG URL API instead.
 
 > **fileURLToPath**: (`url`, `options?`) => `string`
 
-Defined in: [packages/core/src/runtime.ts:276](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L276)
+Defined in: [packages/core/src/runtime.ts:276](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L276)
 
 This function ensures the correct decodings of percent-encoded characters as
 well as ensuring a cross-platform valid absolute path string.

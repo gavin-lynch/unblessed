@@ -1,8 +1,8 @@
 # Function: hasImageSupport()
 
-> **hasImageSupport**(`runtime`): `runtime is Runtime & { images: ImageAPI }`
+> **hasImageSupport**(`runtime`): `runtime is Runtime & \{ images: ImageAPI \}`
 
-Defined in: [packages/core/src/runtime.ts:457](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L457)
+Defined in: [packages/core/src/runtime.ts:457](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L457)
 
 Check if runtime has image processing support
 
@@ -16,7 +16,7 @@ Runtime instance to check
 
 ## Returns
 
-`runtime is Runtime & { images: ImageAPI }`
+`runtime is Runtime & \{ images: ImageAPI \}`
 
 True if image support is available
 

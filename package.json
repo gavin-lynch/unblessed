@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "Unblessed TUI library monorepo",
-  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>, Vinicius De Antoni <vdeantoni@gmail.com>",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
+  "maintainers": [
+    "Gavin Brady Lynch <gavin.b.lynch@gmail.com>"
+  ],
   "license": "MIT",
   "type": "module",
   "workspaces": [
@@ -14,11 +17,11 @@
   "packageManager": "pnpm@10.28.2",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vdeantoni/unblessed.git"
+    "url": "https://github.com/gavin-lynch/unblessed.git"
   },
-  "homepage": "https://github.com/vdeantoni/unblessed",
+  "homepage": "https://github.com/gavin-lynch/unblessed",
   "bugs": {
-    "url": "https://github.com/vdeantoni/unblessed/issues"
+    "url": "https://github.com/gavin-lynch/unblessed/issues"
   },
   "keywords": [
     "curses",
@@ -52,7 +55,8 @@
     "lint:check": "turbo lint:check",
     "format": "turbo format",
     "format:check": "turbo format:check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "sync:metadata": "node scripts/sync-project-metadata.js"
   },
   "dependencies": {
     "@unblessed/core": "workspace:*",

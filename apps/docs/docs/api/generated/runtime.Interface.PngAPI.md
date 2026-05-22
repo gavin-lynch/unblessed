@@ -1,6 +1,6 @@
 # Interface: PngAPI
 
-Defined in: [packages/core/src/runtime.ts:345](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L345)
+Defined in: [packages/core/src/runtime.ts:345](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L345)
 
 PNG image library interface (pngjs)
 
@@ -10,7 +10,7 @@ PNG image library interface (pngjs)
 
 > **PNG**: \{(`options?`): `object`; `sync`: `object`; \}
 
-Defined in: [packages/core/src/runtime.ts:346](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L346)
+Defined in: [packages/core/src/runtime.ts:346](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L346)
 
 #### Parameters
 

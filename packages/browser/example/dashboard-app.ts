@@ -6,12 +6,7 @@
  * Browser port of `packages/contrib/examples/dashboard-truecolor.ts`.
  */
 
-import {
-  Box,
-  BrowserRuntime,
-  Screen,
-  setRuntime,
-} from "@unblessed/browser";
+import { Box, BrowserRuntime, Screen, setRuntime } from "@unblessed/browser";
 import {
   Bar,
   Donut,
@@ -24,8 +19,8 @@ import {
   Sparkline,
   WorldMap,
 } from "@unblessed/contrib";
-import { FitAddon } from "xterm-addon-fit";
 import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
 
 import "xterm/css/xterm.css";
 

@@ -19,9 +19,9 @@ export function createProcess() {
     pid: 1,
     title: "browser",
     version: "v18.0.0",
-    stdin: {},
-    stdout: {},
-    stderr: {},
+    stdin: { isTTY: false },
+    stdout: { isTTY: true },
+    stderr: { isTTY: true },
     on: (event: string, listener: Function) => {
       if (!listeners.has(event)) {
         listeners.set(event, new Set());

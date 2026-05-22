@@ -1,6 +1,6 @@
 # Interface: GifAPI
 
-Defined in: [packages/core/src/runtime.ts:373](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L373)
+Defined in: [packages/core/src/runtime.ts:373](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L373)
 
 GIF image library interface (omggif)
 
@@ -10,7 +10,7 @@ GIF image library interface (omggif)
 
 > **GifReader**: (`buffer`) => `object`
 
-Defined in: [packages/core/src/runtime.ts:374](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L374)
+Defined in: [packages/core/src/runtime.ts:374](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L374)
 
 #### Parameters
 

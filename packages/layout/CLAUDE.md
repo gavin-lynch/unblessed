@@ -1004,7 +1004,7 @@ Potential improvements:
 ## Resources
 
 - **Yoga Documentation**: https://yogalayout.com/docs
-- **Ink Source** (reference implementation): `/Users/vdeantoni/workspace/vdeantoni/ink/src/`
+- **Ink Source** (reference implementation): upstream Ink layout sources (see project docs)
   - `styles.ts` - Flexbox property application
   - `reconciler.ts` - React reconciler with Yoga
   - `render-node-to-output.ts` - Yoga → output rendering

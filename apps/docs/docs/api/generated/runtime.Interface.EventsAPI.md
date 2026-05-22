@@ -1,6 +1,6 @@
 # Interface: EventsAPI
 
-Defined in: [packages/core/src/runtime.ts:319](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L319)
+Defined in: [packages/core/src/runtime.ts:319](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L319)
 
 ## Properties
 
@@ -8,4 +8,4 @@ Defined in: [packages/core/src/runtime.ts:319](https://github.com/vdeantoni/unbl
 
 > **EventEmitter**: _typeof_ `EventEmitter`
 
-Defined in: [packages/core/src/runtime.ts:320](https://github.com/vdeantoni/unblessed/blob/alpha/packages/core/src/runtime.ts#L320)
+Defined in: [packages/core/src/runtime.ts:320](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L320)

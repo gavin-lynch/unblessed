@@ -1,14 +1,19 @@
 import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
+import browserPolyfillsPlugin from "./plugins/browser-polyfills/index.ts";
+
+const GITHUB_OWNER = "gavin-lynch";
+const GITHUB_REPO = "unblessed";
+const GITHUB_URL = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}`;
+const DOCS_URL = "https://unblessed-docs.vercel.app";
 
 const config: Config = {
   title: "unblessed",
   tagline: "Modern, platform-agnostic terminal UI library",
   favicon: "img/favicon.svg",
 
-  // SEO
-  url: "https://unblessed.dev",
+  url: DOCS_URL,
   baseUrl: "/",
 
   // Metadata for SEO
@@ -32,7 +37,7 @@ const config: Config = {
       tagName: "meta",
       attributes: {
         property: "og:image",
-        content: "https://unblessed.dev/img/social-card.png",
+        content: `${DOCS_URL}/img/social-card.png`,
       },
     },
     {
@@ -61,14 +66,14 @@ const config: Config = {
       tagName: "meta",
       attributes: {
         name: "twitter:image",
-        content: "https://unblessed.dev/img/social-card.png",
+        content: `${DOCS_URL}/img/social-card.png`,
       },
     },
     {
       tagName: "meta",
       attributes: {
         name: "twitter:creator",
-        content: "@vdeantoni",
+        content: "@gavin-lynch",
       },
     },
     // Additional SEO
@@ -92,7 +97,7 @@ const config: Config = {
       tagName: "link",
       attributes: {
         rel: "canonical",
-        href: "https://unblessed.dev",
+        href: DOCS_URL,
       },
     },
   ],
@@ -102,10 +107,7 @@ const config: Config = {
     experimental_faster: true,
   },
 
-  url: "https://unblessed-docs.vercel.app",
-  baseUrl: "/",
-
-  organizationName: "vdeantoni",
+  organizationName: GITHUB_OWNER,
   projectName: "unblessed",
 
   onBrokenLinks: "throw",
@@ -117,6 +119,9 @@ const config: Config = {
   },
 
   plugins: [
+    // Node polyfills + stubs for @unblessed/browser in the LiveDemo client bundle
+    browserPolyfillsPlugin,
+
     // Image zoom on click
     "docusaurus-plugin-image-zoom",
 
@@ -182,8 +187,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl:
-            "https://github.com/vdeantoni/unblessed/tree/main/apps/docs/",
+          editUrl: `${GITHUB_URL}/tree/main/apps/docs/`,
         },
         blog: {
           showReadingTime: true,
@@ -191,8 +195,7 @@ const config: Config = {
             type: ["rss", "atom"],
             xslt: true,
           },
-          editUrl:
-            "https://github.com/vdeantoni/unblessed/tree/main/apps/docs/",
+          editUrl: `${GITHUB_URL}/tree/main/apps/docs/`,
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -222,7 +225,7 @@ const config: Config = {
           label: "Docs",
         },
         {
-          href: "https://github.com/vdeantoni/unblessed",
+          href: GITHUB_URL,
           label: "GitHub",
           position: "right",
         },
@@ -304,20 +307,20 @@ const config: Config = {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/vdeantoni/unblessed",
+              href: GITHUB_URL,
             },
             {
               label: "Discussions",
-              href: "https://github.com/vdeantoni/unblessed/discussions",
+              href: `${GITHUB_URL}/discussions`,
             },
             {
               label: "Issues",
-              href: "https://github.com/vdeantoni/unblessed/issues",
+              href: `${GITHUB_URL}/issues`,
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Vinicius De Antoni. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Gavin Brady Lynch. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.vsLight,

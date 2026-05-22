@@ -2,7 +2,7 @@
   "name": "create-unblessed",
   "version": "1.0.0-alpha.23",
   "description": "A CLI to create new unblessed projects",
-  "author": "Vinicius De Antoni <vdeantoni@gmail.com>",
+  "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "private": false,
   "bin": {
@@ -29,5 +29,14 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "execa": "^9.6.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gavin-lynch/unblessed.git",
+    "directory": "packages/create-unblessed"
+  },
+  "bugs": {
+    "url": "https://github.com/gavin-lynch/unblessed/issues"
+  },
+  "homepage": "https://github.com/gavin-lynch/unblessed/tree/main/packages/create-unblessed"
 }

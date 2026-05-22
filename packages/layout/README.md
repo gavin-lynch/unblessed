@@ -362,11 +362,11 @@ Benchmarked on modern hardware (M1/M2 Macs, modern Intel CPUs).
 
 ## Contributing
 
-See the main [unblessed repository](https://github.com/vdeantoni/unblessed) for contribution guidelines.
+See the main [unblessed repository](https://github.com/gavin-lynch/unblessed) for contribution guidelines.
 
 ## License
 
-MIT © [Vinicius De Antoni](https://github.com/vdeantoni)
+MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
