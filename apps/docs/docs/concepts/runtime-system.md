@@ -289,7 +289,7 @@ To support a new platform (e.g., Deno):
 ### 1. Create Runtime Implementation
 
 ```typescript
-// @unblessed/deno/src/deno-runtime.ts
+// @gavin-lynch/unblessed-deno/src/deno-runtime.ts
 import { Runtime } from "@gavin-lynch/unblessed-core";
 
 export class DenoRuntime implements Runtime {
@@ -322,7 +322,7 @@ export class DenoRuntime implements Runtime {
 ### 2. Auto-Initialize
 
 ```typescript
-// @unblessed/deno/src/auto-init.ts
+// @gavin-lynch/unblessed-deno/src/auto-init.ts
 import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { DenoRuntime } from "./deno-runtime";
 
@@ -332,7 +332,7 @@ setRuntime(new DenoRuntime());
 ### 3. Export Widgets
 
 ```typescript
-// @unblessed/deno/src/index.ts
+// @gavin-lynch/unblessed-deno/src/index.ts
 import "./auto-init";
 export * from "@gavin-lynch/unblessed-core";
 ```

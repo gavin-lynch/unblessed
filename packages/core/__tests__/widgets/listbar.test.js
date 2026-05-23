@@ -32,7 +32,6 @@ describe("Listbar", () => {
       const listbar = new Listbar({ screen });
 
       expect(listbar.items).toEqual([]);
-      expect(listbar.ritems).toEqual([]);
       expect(listbar.commands).toEqual([]);
     });
 
@@ -40,7 +39,7 @@ describe("Listbar", () => {
       const listbar = new Listbar({ screen });
 
       expect(listbar.leftBase).toBe(0);
-      expect(listbar.leftOffset).toBe(0);
+      expect(listbar.selectedIndex).toBe(0);
     });
 
     it("should initialize style objects", () => {
@@ -293,7 +292,7 @@ describe("Listbar", () => {
 
       // Check that selected item is tracked
       expect(listbar.leftBase).toBe(0);
-      expect(listbar.leftOffset).toBe(0);
+      expect(listbar.selectedIndex).toBe(0);
     });
 
     it("should emit remove item event", () => {
@@ -317,13 +316,12 @@ describe("Listbar", () => {
       expect(listbar.selected).toBe(0);
     });
 
-    it("should track leftBase and leftOffset", () => {
+    it("should track selectedIndex", () => {
       const listbar = new Listbar({ screen });
       listbar.setItems({ File: vi.fn(), Edit: vi.fn() });
-      listbar.leftBase = 1;
-      listbar.leftOffset = 2;
+      listbar.selectedIndex = 2;
 
-      expect(listbar.selected).toBe(3);
+      expect(listbar.selected).toBe(2);
     });
 
     it("should emit select item event without parent", () => {
@@ -339,10 +337,9 @@ describe("Listbar", () => {
   });
 
   describe("selected getter", () => {
-    it("should return leftBase + leftOffset", () => {
+    it("should return selectedIndex", () => {
       const listbar = new Listbar({ screen });
-      listbar.leftBase = 2;
-      listbar.leftOffset = 3;
+      listbar.selectedIndex = 5;
 
       expect(listbar.selected).toBe(5);
     });
@@ -368,7 +365,7 @@ describe("Listbar", () => {
     it("should handle negative offset", () => {
       const listbar = new Listbar({ screen });
       listbar.setItems({ File: vi.fn(), Edit: vi.fn(), View: vi.fn() });
-      listbar.leftBase = 2;
+      listbar.selectedIndex = 2;
       listbar.select = vi.fn();
 
       listbar.move(-1);
@@ -600,7 +597,7 @@ describe("Listbar", () => {
     it("should reselect current item on focus", () => {
       const listbar = new Listbar({ screen });
       listbar.setItems({ File: vi.fn(), Edit: vi.fn() });
-      listbar.leftBase = 1;
+      listbar.selectedIndex = 1;
       listbar.select = vi.fn();
 
       listbar.emit("focus");

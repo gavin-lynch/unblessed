@@ -252,7 +252,9 @@ class Listbar extends Box {
     if (offset < 0) offset = 0;
     if (offset >= this.items.length) offset = this.items.length - 1;
 
-    this.ensureVisible(offset);
+    if (this.parent) {
+      this.ensureVisible(offset);
+    }
     this.selectedIndex = offset;
     this.emit("select item", this.items[offset], offset);
   }
@@ -319,6 +321,8 @@ class Listbar extends Box {
   }
 
   private ensureVisible(index: number) {
+    if (!this.parent) return;
+
     const lpos = this._getCoords();
     if (!lpos) return;
 
@@ -344,9 +348,6 @@ class Listbar extends Box {
     }
   }
 }
-
-Listbar.prototype.add = Listbar.prototype.appendItem;
-Listbar.prototype.addItem = Listbar.prototype.appendItem;
 
 export default Listbar;
 export { Listbar };

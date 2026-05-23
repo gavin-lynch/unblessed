@@ -8,7 +8,7 @@ Release history and version notes for unblessed.
 
 ## Latest Releases
 
-### [1.0.0-alpha.10](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.10) (2025-10-30)
+### [1.0.0-alpha.10](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.10) (2025-10-30)
 
 **Features:**
 
@@ -19,11 +19,11 @@ Release history and version notes for unblessed.
 
 - **docs:** Adjusted live demo
 
-[View on GitHub](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.10)
+[View on GitHub](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.10)
 
 ---
 
-### [1.0.0-alpha.9](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.9) (2025-10-29)
+### [1.0.0-alpha.9](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.9) (2025-10-29)
 
 **Features:**
 
@@ -33,11 +33,11 @@ Release history and version notes for unblessed.
 
 - **core:** Adjusted label style type
 
-[View on GitHub](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.9)
+[View on GitHub](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.9)
 
 ---
 
-### [1.0.0-alpha.8](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.8) (2025-10-28)
+### [1.0.0-alpha.8](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.8) (2025-10-28)
 
 **Features:**
 
@@ -49,11 +49,11 @@ Release history and version notes for unblessed.
 - **ci:** Configure Codecov for monorepo coverage reporting
 - **ci:** Removed test:coverage from release action
 
-[View on GitHub](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.8)
+[View on GitHub](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.8)
 
 ---
 
-### [1.0.0-alpha.7](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.7) (2025-10-28)
+### [1.0.0-alpha.7](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.7) (2025-10-28)
 
 **Features:**
 
@@ -69,13 +69,13 @@ Release history and version notes for unblessed.
 
 - **core:** Form keyboard navigation (keys/vi options) removed in favor of global Screen Tab navigation. Forms still support navigation via next()/previous().
 
-[View on GitHub](https://github.com/vdeantoni/unblessed/releases/tag/v1.0.0-alpha.7)
+[View on GitHub](https://github.com/gavin-lynch/unblessed/releases/tag/v1.0.0-alpha.7)
 
 ---
 
 ## Version History
 
-View the complete [CHANGELOG.md](https://github.com/vdeantoni/unblessed/blob/main/CHANGELOG.md) on GitHub for full version history.
+View the complete [CHANGELOG.md](https://github.com/gavin-lynch/unblessed/blob/main/CHANGELOG.md) on GitHub for full version history.
 
 ## Release Channels
 
@@ -141,18 +141,18 @@ When upgrading between versions:
 
 ## Stay Updated
 
-- **GitHub Releases:** [Watch repository](https://github.com/vdeantoni/unblessed)
+- **GitHub Releases:** [Watch repository](https://github.com/gavin-lynch/unblessed)
 - **npm:** `npm outdated @gavin-lynch/unblessed-node`
-- **Discussions:** [GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)
+- **Discussions:** [GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)
 
 ## Report Issues
 
 Found a bug in a specific version?
 
-- [Report on GitHub Issues](https://github.com/vdeantoni/unblessed/issues)
+- [Report on GitHub Issues](https://github.com/gavin-lynch/unblessed/issues)
 - Include your version: `npm list @gavin-lynch/unblessed-node`
 - Check if it's fixed in latest alpha
 
 ## Previous Versions
 
-Browse all releases on the [GitHub Releases page](https://github.com/vdeantoni/unblessed/releases).
+Browse all releases on the [GitHub Releases page](https://github.com/gavin-lynch/unblessed/releases).

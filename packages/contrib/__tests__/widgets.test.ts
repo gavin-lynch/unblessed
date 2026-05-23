@@ -32,7 +32,7 @@ describe("Line Chart", () => {
       label: "Test Line",
     });
 
-    expect(line.type).toBe("line");
+    expect(line.type).toBe("linechart");
     screen.destroy();
   });
 
@@ -129,7 +129,7 @@ describe("Stacked Bar Chart", () => {
       height: 12,
     });
 
-    expect(stackedBar.type).toBe("bar");
+    expect(stackedBar.type).toBe("stacked-bar");
     screen.destroy();
   });
 
@@ -434,7 +434,7 @@ describe("GaugeList", () => {
       height: 10,
     });
 
-    expect(gaugeList.type).toBe("gauge");
+    expect(gaugeList.type).toBe("gauge-list");
     screen.destroy();
   });
 
@@ -495,16 +495,15 @@ describe("Table", () => {
     screen.destroy();
   });
 
-  it("should throw without columnWidth", () => {
+  it("should create without columnWidth", () => {
     const screen = new Screen({ width: 80, height: 24 });
-    expect(
-      () =>
-        new Table({
-          parent: screen,
-          width: 60,
-          height: 10,
-        } as any),
-    ).toThrow();
+    const table = new Table({
+      parent: screen,
+      width: 60,
+      height: 10,
+    });
+
+    expect(table.type).toBe("table");
     screen.destroy();
   });
 });

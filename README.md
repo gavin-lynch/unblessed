@@ -15,7 +15,7 @@
 ## ✨ Features
 
 - 🎯 **100% TypeScript** - Full type safety with strict mode enabled
-- 🧪 **Comprehensive Tests** - 2,355+ tests with 98.5% coverage
+- 🧪 **Comprehensive Tests** - 2,600+ tests with high coverage
 - 🌐 **Platform Agnostic** - Works in Node.js and browsers via XTerm.js
 - 🔄 **Backward Compatible** - Drop-in replacement for blessed
 - 📦 **Modern Build** - ESM + CJS dual output, tree-shakeable
@@ -309,7 +309,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 
 ## 🎯 Project Status
 
-**Current Version:** `1.0.0-alpha.21`
+**Current Version:** `1.0.0-alpha.23`
 
 **🔗 Links:**
 
@@ -322,7 +322,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 - Full TypeScript conversion with strict mode
 - Platform-agnostic core architecture
 - Runtime dependency injection pattern
-- 100% test coverage (2,355/2,355 tests passing)
+- Comprehensive test suite (2,600+ tests passing)
 - Browser support via XTerm.js
 - Modern build tooling (tsup, pnpm, Turborepo)
 - Comprehensive documentation

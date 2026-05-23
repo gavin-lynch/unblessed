@@ -364,13 +364,13 @@ screen.key(["C-c"], () => {
 
 We welcome contributions! Ways to help:
 
-- 🐛 Report bugs via [GitHub Issues](https://github.com/vdeantoni/unblessed/issues)
-- 💡 Suggest features via [GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)
+- 🐛 Report bugs via [GitHub Issues](https://github.com/gavin-lynch/unblessed/issues)
+- 💡 Suggest features via [GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)
 - 📖 Improve documentation
 - 🧪 Add tests
 - ⚡ Submit pull requests
 
-Check the [repository](https://github.com/vdeantoni/unblessed) for contribution guidelines.
+Check the [repository](https://github.com/gavin-lynch/unblessed) for contribution guidelines.
 
 ### I found a bug, what should I include?
 
@@ -408,7 +408,7 @@ Current priorities:
 2. **Beta**: Performance optimization, more examples
 3. **1.0**: Production-ready release
 
-See [GitHub Milestones](https://github.com/vdeantoni/unblessed/milestones) for details.
+See [GitHub Milestones](https://github.com/gavin-lynch/unblessed/milestones) for details.
 
 ### How often is unblessed updated?
 
@@ -431,7 +431,7 @@ We follow semantic versioning with automated releases:
 
 We're always improving! Please:
 
-1. Ask in [GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)
+1. Ask in [GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)
 2. Suggest doc improvements via issues
 3. Submit a PR to improve documentation
 
@@ -440,6 +440,6 @@ We're always improving! Please:
 If your question isn't answered here:
 
 - **[Browse the Documentation](/docs/getting-started/introduction)** - Comprehensive guides
-- **[Ask on GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)** - Community help
+- **[Ask on GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)** - Community help
 - **[Check the API Reference](/docs/api/generated/widgets.screen.Class.Screen)** - Detailed API docs
-- **[Report an Issue](https://github.com/vdeantoni/unblessed/issues)** - Found a bug?
+- **[Report an Issue](https://github.com/gavin-lynch/unblessed/issues)** - Found a bug?

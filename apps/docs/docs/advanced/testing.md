@@ -533,7 +533,7 @@ We'd love to hear your ideas for improving the VRT package! If you have suggesti
 
 Please open an issue or discussion on GitHub:
 
-**[Share Your Ideas](https://github.com/vdeantoni/unblessed/discussions)**
+**[Share Your Ideas](https://github.com/gavin-lynch/unblessed/discussions)**
 
 ## Troubleshooting
 

@@ -33,9 +33,9 @@ export default defineConfig({
     },
   ],
 
-  // Run local dev server before tests
+  // Run local dev server before tests (package root so fixture HTML is served)
   webServer: {
-    command: "pnpm vite --config vite.config.ts",
+    command: "pnpm vite --config vite.e2e.config.ts",
     port: 8080,
     reuseExistingServer: !process.env.CI,
     cwd: ".",

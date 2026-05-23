@@ -552,8 +552,13 @@ export function createMockScreen(options = {}) {
   // Attach Screen color + SGR helpers used by render paths.
   // We borrow the real Screen prototype methods so behavior stays in sync.
   screen._rgbCache = new Map();
-  screen._colorPolicy = Screen.prototype._getDefaultColorPolicy.call(screen);
-  Screen.prototype._recomputeColorProfile.call(screen);
+  screen._getDefaultColorPolicy =
+    Screen.prototype._getDefaultColorPolicy.bind(screen);
+  screen._resolveColorMode = Screen.prototype._resolveColorMode.bind(screen);
+  screen._recomputeColorProfile =
+    Screen.prototype._recomputeColorProfile.bind(screen);
+  screen._colorPolicy = screen._getDefaultColorPolicy();
+  screen._recomputeColorProfile();
   // Private helpers used internally by resolveColor/resolveStyle.
   screen._clamp8 = Screen.prototype._clamp8.bind(screen);
   screen._getCachedRgb = Screen.prototype._getCachedRgb.bind(screen);

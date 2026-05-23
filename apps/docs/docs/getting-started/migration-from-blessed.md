@@ -201,7 +201,7 @@ If you encounter issues during migration:
 
 Please report bugs and compatibility issues on GitHub:
 
-**[GitHub Issues](https://github.com/vdeantoni/unblessed/issues)**
+**[GitHub Issues](https://github.com/gavin-lynch/unblessed/issues)**
 
 When reporting, include:
 
@@ -215,7 +215,7 @@ When reporting, include:
 
 For questions about migration or unblessed features:
 
-- **[GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)** - Ask questions, share tips
+- **[GitHub Discussions](https://github.com/gavin-lynch/unblessed/discussions)** - Ask questions, share tips
 - **[Documentation](/docs/getting-started/introduction)** - Comprehensive guides and API reference
 
 ### Contribute

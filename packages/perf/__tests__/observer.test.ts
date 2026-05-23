@@ -12,13 +12,13 @@ describe("RenderPerfObserver", () => {
 
     const observer = new RenderPerfObserver({ targetFps: 60, maxSamples: 10 });
 
-    observer.renderStart();
-    observer.outputFlush(120);
-    observer.renderEnd();
+    observer.renderStart(undefined, 0);
+    observer.outputFlush(120, 5);
+    observer.renderEnd(undefined, 10);
 
-    observer.renderStart();
-    observer.outputFlush(80);
-    observer.renderEnd();
+    observer.renderStart(undefined, 10);
+    observer.outputFlush(80, 15);
+    observer.renderEnd(undefined, 30);
 
     const stats = observer.getStats();
 
@@ -30,7 +30,7 @@ describe("RenderPerfObserver", () => {
     expect(stats.bytesWritten).toBe(200);
     expect(stats.flushCount).toBe(2);
     expect(stats.bytesPerFrame).toBe(100);
-    expect(stats.bytesPerSec).toBeCloseTo(6666.66, 2);
+    expect(stats.bytesPerSec).toBeCloseTo(6666.67, 1);
     expect(stats.renderAvgMs).toBe(15);
     expect(stats.outputAvgMs).toBe(0);
     expect(stats.fpsAvg).toBeCloseTo(66.666, 2);

@@ -5,6 +5,7 @@
  * Automatically selects optimal color mode based on terminal capabilities.
  */
 
+import x256 from "x256";
 import {
   detectColorCapabilities,
   type ColorCapabilities,
@@ -23,6 +24,7 @@ export type { ColorInput } from "./color-types.js";
 export interface ColorResolveOptions {
   targetMode?: ColorTargetMode;
   capabilities?: ColorCapabilities;
+  compat?: "blessed-contrib";
 }
 
 export interface ResolvedColor {
@@ -88,7 +90,10 @@ function resolveRgbFromInput(
   return null;
 }
 
-function resolvePaletteIndex(input: ColorInput): number | null {
+function resolvePaletteIndex(
+  input: ColorInput,
+  options: ColorResolveOptions = {},
+): number | null {
   if (typeof input === "number") {
     return input >= 0 && input < 256 ? input : null;
   }
@@ -115,6 +120,9 @@ function resolvePaletteIndex(input: ColorInput): number | null {
   if (Array.isArray(input) && input.length === 3) {
     const rgb = resolveRgbFromInput(input);
     if (!rgb) return null;
+    if (options.compat === "blessed-contrib") {
+      return x256(rgb[0], rgb[1], rgb[2]);
+    }
     const key = `${rgb[0]},${rgb[1]},${rgb[2]}`;
     const cached = paletteIndexCache.get(key);
     if (cached != null) return cached;
@@ -282,7 +290,7 @@ export function resolveColor(
       return { mode: "truecolor", value: rgb, original: input };
     }
 
-    const idx = resolvePaletteIndex(input);
+    const idx = resolvePaletteIndex(input, options);
     if (idx != null) {
       const paletteRgb = colors.vcolors[idx] as
         | [number, number, number]
@@ -300,7 +308,7 @@ export function resolveColor(
     return { mode: "16", value: 0, original: input };
   }
 
-  const index = resolvePaletteIndex(input);
+  const index = resolvePaletteIndex(input, options);
   const safeIndex = index ?? 0;
 
   if (target === "256") {

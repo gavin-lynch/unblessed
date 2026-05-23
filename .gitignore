@@ -6,6 +6,16 @@ dist/
 .turbo/
 *.log
 
+# Agent / debug artifacts
+.playwright-mcp/
+.opencode/
+*.diff
+diff-*.txt
+
+# Debug screenshots at repo root
+/*.png
+/*.mp4
+
 # Benchmark/test results
 tools/benchmarks/results/*.json
 playwright-report/
