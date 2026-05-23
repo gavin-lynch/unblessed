@@ -5,8 +5,8 @@
  * manual useEffect + refs + makeAnimatable boilerplate.
  */
 
-import { NodeRuntime } from "@unblessed/node";
-import { Box, Text, render } from "@unblessed/react";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
+import { Box, Text, render } from "@gavin-lynch/unblessed-react";
 
 /**
  * Demo: Rainbow border animation (declarative)

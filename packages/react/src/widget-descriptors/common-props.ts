@@ -5,7 +5,7 @@
  * by specific widget descriptors, avoiding duplication.
  */
 
-import type { FlexboxProps } from "@unblessed/layout";
+import type { FlexboxProps } from "@gavin-lynch/unblessed-layout";
 import type {
   BorderAnimationConfig,
   TextAnimationConfig,

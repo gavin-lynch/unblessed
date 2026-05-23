@@ -5,7 +5,7 @@
  * combined with shadows for a stunning visual effect!
  */
 
-import { Box, Screen, Text } from "@unblessed/node";
+import { Box, Screen, Text } from "@gavin-lynch/unblessed-node";
 
 // Create screen with full unicode and color support
 const screen = new Screen({

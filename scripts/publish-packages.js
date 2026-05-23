@@ -1,99 +1,84 @@
 #!/usr/bin/env node
 
 /**
- * Publish all packages to npm in dependency order
+ * Publish all packages to npm in dependency order (@gavin-lynch scope).
  *
- * This script is called by semantic-release during the publish step.
- * It publishes packages in the correct order to respect dependencies.
- *
- * All packages are published with:
- * - --provenance flag (cryptographic attestation)
- * - --access public (scoped packages)
- * - --no-git-checks (version already committed)
+ * Called by semantic-release during the publish step.
  */
 
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
 
-/**
- * Package publish order (respects dependencies)
- * - Independent packages can be in any order
- * - Dependent packages must come after their dependencies
- */
+/** npm package name → packages/ directory */
 const PUBLISH_ORDER = [
-  // Core package
-  "@unblessed/core",
-
-  // Runtime adapters
-  "@unblessed/node",
-  "@unblessed/browser",
-
-  // Renderers
-  "@unblessed/layout",
-  "@unblessed/react",
-
-  // VRT tools
-  "@unblessed/vrt",
-
-  // Compatibility layer
-  "@unblessed/blessed",
-
-  // Create unblessed package
-  "create-unblessed",
+  { name: "@gavin-lynch/unblessed-core", dir: "core" },
+  { name: "@gavin-lynch/unblessed-theme", dir: "theme" },
+  { name: "@gavin-lynch/unblessed-node", dir: "node" },
+  { name: "@gavin-lynch/unblessed-browser", dir: "browser" },
+  { name: "@gavin-lynch/unblessed-layout", dir: "layout" },
+  { name: "@gavin-lynch/unblessed-contrib", dir: "contrib" },
+  { name: "@gavin-lynch/unblessed-react", dir: "react" },
+  { name: "@gavin-lynch/unblessed-vrt", dir: "vrt" },
+  { name: "@gavin-lynch/unblessed-blessed", dir: "blessed" },
+  { name: "@gavin-lynch/unblessed-perf", dir: "perf" },
+  { name: "@gavin-lynch/create-unblessed", dir: "create-unblessed" },
 ];
 
-console.log("\n📦 Publishing all packages to npm...\n");
+console.log("\n📦 Publishing @gavin-lynch packages to npm...\n");
 
 let successCount = 0;
 let skipCount = 0;
 
-PUBLISH_ORDER.forEach((pkgName) => {
+for (const { name, dir } of PUBLISH_ORDER) {
   try {
-    // Find package.json for this package
-    const pkgPath = `packages/${pkgName.split("/").pop()}/package.json`;
+    const pkgPath = `packages/${dir}/package.json`;
     let pkg;
 
     try {
       pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
-    } catch (error) {
-      // Package directory might not exist (e.g., renamed or removed)
-      console.log(`  ⏭️  ${pkgName}: Package not found, skipping`);
+    } catch {
+      console.log(`  ⏭️  ${name}: package.json not found, skipping`);
       skipCount++;
-      return;
+      continue;
     }
 
-    console.log(`  📤 Publishing ${pkgName}@${pkg.version}...`);
+    if (pkg.private) {
+      console.log(`  ⏭️  ${name}: private package, skipping`);
+      skipCount++;
+      continue;
+    }
 
-    // Publish with provenance and public access
-    const publishCmd = [
-      "pnpm",
-      "publish",
-      "--filter",
-      pkgName,
-      "--provenance",
-      "--access",
-      "public",
-      "--no-git-checks",
-    ].join(" ");
+    console.log(`  📤 Publishing ${name}@${pkg.version}...`);
 
-    execSync(publishCmd, {
-      stdio: "inherit",
-      cwd: process.cwd(),
-      env: {
-        ...process.env,
-        // Ensure npm token is available
-        NODE_AUTH_TOKEN: process.env.NPM_TOKEN || process.env.NODE_AUTH_TOKEN,
+    execSync(
+      [
+        "pnpm",
+        "publish",
+        "--filter",
+        name,
+        "--provenance",
+        "--access",
+        "public",
+        "--no-git-checks",
+      ].join(" "),
+      {
+        stdio: "inherit",
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          NODE_AUTH_TOKEN: process.env.NPM_TOKEN || process.env.NODE_AUTH_TOKEN,
+        },
       },
-    });
+    );
 
-    console.log(`  ✅ ${pkgName}@${pkg.version} published successfully\n`);
+    console.log(`  ✅ ${name}@${pkg.version} published successfully\n`);
     successCount++;
   } catch (error) {
-    console.error(`\n  ❌ Failed to publish ${pkgName}:`);
+    console.error(`\n  ❌ Failed to publish ${name}:`);
     console.error(`     ${error.message}\n`);
     process.exit(1);
   }
-});
+}
 
 console.log(`\n✨ Publishing complete!`);
 console.log(`   Published: ${successCount} packages`);

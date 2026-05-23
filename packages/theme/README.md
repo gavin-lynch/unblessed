@@ -1,4 +1,4 @@
-# @unblessed/theme
+# @gavin-lynch/unblessed-theme
 
 Theme tokens and utility classes for unblessed widgets.
 
@@ -19,13 +19,13 @@ Related themed widgets in contrib:
 ## Install
 
 ```bash
-pnpm add @unblessed/theme
+pnpm add @gavin-lynch/unblessed-theme
 ```
 
 ## Token-only usage
 
 ```ts
-import { createTheme } from "@unblessed/theme";
+import { createTheme } from "@gavin-lynch/unblessed-theme";
 
 const theme = createTheme({
   colors: {
@@ -51,7 +51,7 @@ const active = theme.component("tabs", "active");
 ## Utility-class usage
 
 ```ts
-import { createTheme } from "@unblessed/theme";
+import { createTheme } from "@gavin-lynch/unblessed-theme";
 
 const theme = createTheme({
   colors: { bg: "#121212", accent: "#8a63ff", text: "#e0e0e0" },
@@ -76,7 +76,7 @@ const active = "active:bg-accent active:fg-bg";
 
 ## React renderer note
 
-`@unblessed/react` has its own theming abstractions. This package targets core
+`@gavin-lynch/unblessed-react` has its own theming abstractions. This package targets core
 and contrib widgets. It is not redundant; it provides a framework-agnostic theme
 layer that React can optionally map to if desired.
 

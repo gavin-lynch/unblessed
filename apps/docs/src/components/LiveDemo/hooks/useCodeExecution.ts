@@ -34,12 +34,12 @@ export function useCodeExecution(
 
         // Check if code contains JSX/React
         const isReact =
-          code.includes("@unblessed/react") ||
+          code.includes("@gavin-lynch/unblessed-react") ||
           code.includes("<Box") ||
           code.includes("<Text") ||
           code.includes("React.createElement");
 
-        const tui = await import("@unblessed/browser");
+        const tui = await import("@gavin-lynch/unblessed-browser");
 
         // Initialize BrowserRuntime and set it globally
         const runtime = new tui.BrowserRuntime();
@@ -49,7 +49,7 @@ export function useCodeExecution(
 
         // For React code, we need to handle it differently
         if (isReact) {
-          // Import React and @unblessed/react
+          // Import React and @gavin-lynch/unblessed-react
           const ReactModule = await import("react");
           // React can be default export or named exports
           const React = ReactModule.default || ReactModule;
@@ -69,7 +69,7 @@ export function useCodeExecution(
           }
           (globalThis as any).React = React;
 
-          const tuiReact = await import("@unblessed/react");
+          const tuiReact = await import("@gavin-lynch/unblessed-react");
           console.log("[LiveDemo] tuiReact:", Object.keys(tuiReact));
 
           // Transform JSX to JavaScript
@@ -127,7 +127,7 @@ export function useCodeExecution(
         } else {
           // Classic mode - parse imports and create scope
           const importMatches = code.matchAll(
-            /import\s*\{([^}]+)\}\s*from\s*['"]@unblessed\/browser['"]/gs,
+            /import\s*\{([^}]+)\}\s*from\s*['"]@gavin-lynch\/unblessed-browser['"]/gs,
           );
           const importedNames = new Set<string>();
 

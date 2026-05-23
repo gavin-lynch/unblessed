@@ -1,15 +1,15 @@
-# @unblessed/contrib
+# @gavin-lynch/unblessed-contrib
 
-Dashboard widgets and charts for `@unblessed/core` - a complete port of [blessed-contrib](https://github.com/yaronn/blessed-contrib).
+Dashboard widgets and charts for `@gavin-lynch/unblessed-core` - a complete port of [blessed-contrib](https://github.com/yaronn/blessed-contrib).
 
 ![Contrib dashboard with truecolor](./images/example-contrib-with-truecolor.png)
 
 ## Installation
 
 ```bash
-npm install @unblessed/contrib
+npm install @gavin-lynch/unblessed-contrib
 # or
-pnpm add @unblessed/contrib
+pnpm add @gavin-lynch/unblessed-contrib
 ```
 
 ## Features
@@ -52,8 +52,15 @@ Without these dependencies, widgets will display simplified/fallback content.
 ## Quick Start
 
 ```typescript
-import { Screen } from "@unblessed/node";
-import { Grid, Line, Bar, Gauge, Donut, Log } from "@unblessed/contrib";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import {
+  Grid,
+  Line,
+  Bar,
+  Gauge,
+  Donut,
+  Log,
+} from "@gavin-lynch/unblessed-contrib";
 
 const screen = new Screen({
   smartCSR: true,
@@ -169,7 +176,7 @@ new WorldMap({
 Displays multiple data series as line graphs.
 
 ```typescript
-import { Line } from '@unblessed/contrib';
+import { Line } from '@gavin-lynch/unblessed-contrib';
 
 const line = new Line({
   parent: screen,
@@ -196,7 +203,7 @@ line.setData([{ title: 'Indoor', x: [...], y: [...] }]);
 Displays vertical bar charts.
 
 ```typescript
-import { Bar } from "@unblessed/contrib";
+import { Bar } from "@gavin-lynch/unblessed-contrib";
 
 const bar = new Bar({
   parent: screen,
@@ -217,7 +224,7 @@ const bar = new Bar({
 Displays stacked bar charts with multiple data series.
 
 ```typescript
-import { StackedBar } from "@unblessed/contrib";
+import { StackedBar } from "@gavin-lynch/unblessed-contrib";
 
 const stackedBar = new StackedBar({
   parent: screen,
@@ -242,7 +249,7 @@ const stackedBar = new StackedBar({
 Displays a horizontal progress bar.
 
 ```typescript
-import { Gauge } from "@unblessed/contrib";
+import { Gauge } from "@gavin-lynch/unblessed-contrib";
 
 const gauge = new Gauge({
   parent: screen,
@@ -269,7 +276,7 @@ gauge.setStack([
 Displays multiple gauges in a vertical list.
 
 ```typescript
-import { GaugeList } from "@unblessed/contrib";
+import { GaugeList } from "@gavin-lynch/unblessed-contrib";
 
 const gaugeList = new GaugeList({
   parent: screen,
@@ -291,7 +298,7 @@ const gaugeList = new GaugeList({
 Displays donut/pie charts.
 
 ```typescript
-import { Donut } from "@unblessed/contrib";
+import { Donut } from "@gavin-lynch/unblessed-contrib";
 
 const donut = new Donut({
   parent: screen,
@@ -313,7 +320,7 @@ const donut = new Donut({
 Displays characters using 16-segment LED-style display.
 
 ```typescript
-import { LCD } from "@unblessed/contrib";
+import { LCD } from "@gavin-lynch/unblessed-contrib";
 
 const lcd = new LCD({
   parent: screen,
@@ -333,7 +340,7 @@ lcd.setDisplay("HELLO");
 Displays simple ASCII sparkline charts.
 
 ```typescript
-import { Sparkline } from "@unblessed/contrib";
+import { Sparkline } from "@gavin-lynch/unblessed-contrib";
 
 const sparkline = new Sparkline({
   parent: screen,
@@ -358,7 +365,7 @@ sparkline.setData(
 Displays tabular data with headers and selectable rows.
 
 ```typescript
-import { Table } from "@unblessed/contrib";
+import { Table } from "@gavin-lynch/unblessed-contrib";
 
 const table = new Table({
   parent: screen,
@@ -384,7 +391,7 @@ const table = new Table({
 Displays scrolling log messages.
 
 ```typescript
-import { Log } from "@unblessed/contrib";
+import { Log } from "@gavin-lynch/unblessed-contrib";
 
 const log = new Log({
   parent: screen,
@@ -406,7 +413,7 @@ Renders markdown content with terminal formatting.
 Requires optional peer dependencies: `marked`, `marked-terminal`, `chalk`.
 
 ```typescript
-import { Markdown } from "@unblessed/contrib";
+import { Markdown } from "@gavin-lynch/unblessed-contrib";
 
 const markdown = new Markdown({
   parent: screen,
@@ -437,7 +444,7 @@ Displays a world map with markers.
 Requires optional peer dependency: `map-canvas` for detailed rendering.
 
 ```typescript
-import { WorldMap } from "@unblessed/contrib";
+import { WorldMap } from "@gavin-lynch/unblessed-contrib";
 
 const map = new WorldMap({
   parent: screen,
@@ -462,7 +469,7 @@ Displays images in the terminal using ANSI colors.
 Requires optional peer dependency: `picture-tuber`.
 
 ```typescript
-import { Picture } from "@unblessed/contrib";
+import { Picture } from "@gavin-lynch/unblessed-contrib";
 
 const picture = new Picture({
   parent: screen,
@@ -488,7 +495,7 @@ const picture2 = new Picture({
 Arranges widgets in a grid layout.
 
 ```typescript
-import { Grid } from '@unblessed/contrib';
+import { Grid } from '@gavin-lynch/unblessed-contrib';
 
 const grid = new Grid({
   screen: screen,
@@ -508,7 +515,7 @@ const widget3 = grid.set(6, 0, 6, 12, (opts) => new Log(opts), { ... });
 Cycle through multiple pages of widgets.
 
 ```typescript
-import { Carousel } from '@unblessed/contrib';
+import { Carousel } from '@gavin-lynch/unblessed-contrib';
 
 const pages = [
   (screen, pageIndex) => {
@@ -542,7 +549,7 @@ This package is a drop-in replacement for blessed-contrib. Most code should work
 
 ```diff
 - const contrib = require('blessed-contrib');
-+ import { Grid, Line, Bar } from '@unblessed/contrib';
++ import { Grid, Line, Bar } from '@gavin-lynch/unblessed-contrib';
 
 - const line = contrib.line({ ... });
 + const line = new Line({ ... });

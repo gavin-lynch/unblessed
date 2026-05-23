@@ -3,7 +3,7 @@
 Defined in: [packages/core/src/runtime.ts:111](https://github.com/gavin-lynch/unblessed/blob/main/packages/core/src/runtime.ts#L111)
 
 Complete runtime abstraction interface
-All @unblessed/core modules accept this interface for platform operations
+All @gavin-lynch/unblessed-core modules accept this interface for platform operations
 
 Core APIs (always required):
 

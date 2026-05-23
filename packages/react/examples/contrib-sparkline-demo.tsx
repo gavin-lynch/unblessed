@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Sparkline Demo - @unblessed/contrib Sparkline widget example
+ * Sparkline Demo - @gavin-lynch/unblessed-contrib Sparkline widget example
  *
  * Demonstrates:
  * - Multiple sparkline series
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-sparkline-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useState } from "react";
 import { Sparkline, type SparklineData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";

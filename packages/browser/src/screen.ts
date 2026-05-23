@@ -3,8 +3,8 @@
  * Automatically detects and handles xterm.js Terminal instances
  */
 
-import type { ScreenOptions } from "@unblessed/core";
-import { Screen as CoreScreen } from "@unblessed/core";
+import type { ScreenOptions } from "@gavin-lynch/unblessed-core";
+import { Screen as CoreScreen } from "@gavin-lynch/unblessed-core";
 import type { Terminal } from "xterm";
 import { XTermAdapter } from "./adapters/xterm-adapter.js";
 
@@ -32,7 +32,7 @@ export interface BrowserScreenOptions extends Omit<ScreenOptions, "terminal"> {
  * @example
  * ```typescript
  * import { Terminal } from 'xterm';
- * import { Screen } from '@unblessed/browser';
+ * import { Screen } from '@gavin-lynch/unblessed-browser';
  *
  * const term = new Terminal();
  * term.open(document.getElementById('terminal')!);

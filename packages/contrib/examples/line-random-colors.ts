@@ -9,7 +9,7 @@
  * with x256 conversion for blessed-contrib compatibility.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Line } from "../src/index.js";
 
 function randomColor(): [number, number, number] {

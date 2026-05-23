@@ -1,6 +1,6 @@
 # Canvas Rendering System
 
-The `@unblessed/core` canvas system provides terminal-based rendering with an HTML5 Canvas-like API. It supports two rendering modes optimized for different use cases.
+The `@gavin-lynch/unblessed-core` canvas system provides terminal-based rendering with an HTML5 Canvas-like API. It supports two rendering modes optimized for different use cases.
 
 ## What is This? (Virtual Canvas)
 
@@ -31,7 +31,7 @@ The `@unblessed/core` canvas system provides terminal-based rendering with an HT
 - [`drawille-canvas-blessed-contrib`](https://github.com/yaronn/drawille-canvas-blessed-contrib) - which provided the same HTML5 Canvas-like API
 - [`node-drawille`](https://github.com/madbence/node-drawille) - for the braille character rendering
 
-We've reimplemented this system in `@unblessed/core` to be:
+We've reimplemented this system in `@gavin-lynch/unblessed-core` to be:
 
 - ✅ Platform-agnostic (works in Node.js and browsers)
 - ✅ TypeScript-first with full type safety
@@ -50,7 +50,7 @@ canvas.ctx.fillRect(10, 10, 20, 20);
 
 ```typescript
 // @unblessed (modern)
-import { CanvasWidget } from "@unblessed/core";
+import { CanvasWidget } from "@gavin-lynch/unblessed-core";
 class MyWidget extends CanvasWidget {
   draw() {
     this.ctx.fillRect(10, 10, 20, 20);
@@ -124,7 +124,7 @@ class MyWidget extends CanvasWidget {
 **Example:**
 
 ```typescript
-import { Canvas, DrawilleCanvas } from "@unblessed/core";
+import { Canvas, DrawilleCanvas } from "@gavin-lynch/unblessed-core";
 
 // Create a braille canvas (default)
 const canvas = new Canvas(80, 48); // 80×48 pixels = 40×12 characters
@@ -157,7 +157,7 @@ console.log(canvas.frame());
 **Example:**
 
 ```typescript
-import { Canvas, AnsiTermCanvas } from "@unblessed/core";
+import { Canvas, AnsiTermCanvas } from "@gavin-lynch/unblessed-core";
 
 // Create a character canvas
 const canvas = new Canvas(40, 12, AnsiTermCanvas);
@@ -184,7 +184,7 @@ All canvas-based widgets extend `CanvasWidget`, which handles:
 **Example Widget:**
 
 ```typescript
-import { CanvasWidget, DrawilleCanvas } from "@unblessed/core";
+import { CanvasWidget, DrawilleCanvas } from "@gavin-lynch/unblessed-core";
 
 export class MyChart extends CanvasWidget {
   constructor(options = {}) {
@@ -282,8 +282,8 @@ ctx._canvas.fontBg = "blue";
 ## Complete Example
 
 ```typescript
-import { Screen } from "@unblessed/node";
-import { CanvasWidget, DrawilleCanvas } from "@unblessed/core";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import { CanvasWidget, DrawilleCanvas } from "@gavin-lynch/unblessed-core";
 
 class SimpleChart extends CanvasWidget {
   constructor(options = {}) {

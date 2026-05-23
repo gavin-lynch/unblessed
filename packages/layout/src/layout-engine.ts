@@ -2,7 +2,7 @@
  * layout-engine.ts - Main layout engine for flexbox calculations
  */
 
-import type { Screen } from "@unblessed/core";
+import type { Screen } from "@gavin-lynch/unblessed-core";
 import Yoga from "yoga-layout";
 import type { LayoutManagerOptions, LayoutNode } from "./types.js";
 import { destroyWidgets, syncTreeAndRender } from "./widget-sync.js";
@@ -13,7 +13,7 @@ import { createLayoutNode, destroyLayoutNode } from "./yoga-node.js";
  *
  * This class manages the lifecycle of a Yoga layout tree and synchronizes
  * it with unblessed widgets. It's designed to be used by framework integrations
- * like @unblessed/react.
+ * like @gavin-lynch/unblessed-react.
  *
  * @example
  * ```typescript

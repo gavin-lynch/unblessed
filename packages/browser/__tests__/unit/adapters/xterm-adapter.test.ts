@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock blessed before importing XTermAdapter
-vi.mock("@unblessed/blessed", () => ({
+vi.mock("@gavin-lynch/unblessed-blessed", () => ({
   default: {},
 }));
 

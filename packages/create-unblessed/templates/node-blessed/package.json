@@ -8,8 +8,8 @@
     "dev": "tsx watch index.ts"
   },
   "dependencies": {
-    "@unblessed/core": "^1.0.0-alpha",
-    "@unblessed/node": "^1.0.0-alpha"
+    "@gavin-lynch/unblessed-core": "^1.0.0-alpha",
+    "@gavin-lynch/unblessed-node": "^1.0.0-alpha"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

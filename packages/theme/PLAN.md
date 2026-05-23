@@ -1,13 +1,13 @@
 # Theme Extraction Plan
 
-Goal: extract all theming logic from core into `@unblessed/theme`, keep core
+Goal: extract all theming logic from core into `@gavin-lynch/unblessed-theme`, keep core
 focused on rendering and widget behavior, and make theming available to all
 widgets (core + contrib) through a single, framework-agnostic API.
 
 ## Scope
 
 - Move token resolution, utility class parsing, and variant resolution to
-  `@unblessed/theme`.
+  `@gavin-lynch/unblessed-theme`.
 - Keep core responsible only for applying resolved style objects.
 - Widgets own state (hover/focus/active) and choose which variant bundle to
   apply.
@@ -24,13 +24,13 @@ widgets (core + contrib) through a single, framework-agnostic API.
    - Identify where core resolves colors from names/hex/arrays.
    - Identify any theme-like logic or style conventions in widgets.
 
-2. Define `@unblessed/theme` API (source of truth)
+2. Define `@gavin-lynch/unblessed-theme` API (source of truth)
    - Token schema: colors, spacing, borders, radii, typography, components.
    - Resolver: tokens -> resolved style objects.
    - Utilities: Tailwind-like class parser + variants (hover/focus/active).
 
 3. Move and centralize logic
-   - Keep token and utility logic in `@unblessed/theme` only.
+   - Keep token and utility logic in `@gavin-lynch/unblessed-theme` only.
    - Core takes resolved values; no token lookup in core.
 
 4. Update widget integration

@@ -1,9 +1,12 @@
 /**
- * BigText.tsx - BigText component and descriptor for @unblessed/react
+ * BigText.tsx - BigText component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { BigText as BigTextWidget, type Screen } from "@unblessed/core";
-import { ComputedLayout, FlexboxProps } from "@unblessed/layout";
+import {
+  BigText as BigTextWidget,
+  type Screen,
+} from "@gavin-lynch/unblessed-core";
+import { ComputedLayout, FlexboxProps } from "@gavin-lynch/unblessed-layout";
 import { forwardRef, type PropsWithChildren } from "react";
 import { StyleObject } from "../widget-descriptors";
 import { BoxDescriptor, COMMON_WIDGET_OPTIONS } from "./Box";

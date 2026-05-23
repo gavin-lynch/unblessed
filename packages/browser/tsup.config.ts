@@ -71,7 +71,7 @@ export default defineConfig([
     },
 
     onSuccess: async () => {
-      console.log("✅ @unblessed/browser build complete");
+      console.log("✅ @gavin-lynch/unblessed-browser build complete");
       console.log("📦 Output: dist/index.js (ESM)");
       console.log("📦 Output: dist/index.cjs (CJS)");
     },
@@ -101,7 +101,7 @@ export default defineConfig([
     onSuccess: async () => {
       await cp("../core/data", "dist/data", { recursive: true });
       console.log("✅ Copied ../core/data/ to dist/data/");
-      console.log("✅ @unblessed/browser build complete");
+      console.log("✅ @gavin-lynch/unblessed-browser build complete");
       console.log("📦 Output: dist/index.js (ESM)");
       console.log("📦 Output: dist/index.cjs (CJS)");
       console.log("📦 Output: dist/index.cjs (CJS)");

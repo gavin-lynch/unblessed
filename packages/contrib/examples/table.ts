@@ -5,7 +5,7 @@
  * Demonstrates table widget with interactive selection.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Table } from "../src/widgets/table.js";
 
 const screen = new Screen({ smartCSR: true });

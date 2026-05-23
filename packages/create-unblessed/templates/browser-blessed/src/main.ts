@@ -1,4 +1,4 @@
-import { Box, Screen } from "@unblessed/browser";
+import { Box, Screen } from "@gavin-lynch/unblessed-browser";
 import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 

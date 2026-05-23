@@ -19,21 +19,30 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@unblessed/core/data/terminfo/xterm-256color.json": resolve(
+      "@gavin-lynch/unblessed-core/data/terminfo/xterm-256color.json": resolve(
         __dirname,
         "../core/dist/data/terminfo/xterm-256color.json",
       ),
-      "@unblessed/core/data/fonts/ter-u14n.json": resolve(
+      "@gavin-lynch/unblessed-core/data/fonts/ter-u14n.json": resolve(
         __dirname,
         "../core/dist/data/fonts/ter-u14n.json",
       ),
-      "@unblessed/core/data/fonts/ter-u14b.json": resolve(
+      "@gavin-lynch/unblessed-core/data/fonts/ter-u14b.json": resolve(
         __dirname,
         "../core/dist/data/fonts/ter-u14b.json",
       ),
-      "@unblessed/core": resolve(__dirname, "../core/dist/index.js"),
-      "@unblessed/theme": resolve(__dirname, "../theme/dist/index.js"),
-      "@unblessed/contrib": resolve(__dirname, "../contrib/dist/index.js"),
+      "@gavin-lynch/unblessed-core": resolve(
+        __dirname,
+        "../core/dist/index.js",
+      ),
+      "@gavin-lynch/unblessed-theme": resolve(
+        __dirname,
+        "../theme/dist/index.js",
+      ),
+      "@gavin-lynch/unblessed-contrib": resolve(
+        __dirname,
+        "../contrib/dist/index.js",
+      ),
     },
   },
 });

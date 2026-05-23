@@ -5,8 +5,8 @@
  * avoiding the need for complex inheritance hierarchies.
  */
 
-import { colors } from "@unblessed/core";
-import type { FlexboxProps } from "@unblessed/layout";
+import { colors } from "@gavin-lynch/unblessed-core";
+import type { FlexboxProps } from "@gavin-lynch/unblessed-layout";
 import { merge } from "lodash-es";
 import { resolveColor } from "../themes/theme-utils.js";
 import type { Theme } from "../themes/theme.js";

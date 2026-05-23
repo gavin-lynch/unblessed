@@ -1,16 +1,16 @@
 # Core Dependency Extraction Plan
 
 This document summarizes how we will remove third-party dependencies from
-`@unblessed/core` while preserving core capabilities like truecolor, canvas
+`@gavin-lynch/unblessed-core` while preserving core capabilities like truecolor, canvas
 rendering, and runtime-driven image decoding. It also captures the expected
-organization for `@unblessed/contrib` after extraction.
+organization for `@gavin-lynch/unblessed-contrib` after extraction.
 
 ## Goals
 
-- Keep `@unblessed/core` dependency-free.
+- Keep `@gavin-lynch/unblessed-core` dependency-free.
 - Preserve holistic truecolor support and the core color pipeline.
 - Keep canvas/drawing primitives in core as foundational infrastructure.
-- Move widget-specific third-party dependencies into `@unblessed/contrib`.
+- Move widget-specific third-party dependencies into `@gavin-lynch/unblessed-contrib`.
 - Keep compatibility surface stable for contrib/blessed users.
 
 ## Non-negotiables (Core Must Keep)
@@ -86,7 +86,7 @@ parity needs `x256`, keep it in contrib only.
 ### 3) Keep image decoding in core via runtime
 
 Image rendering stays in core because it is foundational. Decoding is
-performed by runtime adapters (`@unblessed/node`, `@unblessed/browser`)
+performed by runtime adapters (`@gavin-lynch/unblessed-node`, `@gavin-lynch/unblessed-browser`)
 via `runtime.images`. This keeps core dependency-free while enabling
 future image-based widgets.
 
@@ -111,8 +111,8 @@ This keeps contrib’s role clear: compatibility surface + optional deps.
 
 Run these after extraction to verify no regressions:
 
-- `pnpm --filter @unblessed/core build`
-- `pnpm --filter @unblessed/contrib build`
+- `pnpm --filter @gavin-lynch/unblessed-core build`
+- `pnpm --filter @gavin-lynch/unblessed-contrib build`
 - `pnpm exec tsx packages/contrib/examples/dashboard.ts`
 - `pnpm exec tsx packages/contrib/examples/truecolor.ts`
 - `pnpm exec tsx packages/contrib/examples/dashboard-truecolor-dump.ts`

@@ -3,8 +3,8 @@
  * Debug truecolor rendering - comprehensive logging
  */
 
-import { getRuntime } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { getRuntime } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Diff } from "../src/widgets/diff.js";
 
 // Enable all debug flags

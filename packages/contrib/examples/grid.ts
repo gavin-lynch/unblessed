@@ -5,7 +5,7 @@
  * Demonstrates grid-based layout for arranging widgets.
  */
 
-import { Box, Screen } from "@unblessed/node";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
 import { Grid } from "../src/layout/grid.js";
 import { WorldMap } from "../src/widgets/map.js";
 

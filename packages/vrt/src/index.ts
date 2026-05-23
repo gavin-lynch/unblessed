@@ -1,13 +1,13 @@
 /**
- * @unblessed/vrt - Visual Regression Testing for Terminal UIs
+ * @gavin-lynch/unblessed-vrt - Visual Regression Testing for Terminal UIs
  *
  * Provides tools for recording, playing back, and comparing terminal UI screenshots
  * to detect visual regressions in @unblessed applications.
  *
  * @example
  * ```typescript
- * import { VRTRecorder, VRTPlayer, VRTComparator } from '@unblessed/vrt';
- * import { Screen, Box } from '@unblessed/node';
+ * import { VRTRecorder, VRTPlayer, VRTComparator } from '@gavin-lynch/unblessed-vrt';
+ * import { Screen, Box } from '@gavin-lynch/unblessed-node';
  *
  * // Record a session
  * const screen = new Screen({ smartCSR: true });

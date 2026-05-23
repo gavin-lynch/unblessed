@@ -1,13 +1,13 @@
 /**
- * @unblessed/contrib - Dashboard widgets and charts
+ * @gavin-lynch/unblessed-contrib - Dashboard widgets and charts
  *
  * A port of blessed-contrib providing dashboard widgets and chart components
  * for terminal user interfaces.
  *
  * @example
  * ```ts
- * import { Screen } from '@unblessed/node';
- * import { Grid, Line, Bar, Gauge, Donut, Log, Sparkline } from '@unblessed/contrib';
+ * import { Screen } from '@gavin-lynch/unblessed-node';
+ * import { Grid, Line, Bar, Gauge, Donut, Log, Sparkline } from '@gavin-lynch/unblessed-contrib';
  *
  * const screen = new Screen({ smartCSR: true });
  *

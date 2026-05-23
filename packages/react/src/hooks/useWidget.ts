@@ -6,7 +6,7 @@
  * React re-renders.
  */
 
-import type { Element } from "@unblessed/core";
+import type { Element } from "@gavin-lynch/unblessed-core";
 import { useEffect, useRef, type MutableRefObject } from "react";
 
 /**
@@ -30,7 +30,7 @@ import { useEffect, useRef, type MutableRefObject } from "react";
  *
  * @example
  * ```tsx
- * import { useWidget, makeAnimatable, generateRainbow, rotateColors } from '@unblessed/react';
+ * import { useWidget, makeAnimatable, generateRainbow, rotateColors } from '@gavin-lynch/unblessed-react';
  *
  * const MyBox = forwardRef((props, ref) => {
  *   return <Box ref={ref} {...props} />;

@@ -5,7 +5,7 @@
  * Demonstrates sparkline widget usage.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Sparkline } from "../src/widgets/sparkline.js";
 
 const screen = new Screen({ smartCSR: true });

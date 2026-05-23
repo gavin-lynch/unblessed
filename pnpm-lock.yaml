@@ -8,13 +8,13 @@ importers:
 
   .:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:packages/core
-      '@unblessed/node':
+      '@gavin-lynch/unblessed-node':
         specifier: workspace:*
         version: link:packages/node
-      '@unblessed/theme':
+      '@gavin-lynch/unblessed-theme':
         specifier: workspace:*
         version: link:packages/theme
     devDependencies:
@@ -150,10 +150,10 @@ importers:
       '@sentry/react':
         specifier: ^10.23.0
         version: 10.23.0(react@19.2.0)
-      '@unblessed/browser':
+      '@gavin-lynch/unblessed-browser':
         specifier: workspace:*
         version: link:../../packages/browser
-      '@unblessed/react':
+      '@gavin-lynch/unblessed-react':
         specifier: workspace:*
         version: link:../../packages/react
       '@xterm/addon-fit':
@@ -217,7 +217,7 @@ importers:
 
   packages/blessed:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
       omggif:
@@ -239,7 +239,7 @@ importers:
 
   packages/browser:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
       assert:
@@ -273,10 +273,10 @@ importers:
       '@types/path-browserify':
         specifier: ^1.0.3
         version: 1.0.3
-      '@unblessed/contrib':
+      '@gavin-lynch/unblessed-contrib':
         specifier: workspace:*
         version: link:../contrib
-      '@unblessed/theme':
+      '@gavin-lynch/unblessed-theme':
         specifier: workspace:*
         version: link:../theme
       '@vitest/coverage-v8':
@@ -297,10 +297,10 @@ importers:
 
   packages/contrib:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
-      '@unblessed/theme':
+      '@gavin-lynch/unblessed-theme':
         specifier: workspace:*
         version: link:../theme
       chalk:
@@ -331,10 +331,10 @@ importers:
       '@types/marked-terminal':
         specifier: ^6.1.1
         version: 6.1.1
-      '@unblessed/node':
+      '@gavin-lynch/unblessed-node':
         specifier: workspace:*
         version: link:../node
-      '@unblessed/perf':
+      '@gavin-lynch/unblessed-perf':
         specifier: workspace:*
         version: link:../perf
       '@vitest/coverage-v8':
@@ -406,10 +406,10 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1
     devDependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
-      '@unblessed/node':
+      '@gavin-lynch/unblessed-node':
         specifier: workspace:*
         version: link:../node
       '@vitest/coverage-v8':
@@ -421,7 +421,7 @@ importers:
 
   packages/node:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
       omggif:
@@ -431,7 +431,7 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
     devDependencies:
-      '@unblessed/vrt':
+      '@gavin-lynch/unblessed-vrt':
         specifier: workspace:*
         version: link:../vrt
       '@vitest/coverage-v8':
@@ -443,7 +443,7 @@ importers:
 
   packages/perf:
     devDependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
       '@vitest/coverage-v8':
@@ -455,10 +455,10 @@ importers:
 
   packages/react:
     dependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:^
         version: link:../core
-      '@unblessed/layout':
+      '@gavin-lynch/unblessed-layout':
         specifier: workspace:*
         version: link:../layout
       react-reconciler:
@@ -474,10 +474,10 @@ importers:
       '@types/react-reconciler':
         specifier: ^0.32.3
         version: 0.32.3(@types/react@19.2.2)
-      '@unblessed/contrib':
+      '@gavin-lynch/unblessed-contrib':
         specifier: workspace:*
         version: link:../contrib
-      '@unblessed/node':
+      '@gavin-lynch/unblessed-node':
         specifier: workspace:*
         version: link:../node
       react:
@@ -499,7 +499,7 @@ importers:
         specifier: ^12.1.0
         version: 12.1.0
     devDependencies:
-      '@unblessed/core':
+      '@gavin-lynch/unblessed-core':
         specifier: workspace:*
         version: link:../core
       '@vitest/coverage-v8':
@@ -511,7 +511,7 @@ importers:
 
   tools/benchmarks:
     dependencies:
-      '@unblessed/blessed':
+      '@gavin-lynch/unblessed-blessed':
         specifier: workspace:*
         version: link:../../packages/blessed
 

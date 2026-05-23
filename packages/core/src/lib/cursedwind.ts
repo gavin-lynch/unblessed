@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { Box } from '@unblessed/core';
+ * import { Box } from '@gavin-lynch/unblessed-core';
  *
  * const box = new Box({
  *   parent: screen,

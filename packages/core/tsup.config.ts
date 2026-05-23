@@ -31,6 +31,6 @@ export default defineConfig({
   onSuccess: async () => {
     await cp("data", "dist/data", { recursive: true });
     console.log("✅ Copied data/ to dist/data/");
-    console.log("✅ @unblessed/core build complete");
+    console.log("✅ @gavin-lynch/unblessed-core build complete");
   },
 });

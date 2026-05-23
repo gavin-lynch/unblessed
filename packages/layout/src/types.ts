@@ -1,8 +1,8 @@
 /**
- * types.ts - Type definitions for @unblessed/layout
+ * types.ts - Type definitions for @gavin-lynch/unblessed-layout
  */
 
-import type { Element, Screen } from "@unblessed/core";
+import type { Element, Screen } from "@gavin-lynch/unblessed-core";
 import type { Node as YogaNode } from "yoga-layout";
 import { WidgetDescriptor } from "./widget-descriptor";
 
@@ -287,9 +287,9 @@ export interface LayoutNode {
    */
   _animations?: {
     /** Border animation configuration (rainbow, gradient, rotating-colors, custom) */
-    border?: any; // BorderAnimationConfig from @unblessed/react
+    border?: any; // BorderAnimationConfig from @gavin-lynch/unblessed-react
     /** Text color animation configuration (pulse, color-cycle, typewriter) */
-    color?: any; // TextAnimationConfig from @unblessed/react
+    color?: any; // TextAnimationConfig from @gavin-lynch/unblessed-react
   };
 }
 

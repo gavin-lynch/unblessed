@@ -4,7 +4,7 @@
  * PURPOSE: Verify that focus hooks correctly wrap the blessed focus system
  */
 
-import { Box as CoreBox } from "@unblessed/core";
+import { Box as CoreBox } from "@gavin-lynch/unblessed-core";
 import { useRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Box, render, Text, useFocus, useScreenFocus } from "../src";

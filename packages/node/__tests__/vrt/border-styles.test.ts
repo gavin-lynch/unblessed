@@ -1,10 +1,10 @@
 /**
- * VRT Border Styles Tests for @unblessed/node
+ * VRT Border Styles Tests for @gavin-lynch/unblessed-node
  *
  * Visual regression tests for all border styles (single, double, round, bold, etc.).
  */
 
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { describe } from "vitest";
 import { Box } from "../../dist/index.js";
 import { NodeRuntime } from "../../src";

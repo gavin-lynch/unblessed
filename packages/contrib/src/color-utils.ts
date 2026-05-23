@@ -8,7 +8,7 @@ import {
   resolveColor,
   type ColorCapabilities,
   type ColorInput,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 
 export interface ColorResolveOptions {
   targetMode?: "auto" | "truecolor" | "256" | "16" | "8" | "none";

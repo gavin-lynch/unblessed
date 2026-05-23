@@ -1,11 +1,11 @@
 /**
- * VRT Rendering Tests for @unblessed/node
+ * VRT Rendering Tests for @gavin-lynch/unblessed-node
  *
  * Visual regression tests that record UI rendering and compare with golden snapshots.
  * Run with UPDATE_SNAPSHOTS=1 to update baselines after intentional UI changes.
  */
 
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { describe } from "vitest";
 import { Box, List, Text } from "../../dist/index.js";
 import { NodeRuntime } from "../../src";

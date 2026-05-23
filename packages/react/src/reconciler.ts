@@ -1,16 +1,16 @@
 /**
- * reconciler.ts - React reconciler for @unblessed/react
+ * reconciler.ts - React reconciler for @gavin-lynch/unblessed-react
  *
  * This module configures the React reconciler to work with our virtual DOM
- * and @unblessed/layout's LayoutManager.
+ * and @gavin-lynch/unblessed-layout's LayoutManager.
  *
  * Key differences from Ink:
- * - We use LayoutManager from @unblessed/layout (don't create Yoga nodes directly)
+ * - We use LayoutManager from @gavin-lynch/unblessed-layout (don't create Yoga nodes directly)
  * - Widget descriptors encapsulate all widget configuration logic
  * - Layout calculation delegated to LayoutManager
  */
 
-import { LayoutManager, updateLayoutNode } from "@unblessed/layout";
+import { LayoutManager, updateLayoutNode } from "@gavin-lynch/unblessed-layout";
 import createReconciler from "react-reconciler";
 import {
   DefaultEventPriority,
@@ -55,7 +55,7 @@ export function setLayoutManager(manager: LayoutManager): void {
 function getLayoutManager(): LayoutManager {
   if (!currentLayoutManager) {
     throw new Error(
-      "LayoutManager not set - this is a bug in @unblessed/react",
+      "LayoutManager not set - this is a bug in @gavin-lynch/unblessed-react",
     );
   }
   return currentLayoutManager;

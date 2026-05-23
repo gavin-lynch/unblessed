@@ -1,10 +1,10 @@
 /**
- * Test setup for @unblessed/contrib
+ * Test setup for @gavin-lynch/unblessed-contrib
  *
- * Uses the same runtime initialization as @unblessed/core tests
+ * Uses the same runtime initialization as @gavin-lynch/unblessed-core tests
  */
 
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { Buffer } from "buffer";
 import { EventEmitter } from "events";
 import fs from "fs";

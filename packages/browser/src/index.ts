@@ -1,13 +1,13 @@
 /**
- * @unblessed/browser - Browser runtime for unblessed
+ * @gavin-lynch/unblessed-browser - Browser runtime for unblessed
  *
- * Provides browser-compatible runtime for @unblessed/core with XTerm.js integration.
+ * Provides browser-compatible runtime for @gavin-lynch/unblessed-core with XTerm.js integration.
  *
  * ## Usage
  *
  * ```typescript
- * import { BrowserRuntime } from '@unblessed/browser';
- * import { render, Box, Text } from '@unblessed/react';
+ * import { BrowserRuntime } from '@gavin-lynch/unblessed-browser';
+ * import { render, Box, Text } from '@gavin-lynch/unblessed-react';
  * import { Terminal } from 'xterm';
  *
  * // Create terminal
@@ -31,11 +31,11 @@
 import "./runtime/globals.js";
 
 // Export BrowserRuntime for explicit initialization
-export type { Runtime } from "@unblessed/core";
+export type { Runtime } from "@gavin-lynch/unblessed-core";
 export { BrowserRuntime } from "./runtime/browser-runtime.js";
 
 // Re-export everything from core EXCEPT Screen
-export * from "@unblessed/core";
+export * from "@gavin-lynch/unblessed-core";
 
 // Export browser-specific Screen (overrides core Screen)
 export { Screen } from "./screen.js";

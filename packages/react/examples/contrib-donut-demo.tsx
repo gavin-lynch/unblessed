@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Donut Chart Demo - @unblessed/contrib Donut widget example
+ * Donut Chart Demo - @gavin-lynch/unblessed-contrib Donut widget example
  *
  * Demonstrates:
  * - Multiple donut charts
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-donut-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useState } from "react";
 import { Donut, type DonutData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";

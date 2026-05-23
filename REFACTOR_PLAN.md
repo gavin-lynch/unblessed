@@ -4,7 +4,7 @@ This plan captures the agreed next steps for the ongoing refactor.
 
 ## Goals
 
-- Keep `@unblessed/core` dependency-free.
+- Keep `@gavin-lynch/unblessed-core` dependency-free.
 - Preserve holistic truecolor support and the core color pipeline.
 - Keep canvas/drawing primitives in core.
 - Rename `packages/contrib` to `packages/blessed-contrib`.
@@ -22,7 +22,7 @@ This plan captures the agreed next steps for the ongoing refactor.
 1. Rename contrib package
    - Move `packages/contrib` -> `packages/blessed-contrib`.
    - Update workspace configs, imports, docs, and examples.
-   - Update package names and references to `@unblessed/contrib`.
+   - Update package names and references to `@gavin-lynch/unblessed-contrib`.
 
 2. Create `packages/external`
    - Scaffold with package.json/tsconfig/entry exports.

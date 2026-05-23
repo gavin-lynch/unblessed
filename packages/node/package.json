@@ -1,6 +1,6 @@
 {
-  "name": "@unblessed/node",
-  "description": "Node.js runtime adapter for @unblessed/core terminal UI library",
+  "name": "@gavin-lynch/unblessed-node",
+  "description": "Node.js runtime adapter for @gavin-lynch/unblessed-core terminal UI library",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
@@ -70,10 +70,10 @@
     "example:dashboard": "tsx examples/dashboard.ts"
   },
   "dependencies": {
-    "@unblessed/core": "workspace:*"
+    "@gavin-lynch/unblessed-core": "workspace:*"
   },
   "devDependencies": {
-    "@unblessed/vrt": "workspace:*",
+    "@gavin-lynch/unblessed-vrt": "workspace:*",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4"
   },

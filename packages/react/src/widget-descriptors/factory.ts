@@ -5,7 +5,7 @@
  * from React props.
  */
 
-import { WidgetDescriptor } from "@unblessed/layout";
+import { WidgetDescriptor } from "@gavin-lynch/unblessed-layout";
 import { BigTextDescriptor } from "../components/BigText.js";
 import { BoxDescriptor } from "../components/Box.js";
 import { BrailleCanvasDescriptor } from "../components/BrailleCanvas.js";

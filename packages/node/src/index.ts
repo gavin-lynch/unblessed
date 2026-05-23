@@ -1,15 +1,15 @@
 /**
- * @unblessed/node - Node.js runtime adapter for @unblessed/core
+ * @gavin-lynch/unblessed-node - Node.js runtime adapter for @gavin-lynch/unblessed-core
  *
  * This package provides Node.js-specific implementations and makes it easy
- * to use @unblessed/core in Node.js environments.
+ * to use @gavin-lynch/unblessed-core in Node.js environments.
  *
  * ## Usage
  *
  * Simply import widgets and use them - runtime auto-initializes:
  *
  * ```typescript
- * import { Screen, Box } from '@unblessed/node';
+ * import { Screen, Box } from '@gavin-lynch/unblessed-node';
  *
  * const screen = new Screen({ smartCSR: true });
  * const box = new Box({ screen, content: 'Hello!' });
@@ -17,8 +17,8 @@
  * ```
  */
 
-import type { Runtime } from "@unblessed/core";
-import { setRuntime } from "@unblessed/core";
+import type { Runtime } from "@gavin-lynch/unblessed-core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { Buffer } from "buffer";
 import * as child_process from "child_process";
 import { EventEmitter } from "events";
@@ -73,5 +73,5 @@ if (typeof process !== "undefined" && process.env.NODE_ENV !== "test") {
   setRuntime(new NodeRuntime());
 }
 
-// Re-export all from @unblessed/core
-export * from "@unblessed/core";
+// Re-export all from @gavin-lynch/unblessed-core
+export * from "@gavin-lynch/unblessed-core";

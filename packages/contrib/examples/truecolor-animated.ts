@@ -5,8 +5,11 @@
  * Renders a full-screen 24-bit gradient and rotates hue over time.
  */
 
-import { Box, Screen } from "@unblessed/node";
-import { createPerfOverlay, installRenderPerfObserver } from "@unblessed/perf";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
+import {
+  createPerfOverlay,
+  installRenderPerfObserver,
+} from "@gavin-lynch/unblessed-perf";
 import { appendFileSync, writeFileSync } from "fs";
 
 const screen = new Screen({ smartCSR: true });

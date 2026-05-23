@@ -1,5 +1,5 @@
 {
-  "name": "@unblessed/vrt",
+  "name": "@gavin-lynch/unblessed-vrt",
   "description": "Visual Regression Testing tools for @unblessed terminal UI applications",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
@@ -65,10 +65,10 @@
     "commander": "^12.1.0"
   },
   "peerDependencies": {
-    "@unblessed/core": "workspace:^"
+    "@gavin-lynch/unblessed-core": "workspace:^"
   },
   "devDependencies": {
-    "@unblessed/core": "workspace:*",
+    "@gavin-lynch/unblessed-core": "workspace:*",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4"
   },

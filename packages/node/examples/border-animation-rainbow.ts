@@ -11,7 +11,7 @@ import {
   Text,
   generateRainbow,
   rotateColors,
-} from "@unblessed/node";
+} from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   smartCSR: true,

@@ -3,8 +3,8 @@
  * Test truecolor background codes directly
  */
 
-import { Box } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { Box } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -4,10 +4,10 @@
  * Provides EventEmitter functionality without Node.js dependencies
  * by delegating to runtime-provided EventEmitter implementation.
  *
- * This allows @unblessed/core to remain platform-agnostic while providing
+ * This allows @gavin-lynch/unblessed-core to remain platform-agnostic while providing
  * full EventEmitter functionality. The actual EventEmitter comes from:
- * - @unblessed/node: Node.js events.EventEmitter
- * - @unblessed/browser: EventEmitter polyfill (e.g., eventemitter3)
+ * - @gavin-lynch/unblessed-node: Node.js events.EventEmitter
+ * - @gavin-lynch/unblessed-browser: EventEmitter polyfill (e.g., eventemitter3)
  */
 
 import { getRuntime, type EventEmitterType } from "./runtime-helpers.js";

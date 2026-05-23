@@ -5,7 +5,7 @@
  * Demonstrates stacked bar chart with multiple categories.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { StackedBar } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

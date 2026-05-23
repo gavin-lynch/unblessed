@@ -6,7 +6,7 @@
  * verify edges, spacing, and label coloring in a deterministic way.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { PassThrough } from "stream";
 import { Bar } from "../src/widgets/bar.js";
 

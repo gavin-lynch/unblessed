@@ -1,14 +1,14 @@
 /**
  * BrowserRuntime - Browser implementation of Runtime interface
  *
- * Provides browser-compatible implementations of Node.js APIs needed by @unblessed/core.
+ * Provides browser-compatible implementations of Node.js APIs needed by @gavin-lynch/unblessed-core.
  * Automatically sets up global polyfills (process, Buffer) when instantiated.
  */
 
 // IMPORTANT: Set up minimal globals FIRST, before any other imports
 import "./globals.js";
 
-import type { Runtime } from "@unblessed/core";
+import type { Runtime } from "@gavin-lynch/unblessed-core";
 import { Buffer } from "buffer";
 import { EventEmitter } from "events";
 import path from "path-browserify";
@@ -66,7 +66,7 @@ class Writable extends EventEmitter {
  * Browser runtime implementation
  *
  * Automatically sets up global polyfills (process, Buffer, global) when instantiated.
- * This allows @unblessed/core to work in browser environments.
+ * This allows @gavin-lynch/unblessed-core to work in browser environments.
  */
 export class BrowserRuntime implements Runtime {
   fs: Runtime["fs"];

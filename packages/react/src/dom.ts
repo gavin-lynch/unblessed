@@ -1,16 +1,16 @@
 /**
- * dom.ts - Virtual DOM for @unblessed/react
+ * dom.ts - Virtual DOM for @gavin-lynch/unblessed-react
  *
  * This module defines the virtual DOM structure that bridges React components
- * to @unblessed/layout's LayoutNodes and ultimately to unblessed widgets.
+ * to @gavin-lynch/unblessed-layout's LayoutNodes and ultimately to unblessed widgets.
  *
- * Key insight: We use LayoutNode from @unblessed/layout as our "DOM" nodes.
- * The reconciler creates/updates LayoutNodes, and @unblessed/layout handles
+ * Key insight: We use LayoutNode from @gavin-lynch/unblessed-layout as our "DOM" nodes.
+ * The reconciler creates/updates LayoutNodes, and @gavin-lynch/unblessed-layout handles
  * the Yoga calculations and widget synchronization.
  */
 
-import { BigText, Screen } from "@unblessed/core";
-import type { LayoutNode } from "@unblessed/layout";
+import { BigText, Screen } from "@gavin-lynch/unblessed-core";
+import type { LayoutNode } from "@gavin-lynch/unblessed-layout";
 import { BoxProps } from "./components/Box";
 import { TextProps } from "./components/Text";
 
@@ -41,7 +41,7 @@ export interface DOMNode {
   type: ElementType;
 
   /**
-   * The underlying layout node (from @unblessed/layout)
+   * The underlying layout node (from @gavin-lynch/unblessed-layout)
    * This is what gets passed to LayoutManager
    */
   layoutNode: LayoutNode;

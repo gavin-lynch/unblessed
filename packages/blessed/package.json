@@ -1,6 +1,6 @@
 {
-  "name": "@unblessed/blessed",
-  "description": "100% backward compatible blessed API wrapper over @unblessed/core",
+  "name": "@gavin-lynch/unblessed-blessed",
+  "description": "100% backward compatible blessed API wrapper over @gavin-lynch/unblessed-core",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
@@ -78,7 +78,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@unblessed/core": "workspace:*"
+    "@gavin-lynch/unblessed-core": "workspace:*"
   },
   "devDependencies": {
     "@types/blessed": "^0.1.25",

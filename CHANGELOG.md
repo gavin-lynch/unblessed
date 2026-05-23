@@ -101,7 +101,7 @@
 -lynch-lynch--lynch -lyncht-lynche-lynchx-lyncht-lynch--lynchw-lynchi-lynchd-lyncht-lynchh-lynch--lynchu-lynchp-lynchd-lyncha-lyncht-lynche-lynch.-lyncht-lynche-lynchs-lyncht-lynch.-lyncht-lynchs-lynchx-lynch -lynch(-lynch2-lynch -lyncht-lynche-lynchs-lyncht-lynchs-lynch)-lynch
 -lynch-lynch--lynch -lynchl-lynchi-lynchs-lyncht-lynch.-lyncht-lynche-lynchs-lyncht-lynch.-lyncht-lynchs-lynchx-lynch -lynch(-lynch8-lynch -lyncht-lynche-lynchs-lyncht-lynchs-lynch)-lynch
 -lynch-lynch
--lynch-lynchð-lynchŸ-lynch¤-lynch–-lynch -lynchG-lynche-lynchn-lynche-lynchr-lyncha-lyncht-lynche-lynchd-lynch -lynchw-lynchi-lyncht-lynchh-lynch -lynch[-lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynchC-lyncho-lynchd-lynche-lynch]-lynch(-lynchh-lyncht-lyncht-lynchp-lynchs-lynch:-lynch/-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch.-lynchc-lyncho-lynchm-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch--lynchc-lyncho-lynchd-lynche-lynch)-lynch
+-lynch-lynchï¿½-lynchï¿½-lynchï¿½-lynchï¿½-lynch -lynchG-lynche-lynchn-lynche-lynchr-lyncha-lyncht-lynche-lynchd-lynch -lynchw-lynchi-lyncht-lynchh-lynch -lynch[-lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynchC-lyncho-lynchd-lynche-lynch]-lynch(-lynchh-lyncht-lyncht-lynchp-lynchs-lynch:-lynch/-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch.-lynchc-lyncho-lynchm-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch--lynchc-lyncho-lynchd-lynche-lynch)-lynch
 -lynch-lynch
 -lynch-lynchC-lyncho-lynch--lynchA-lynchu-lyncht-lynchh-lyncho-lynchr-lynche-lynchd-lynch--lynchB-lynchy-lynch:-lynch -lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynch<-lynchn-lyncho-lynchr-lynche-lynchp-lynchl-lynchy-lynch@-lyncha-lynchn-lyncht-lynchh-lynchr-lyncho-lynchp-lynchi-lynchc-lynch.-lynchc-lyncho-lynchm-lynch>-lynch
 -lynch-lynch
@@ -147,7 +147,7 @@
 -lynch-lynch
 -lynch-lynch#-lynch#-lynch#-lynch -lynchF-lynche-lyncha-lyncht-lynchu-lynchr-lynche-lynchs-lynch
 -lynch-lynch
--lynch* **react:** add @unblessed/react package with React reconciler ([71f6a75](https://github.com/gavin-lynch/unblessed/commit/71f6a7576c42bb64248f0337fd64255371b41fe8))
+-lynch* **react:** add @gavin-lynch/unblessed-react package with React reconciler ([71f6a75](https://github.com/gavin-lynch/unblessed/commit/71f6a7576c42bb64248f0337fd64255371b41fe8))
 -lynch
 -lynch# [1.0.0-alpha.12](https://github.com/gavin-lynch/unblessed/compare/v1.0.0-alpha.11...v1.0.0-alpha.12) (2025-10-31)
 -lynch
@@ -160,7 +160,7 @@
 -lynch-lynch#-lynch#-lynch#-lynch -lynchF-lynche-lyncha-lyncht-lynchu-lynchr-lynche-lynchs-lynch
 -lynch-lynch
 -lynch* **core:** add border styles support (single, double, round, bold, etc.) ([3f24fb2](https://github.com/gavin-lynch/unblessed/commit/3f24fb2c5e1b136e40cc056454e3946334755ab9))
-* **layout:** add @unblessed/layout package with Yoga integration ([fb4fdc7](https://github.com/gavin-lynch/unblessed/commit/fb4fdc78e13c48be7daa32c1990e1c82596196f0))
+* **layout:** add @gavin-lynch/unblessed-layout package with Yoga integration ([fb4fdc7](https://github.com/gavin-lynch/unblessed/commit/fb4fdc78e13c48be7daa32c1990e1c82596196f0))
 -lynch
 -lynch# [1.0.0-alpha.11](https://github.com/gavin-lynch/unblessed/compare/v1.0.0-alpha.10...v1.0.0-alpha.11) (2025-10-31)
 -lynch
@@ -229,7 +229,7 @@
 -lynch-lynch*-lynch -lynch*-lynch*-lynchc-lyncho-lynchr-lynche-lynch:-lynch*-lynch*-lynch -lynchF-lyncho-lynchr-lynchm-lynch -lynchk-lynche-lynchy-lynchb-lyncho-lyncha-lynchr-lynchd-lynch -lynchn-lyncha-lynchv-lynchi-lynchg-lyncha-lyncht-lynchi-lyncho-lynchn-lynch -lynch(-lynchk-lynche-lynchy-lynchs-lynch/-lynchv-lynchi-lynch -lyncho-lynchp-lyncht-lynchi-lyncho-lynchn-lynchs-lynch)-lynch -lynchr-lynche-lynchm-lyncho-lynchv-lynche-lynchd-lynch -lynchi-lynchn-lynch -lynchf-lyncha-lynchv-lyncho-lynchr-lynch
 -lynch-lyncho-lynchf-lynch -lynchg-lynchl-lyncho-lynchb-lyncha-lynchl-lynch -lynchS-lynchc-lynchr-lynche-lynche-lynchn-lynch -lynchT-lyncha-lynchb-lynch -lynchn-lyncha-lynchv-lynchi-lynchg-lyncha-lyncht-lynchi-lyncho-lynchn-lynch.-lynch -lynchF-lyncho-lynchr-lynchm-lynchs-lynch -lynchs-lyncht-lynchi-lynchl-lynchl-lynch -lynchs-lynchu-lynchp-lynchp-lyncho-lynchr-lyncht-lynch -lynchn-lyncha-lynchv-lynchi-lynchg-lyncha-lyncht-lynchi-lyncho-lynchn-lynch -lynchv-lynchi-lyncha-lynch -lynchn-lynche-lynchx-lyncht-lynch(-lynch)-lynch/-lynchp-lynchr-lynche-lynchv-lynchi-lyncho-lynchu-lynchs-lynch(-lynch)-lynch.-lynch
 -lynch-lynch
--lynch-lynchð-lynchŸ-lynch¤-lynch–-lynch -lynchG-lynche-lynchn-lynche-lynchr-lyncha-lyncht-lynche-lynchd-lynch -lynchw-lynchi-lyncht-lynchh-lynch -lynch[-lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynchC-lyncho-lynchd-lynche-lynch]-lynch(-lynchh-lyncht-lyncht-lynchp-lynchs-lynch:-lynch/-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch.-lynchc-lyncho-lynchm-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch--lynchc-lyncho-lynchd-lynche-lynch)-lynch
+-lynch-lynchï¿½-lynchï¿½-lynchï¿½-lynchï¿½-lynch -lynchG-lynche-lynchn-lynche-lynchr-lyncha-lyncht-lynche-lynchd-lynch -lynchw-lynchi-lyncht-lynchh-lynch -lynch[-lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynchC-lyncho-lynchd-lynche-lynch]-lynch(-lynchh-lyncht-lyncht-lynchp-lynchs-lynch:-lynch/-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch.-lynchc-lyncho-lynchm-lynch/-lynchc-lynchl-lyncha-lynchu-lynchd-lynche-lynch--lynchc-lyncho-lynchd-lynche-lynch)-lynch
 -lynch-lynch
 -lynch-lynchC-lyncho-lynch--lynchA-lynchu-lyncht-lynchh-lyncho-lynchr-lynche-lynchd-lynch--lynchB-lynchy-lynch:-lynch -lynchC-lynchl-lyncha-lynchu-lynchd-lynche-lynch -lynch<-lynchn-lyncho-lynchr-lynche-lynchp-lynchl-lynchy-lynch@-lyncha-lynchn-lyncht-lynchh-lynchr-lyncho-lynchp-lynchi-lynchc-lynch.-lynchc-lyncho-lynchm-lynch>-lynch
 -lynch-lynch

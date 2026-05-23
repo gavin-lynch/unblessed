@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Gauge Demo - @unblessed/contrib Gauge widget example
+ * Gauge Demo - @gavin-lynch/unblessed-contrib Gauge widget example
  *
  * Demonstrates:
  * - Single value gauge
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-gauge-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useState } from "react";
 import { Gauge, type GaugeStackItem } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";

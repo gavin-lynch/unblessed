@@ -3,7 +3,7 @@
  * Tests if per-side colors work at all
  */
 
-import { Box, Screen } from "@unblessed/node";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   smartCSR: true,

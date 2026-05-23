@@ -1,5 +1,5 @@
 {
-  "name": "create-unblessed",
+  "name": "@gavin-lynch/create-unblessed",
   "version": "1.0.0-alpha.23",
   "description": "A CLI to create new unblessed projects",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",

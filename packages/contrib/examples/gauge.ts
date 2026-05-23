@@ -5,7 +5,7 @@
  * Demonstrates basic gauge widget usage.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Gauge } from "../src/widgets/gauge.js";
 
 const screen = new Screen({ smartCSR: true });

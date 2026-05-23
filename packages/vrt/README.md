@@ -1,17 +1,17 @@
-# @unblessed/vrt
+# @gavin-lynch/unblessed-vrt
 
 Visual Regression Testing tools for @unblessed terminal UI applications.
 
 ## Overview
 
-`@unblessed/vrt` provides infrastructure for recording, playing back, and comparing terminal UI screenshots to detect visual regressions. It captures the raw SGR-encoded terminal output from `screen.screenshot()` and allows you to verify that UI rendering remains consistent across code changes.
+`@gavin-lynch/unblessed-vrt` provides infrastructure for recording, playing back, and comparing terminal UI screenshots to detect visual regressions. It captures the raw SGR-encoded terminal output from `screen.screenshot()` and allows you to verify that UI rendering remains consistent across code changes.
 
 ## Installation
 
 ```bash
-npm install --save-dev @unblessed/vrt
+npm install --save-dev @gavin-lynch/unblessed-vrt
 # or
-pnpm add -D @unblessed/vrt
+pnpm add -D @gavin-lynch/unblessed-vrt
 ```
 
 ## CLI Tools
@@ -84,8 +84,8 @@ Add CLI commands to your `package.json` scripts:
 The most common use case is golden snapshot testing with the `compareWithGolden` utility:
 
 ```typescript
-import { compareWithGolden } from "@unblessed/vrt";
-import { Screen, Box } from "@unblessed/node";
+import { compareWithGolden } from "@gavin-lynch/unblessed-vrt";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 it("box renders correctly", async () => {
   const screen = new Screen();
@@ -163,8 +163,8 @@ Save a VRT recording as a golden snapshot file.
 ### Recording a Session
 
 ```typescript
-import { VRTRecorder } from "@unblessed/vrt";
-import { Screen, Box } from "@unblessed/node";
+import { VRTRecorder } from "@gavin-lynch/unblessed-vrt";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 const recorder = new VRTRecorder(screen, {
@@ -191,7 +191,7 @@ const recording = recorder.stop();
 ### Playing Back a Recording
 
 ```typescript
-import { VRTPlayer } from "@unblessed/vrt";
+import { VRTPlayer } from "@gavin-lynch/unblessed-vrt";
 
 const player = new VRTPlayer("./recording.vrt.json");
 
@@ -210,7 +210,7 @@ await player.play({
 ### Comparing Recordings
 
 ```typescript
-import { VRTComparator } from "@unblessed/vrt";
+import { VRTComparator } from "@gavin-lynch/unblessed-vrt";
 
 const result = VRTComparator.compare(
   "./golden.vrt.json", // Expected
@@ -240,8 +240,8 @@ Use VRT in your Vitest tests:
 
 ```typescript
 import { describe, it, expect } from "vitest";
-import { Screen, Box } from "@unblessed/node";
-import { VRTRecorder, VRTComparator } from "@unblessed/vrt";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
+import { VRTRecorder, VRTComparator } from "@gavin-lynch/unblessed-vrt";
 
 describe("Box rendering", () => {
   it("renders with border correctly", async () => {

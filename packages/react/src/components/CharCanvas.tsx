@@ -1,13 +1,16 @@
 /**
- * CharCanvas.tsx - CharCanvas component and descriptor for @unblessed/react
+ * CharCanvas.tsx - CharCanvas component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { CharCanvas as CharCanvasWidget, type Screen } from "@unblessed/core";
+import {
+  CharCanvas as CharCanvasWidget,
+  type Screen,
+} from "@gavin-lynch/unblessed-core";
 import {
   ComputedLayout,
   FlexboxProps,
   WidgetDescriptor,
-} from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef, type PropsWithChildren } from "react";
 import type { Theme } from "../themes/theme.js";

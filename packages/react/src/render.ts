@@ -1,12 +1,15 @@
 /**
- * render.ts - Main render function for @unblessed/react
+ * render.ts - Main render function for @gavin-lynch/unblessed-react
  *
  * This module provides the main `render()` function that users call to
  * mount React components to an unblessed Screen.
  */
 
-import { Screen, setRuntime } from "@unblessed/core";
-import { LayoutManager, syncTreeAndRender } from "@unblessed/layout";
+import { Screen, setRuntime } from "@gavin-lynch/unblessed-core";
+import {
+  LayoutManager,
+  syncTreeAndRender,
+} from "@gavin-lynch/unblessed-layout";
 import React, { type ReactNode } from "react";
 import { BoxDescriptor } from "./components/Box.js";
 import { ThemeProvider } from "./components/ThemeProvider.js";
@@ -23,8 +26,8 @@ import type { RenderInstance, RenderOptions } from "./types.js";
  * @example
  * Basic usage (render() creates screen automatically):
  * ```tsx
- * import { NodeRuntime } from '@unblessed/node';
- * import { render, Box, Text } from '@unblessed/react';
+ * import { NodeRuntime } from '@gavin-lynch/unblessed-node';
+ * import { render, Box, Text } from '@gavin-lynch/unblessed-react';
  *
  * const App = () => (
  *   <Box flexDirection="row" gap={2}>
@@ -43,8 +46,8 @@ import type { RenderInstance, RenderOptions } from "./types.js";
  * @example
  * Advanced usage (provide custom screen):
  * ```tsx
- * import { Screen, NodeRuntime } from '@unblessed/node';
- * import { render, Box, Text } from '@unblessed/react';
+ * import { Screen, NodeRuntime } from '@gavin-lynch/unblessed-node';
+ * import { render, Box, Text } from '@gavin-lynch/unblessed-react';
  *
  * const screen = new Screen({
  *   smartCSR: false,

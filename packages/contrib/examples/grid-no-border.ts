@@ -5,8 +5,8 @@
  * Demonstrates grid layout without borders.
  */
 
-import { Box } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { Box } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Grid, WorldMap } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

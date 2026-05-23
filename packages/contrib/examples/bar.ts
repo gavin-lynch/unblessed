@@ -5,7 +5,7 @@
  * Demonstrates basic bar chart usage with server utilization data.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Bar } from "../src/widgets/bar.js";
 
 const screen = new Screen({ smartCSR: true });

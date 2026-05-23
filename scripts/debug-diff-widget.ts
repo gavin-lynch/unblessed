@@ -9,7 +9,7 @@ import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
 const require = createRequire(import.meta.url);
-const { Screen } = require("@unblessed/node") as { Screen: any };
+const { Screen } = require("@gavin-lynch/unblessed-node") as { Screen: any };
 const { Diff } = require("../packages/contrib/src/widgets/diff.js") as {
   Diff: any;
 };

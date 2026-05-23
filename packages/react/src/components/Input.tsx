@@ -1,9 +1,9 @@
 /**
- * Input.tsx - Input component and descriptor for @unblessed/react
+ * Input.tsx - Input component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { type Screen, Textbox } from "@unblessed/core";
-import { ComputedLayout } from "@unblessed/layout";
+import { type Screen, Textbox } from "@gavin-lynch/unblessed-core";
+import { ComputedLayout } from "@gavin-lynch/unblessed-layout";
 import { forwardRef } from "react";
 import type { InteractiveWidgetProps } from "../widget-descriptors/common-props.js";
 import { BoxDescriptor, COMMON_WIDGET_OPTIONS } from "./Box";

@@ -5,7 +5,7 @@
  * Tests nested layout calculations and buffer operations.
  */
 
-import blessed from '@unblessed/blessed';
+import blessed from '@gavin-lynch/unblessed-blessed';
 import { measure, formatResult, createMockProgram } from './utils.js';
 
 async function benchmarkComplexScreen() {

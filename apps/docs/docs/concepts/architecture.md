@@ -10,7 +10,7 @@ Overview of unblessed's architecture and design principles.
 
 unblessed is built on three fundamental principles:
 
-1. **Platform-Agnostic Core**: All widget logic lives in `@unblessed/core` with zero platform dependencies
+1. **Platform-Agnostic Core**: All widget logic lives in `@gavin-lynch/unblessed-core` with zero platform dependencies
 2. **Runtime Dependency Injection**: Platform-specific APIs are injected at runtime, allowing the same code to run anywhere
 3. **Modular Packages**: Install only what you need - Node.js runtime, browser runtime, or blessed compatibility
 
@@ -18,12 +18,12 @@ unblessed is built on three fundamental principles:
 
 ```mermaid
 graph TD
-    A["@unblessed/core
-    Platform-agnostic widgets"] --> B["@unblessed/node
+    A["@gavin-lynch/unblessed-core
+    Platform-agnostic widgets"] --> B["@gavin-lynch/unblessed-node
     Node.js runtime"]
-    A --> C["@unblessed/browser
+    A --> C["@gavin-lynch/unblessed-browser
     Browser runtime + XTerm.js"]
-    B --> D["@unblessed/blessed
+    B --> D["@gavin-lynch/unblessed-blessed
     Backward compatibility"]
 
     style A fill:#0dbc79,stroke:#0a9d62,color:#000
@@ -32,7 +32,7 @@ graph TD
     style D fill:#454545,stroke:#2d2d30,color:#fff
 ```
 
-### @unblessed/core
+### @gavin-lynch/unblessed-core
 
 The platform-agnostic core contains all the TUI logic:
 
@@ -44,7 +44,7 @@ The platform-agnostic core contains all the TUI logic:
 
 **Key characteristic**: Zero platform dependencies. All platform-specific code uses the Runtime interface.
 
-### @unblessed/node
+### @gavin-lynch/unblessed-node
 
 The Node.js runtime implementation:
 
@@ -56,11 +56,11 @@ The Node.js runtime implementation:
 **Usage**:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 // Runtime automatically initialized - just use it!
 ```
 
-### @unblessed/browser
+### @gavin-lynch/unblessed-browser
 
 The browser runtime implementation:
 
@@ -72,7 +72,7 @@ The browser runtime implementation:
 **Usage**:
 
 ```typescript
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 import { Terminal } from "xterm";
 
 const term = new Terminal();
@@ -82,12 +82,12 @@ const screen = new Screen({ terminal: term });
 // Runtime automatically initialized - works in browser!
 ```
 
-### @unblessed/blessed
+### @gavin-lynch/unblessed-blessed
 
 100% backward-compatible blessed wrapper:
 
 - **Drop-in replacement**: Change import, keep code unchanged
-- **Thin wrapper**: Delegates to @unblessed/node
+- **Thin wrapper**: Delegates to @gavin-lynch/unblessed-node
 - **Blessed API**: Classic constructor patterns and methods
 - **Migration path**: Easy upgrade from blessed to unblessed
 
@@ -98,7 +98,7 @@ const screen = new Screen({ terminal: term });
 // import blessed from 'blessed';
 
 // New unblessed code - just change the import!
-import blessed from '@unblessed/blessed';
+import blessed from '@gavin-lynch/unblessed-blessed';
 
 // Everything else works the same
 const screen = blessed.screen();
@@ -129,7 +129,7 @@ export interface Runtime {
 1. **Core code requests runtime**:
 
 ```typescript
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 // In widget code
 const runtime = getRuntime();
@@ -139,8 +139,8 @@ const data = runtime.fs.readFileSync(path);
 2. **Platform package provides runtime**:
 
 ```typescript
-// @unblessed/node/src/auto-init.ts
-import { setRuntime } from "@unblessed/core";
+// @gavin-lynch/unblessed-node/src/auto-init.ts
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { NodeRuntime } from "./node-runtime";
 
 setRuntime(new NodeRuntime()); // Injects Node.js implementation
@@ -149,8 +149,8 @@ setRuntime(new NodeRuntime()); // Injects Node.js implementation
 3. **Browser uses polyfills**:
 
 ```typescript
-// @unblessed/browser/src/auto-init.ts
-import { setRuntime } from "@unblessed/core";
+// @gavin-lynch/unblessed-browser/src/auto-init.ts
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { BrowserRuntime } from "./browser-runtime";
 
 setRuntime(new BrowserRuntime()); // Injects browser polyfills
@@ -169,15 +169,15 @@ unblessed uses an **auto-initialization** pattern for ergonomics:
 
 ```typescript
 // ✅ Modern unblessed - just import and use
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 const screen = new Screen();
 
 // ❌ Old pattern - no longer needed
-import { initRuntime } from "@unblessed/node";
+import { initRuntime } from "@gavin-lynch/unblessed-node";
 initRuntime(); // Not required!
 ```
 
-When you import from `@unblessed/node` or `@unblessed/browser`, the runtime is automatically initialized before any widgets are created.
+When you import from `@gavin-lynch/unblessed-node` or `@gavin-lynch/unblessed-browser`, the runtime is automatically initialized before any widgets are created.
 
 **Why**: Reduces boilerplate and cognitive load. Users shouldn't think about initialization.
 
@@ -263,7 +263,7 @@ unblessed is built with TypeScript in strict mode:
 - **Generic support**: Type-safe custom widgets
 
 ```typescript
-import { Box, type BoxOptions } from "@unblessed/node";
+import { Box, type BoxOptions } from "@gavin-lynch/unblessed-node";
 
 // Full type checking
 const options: BoxOptions = {

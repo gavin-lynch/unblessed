@@ -15,7 +15,7 @@
  * - color: display color (default: "white")
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { LCD } from "../src/widgets/lcd.js";
 
 const screen = new Screen({ smartCSR: true });

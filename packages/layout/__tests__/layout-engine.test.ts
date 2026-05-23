@@ -2,7 +2,7 @@
  * layout-engine.test.ts - Tests for LayoutManager
  */
 
-import { Screen } from "@unblessed/core";
+import { Screen } from "@gavin-lynch/unblessed-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { LayoutManager } from "../src/layout-engine.js";
 import { destroyLayoutNode } from "../src/yoga-node.js";

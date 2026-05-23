@@ -8,8 +8,8 @@
  * 3. What the final output looks like
  */
 
-import { getRuntime } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { getRuntime } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import chalk from "chalk";
 import { Markdown } from "../src/widgets/markdown.js";
 

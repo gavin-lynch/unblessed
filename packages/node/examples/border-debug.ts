@@ -4,7 +4,7 @@
  * Simple test to debug per-side border colors
  */
 
-import { Box, Screen } from "@unblessed/node";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   smartCSR: true,

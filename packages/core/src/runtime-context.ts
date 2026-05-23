@@ -1,5 +1,5 @@
 /**
- * runtime-context.ts - Global runtime context for @unblessed/core
+ * runtime-context.ts - Global runtime context for @gavin-lynch/unblessed-core
  *
  * Provides global access to the platform Runtime.
  * Runtime is stateless (just platform APIs), so safe to share globally.
@@ -26,7 +26,7 @@ let runtime: Runtime | null = null;
  * Users typically don't need to call this directly.
  *
  * Example (platform package):
- *   import { setRuntime } from '@unblessed/core';
+ *   import { setRuntime } from '@gavin-lynch/unblessed-core';
  *   const runtime = new NodeRuntime();
  *   setRuntime(runtime);
  *
@@ -47,9 +47,9 @@ export function getRuntime(): Runtime {
   if (!runtime) {
     throw new Error(
       "Runtime not initialized. " +
-        "Import @unblessed/node (Node.js) or @unblessed/browser (browser) before creating widgets.\n\n" +
+        "Import @gavin-lynch/unblessed-node (Node.js) or @gavin-lynch/unblessed-browser (browser) before creating widgets.\n\n" +
         "Example:\n" +
-        "  import { Screen } from '@unblessed/node';\n" +
+        "  import { Screen } from '@gavin-lynch/unblessed-node';\n" +
         "  const screen = new Screen();",
     );
   }

@@ -1,10 +1,10 @@
-# Claude Context for @unblessed/react
+# Claude Context for @gavin-lynch/unblessed-react
 
-This document provides architectural context and development guidelines for the `@unblessed/react` package.
+This document provides architectural context and development guidelines for the `@gavin-lynch/unblessed-react` package.
 
 ## Overview
 
-`@unblessed/react` is a **React renderer** for unblessed that enables building terminal UIs using JSX and React components, with automatic flexbox layouts powered by Yoga.
+`@gavin-lynch/unblessed-react` is a **React renderer** for unblessed that enables building terminal UIs using JSX and React components, with automatic flexbox layouts powered by Yoga.
 
 **Purpose:** Provide a modern, declarative API for building terminal UIs with React
 
@@ -15,8 +15,8 @@ This document provides architectural context and development guidelines for the 
 Enables writing terminal UIs like this:
 
 ```tsx
-import { Screen } from "@unblessed/node";
-import { render, Box, Text, Button } from "@unblessed/react";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import { render, Box, Text, Button } from "@gavin-lynch/unblessed-react";
 
 const screen = new Screen();
 
@@ -55,7 +55,7 @@ Widget Descriptors (encapsulate configuration)
     ↓
 React Reconciler (creates/updates LayoutNodes)
     ↓
-@unblessed/layout (Yoga calculations)
+@gavin-lynch/unblessed-layout (Yoga calculations)
     ↓
 unblessed widgets (positioned)
     ↓
@@ -391,7 +391,7 @@ export function buildBorder(props) {
 
 ```typescript
 // In reconciler.ts
-import { colors } from "@unblessed/core";
+import { colors } from "@gavin-lynch/unblessed-core";
 
 // Convert border colors
 if (props.borderColor) {
@@ -641,7 +641,12 @@ interface Theme {
 **Basic usage with default theme:**
 
 ```tsx
-import { render, Box, Text, unblessedTheme } from "@unblessed/react";
+import {
+  render,
+  Box,
+  Text,
+  unblessedTheme,
+} from "@gavin-lynch/unblessed-react";
 
 render(<App />, {
   runtime,
@@ -652,7 +657,11 @@ render(<App />, {
 **Runtime theme switching:**
 
 ```tsx
-import { useTheme, unblessedTheme, matrixTheme } from "@unblessed/react";
+import {
+  useTheme,
+  unblessedTheme,
+  matrixTheme,
+} from "@gavin-lynch/unblessed-react";
 
 function App() {
   const [theme, setTheme] = useTheme();
@@ -739,7 +748,7 @@ Both themes include complete color scales and semantic mappings.
 **Widget Integration:**
 
 - `WidgetDescriptor<TProps, TTheme>` - Generic theme parameter
-- Base class in `@unblessed/layout` stays agnostic
+- Base class in `@gavin-lynch/unblessed-layout` stays agnostic
 - React descriptors specialize with `Theme` type
 - Helper functions (`buildBorder`, `buildTextStyles`, etc.) accept theme parameter
 - Colors resolved during `widgetOptions` getter
@@ -747,14 +756,14 @@ Both themes include complete color scales and semantic mappings.
 **Terminal Compatibility:**
 
 - All colors automatically reduced to terminal capabilities
-- Uses existing `colors.convert()` from `@unblessed/core`
+- Uses existing `colors.convert()` from `@gavin-lynch/unblessed-core`
 - Supports 256-color, 16-color, and 8-color terminals
 - No manual fallbacks needed
 
 ### Creating Custom Themes
 
 ```typescript
-import { Theme, unblessedTheme } from '@unblessed/react';
+import { Theme, unblessedTheme } from '@gavin-lynch/unblessed-react';
 
 const myTheme: Theme = {
   name: 'my-theme',
@@ -874,7 +883,7 @@ node --import tsx --no-warnings theme-demo.tsx
 **To run:**
 
 ```bash
-pnpm --filter @unblessed/react test
+pnpm --filter @gavin-lynch/unblessed-react test
 ```
 
 **Example to run:**
@@ -940,7 +949,7 @@ When adding border support, remember:
 
 ## Summary
 
-**@unblessed/react** brings React's declarative component model to terminal UIs. It integrates React's reconciler with @unblessed/layout's Yoga engine and unblessed's rendering capabilities.
+**@gavin-lynch/unblessed-react** brings React's declarative component model to terminal UIs. It integrates React's reconciler with @gavin-lynch/unblessed-layout's Yoga engine and unblessed's rendering capabilities.
 
 **Key insights:**
 

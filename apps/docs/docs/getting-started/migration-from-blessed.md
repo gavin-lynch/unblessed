@@ -12,18 +12,18 @@ Learn how to migrate your existing blessed applications to unblessed.
 
 While unblessed brings modern features like TypeScript, browser support, and improved architecture, we understand that many applications depend on the blessed API. That's why we provide a **100% backward-compatible** package for seamless migration.
 
-## Drop-in Replacement with @unblessed/blessed
+## Drop-in Replacement with @gavin-lynch/unblessed-blessed
 
-The easiest and recommended way to migrate is using `@unblessed/blessed`, which provides complete API compatibility with blessed.
+The easiest and recommended way to migrate is using `@gavin-lynch/unblessed-blessed`, which provides complete API compatibility with blessed.
 
 ### Installation
 
 ```bash
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 # or
-pnpm add @unblessed/blessed@alpha
+pnpm add @gavin-lynch/unblessed-blessed@alpha
 # or
-yarn add @unblessed/blessed@alpha
+yarn add @gavin-lynch/unblessed-blessed@alpha
 ```
 
 ### For CommonJS (require)
@@ -32,7 +32,7 @@ If your project uses CommonJS:
 
 ```diff
 - const blessed = require('blessed');
-+ const blessed = require('@unblessed/blessed');
++ const blessed = require('@gavin-lynch/unblessed-blessed');
 
 const screen = blessed.screen({
   smartCSR: true
@@ -66,7 +66,7 @@ If your project uses ES modules:
 
 ```diff
 - import blessed from 'blessed';
-+ import blessed from '@unblessed/blessed';
++ import blessed from '@gavin-lynch/unblessed-blessed';
 
 const screen = blessed.screen({
   smartCSR: true
@@ -97,8 +97,8 @@ screen.render();
 For TypeScript projects, you can continue using `@types/blessed`:
 
 ```typescript
-import blessed from "@unblessed/blessed";
-import type { Widgets } from "@unblessed/blessed";
+import blessed from "@gavin-lynch/unblessed-blessed";
+import type { Widgets } from "@gavin-lynch/unblessed-blessed";
 
 const screen: Widgets.Screen = blessed.screen({
   smartCSR: true,
@@ -120,19 +120,19 @@ screen.render();
 
 ## Upgrading to Modern API (Optional)
 
-Once your app is working with `@unblessed/blessed`, you can gradually migrate to the modern API for better TypeScript support and tree-shaking:
+Once your app is working with `@gavin-lynch/unblessed-blessed`, you can gradually migrate to the modern API for better TypeScript support and tree-shaking:
 
-### Step 1: Switch to @unblessed/node
+### Step 1: Switch to @gavin-lynch/unblessed-node
 
 ```bash
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 ```
 
 ### Step 2: Update imports
 
 ```diff
-- import blessed from '@unblessed/blessed';
-+ import { Screen, Box } from '@unblessed/node';
+- import blessed from '@gavin-lynch/unblessed-blessed';
++ import { Screen, Box } from '@gavin-lynch/unblessed-node';
 ```
 
 ### Step 3: Update widget creation
@@ -191,7 +191,7 @@ After migrating, thoroughly test your application:
 3. **Edge cases**: Test scrolling, focus management, complex layouts
 4. **Performance**: Compare render performance
 
-Consider using the [@unblessed/vrt](/docs/advanced/testing) package for visual regression testing.
+Consider using the [@gavin-lynch/unblessed-vrt](/docs/advanced/testing) package for visual regression testing.
 
 ## Need Help?
 
@@ -228,12 +228,12 @@ Found a compatibility issue and know how to fix it? Contributions are welcome!
 
 ## Migration Checklist
 
-- [ ] Install `@unblessed/blessed@alpha`
-- [ ] Update imports from `blessed` to `@unblessed/blessed`
+- [ ] Install `@gavin-lynch/unblessed-blessed@alpha`
+- [ ] Update imports from `blessed` to `@gavin-lynch/unblessed-blessed`
 - [ ] Test core functionality (rendering, events, layout)
 - [ ] Test edge cases (scrolling, focus, complex UIs)
 - [ ] Update Node.js to >= 22.0.0 if needed
-- [ ] (Optional) Gradually migrate to modern API with `@unblessed/node`
+- [ ] (Optional) Gradually migrate to modern API with `@gavin-lynch/unblessed-node`
 - [ ] Report any compatibility issues on GitHub
 
 ## Next Steps

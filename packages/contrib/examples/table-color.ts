@@ -5,7 +5,7 @@
  * Demonstrates table with colored cell content.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Table } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

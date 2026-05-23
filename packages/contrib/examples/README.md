@@ -1,6 +1,6 @@
 # Contrib Examples
 
-Examples demonstrating @unblessed/contrib widgets.
+Examples demonstrating @gavin-lynch/unblessed-contrib widgets.
 
 ## Running Examples
 
@@ -31,5 +31,5 @@ Keys:
 - `markdown.ts` - Basic markdown rendering
 - `markdown-terminal.ts` - Markdown with custom syntax highlighting
 - `debug-markdown-colors.ts` - Debug script for markdown color issues
-- `perf-overlay.ts` - FPS overlay using @unblessed/perf
+- `perf-overlay.ts` - FPS overlay using @gavin-lynch/unblessed-perf
 - `truecolor-animated.ts` - Truecolor gradient with hue rotation + perf overlay

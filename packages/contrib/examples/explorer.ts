@@ -5,8 +5,8 @@
  * Demonstrates filesystem tree navigation with file info display.
  */
 
-import { Tree } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { Tree } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import fs from "fs";
 import { Grid, Table } from "../src/index.js";
 

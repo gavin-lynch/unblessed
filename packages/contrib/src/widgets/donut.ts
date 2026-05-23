@@ -1,1 +1,5 @@
-export { Donut, type DonutData, type DonutOptions } from "@unblessed/core";
+export {
+  Donut,
+  type DonutData,
+  type DonutOptions,
+} from "@gavin-lynch/unblessed-core";

@@ -8,7 +8,7 @@ import {
   generateGradient,
   generateRainbow,
   rotateColors,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 import type {
   BorderAnimationConfig,
   BorderAnimationType,

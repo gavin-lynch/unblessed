@@ -11,7 +11,7 @@ sidebar_position: 4
 Any widget that extends `Element` accepts `className`:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -42,7 +42,7 @@ Classes are parsed when the widget is constructed and merged into the widget's o
 
 ## How it works
 
-CursedWind lives in `@unblessed/core` as a small parser module:
+CursedWind lives in `@gavin-lynch/unblessed-core` as a small parser module:
 
 | Function                              | Purpose                                              |
 | ------------------------------------- | ---------------------------------------------------- |
@@ -51,7 +51,7 @@ CursedWind lives in `@unblessed/core` as a small parser module:
 | `applyClassName(options)`             | Parse `options.className` and merge in one step      |
 
 ```typescript
-import { parseClassName, applyClassName } from "@unblessed/core";
+import { parseClassName, applyClassName } from "@gavin-lynch/unblessed-core";
 
 const parsed = parseClassName("bg-blue fg-white bold p-2");
 
@@ -165,7 +165,7 @@ The `Tree` widget has dedicated utilities for lines, indicators, and per-depth s
 | `tree-depth-0-cyan`, `tree-depth-1-bg-magenta`   | Per-depth overrides          |
 
 ```typescript
-import { Tree } from "@unblessed/node";
+import { Tree } from "@gavin-lynch/unblessed-node";
 
 new Tree({
   parent: screen,
@@ -184,7 +184,7 @@ When both set the same style key, the **class wins**. Use either classes or expl
 ## Dashboard example
 
 ```typescript
-import { Screen, Box, List } from "@unblessed/node";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true, title: "CursedWind demo" });
 

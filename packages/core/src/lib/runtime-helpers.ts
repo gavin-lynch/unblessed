@@ -70,7 +70,7 @@ export function getDir(): string {
 
 /**
  * Get path to data directory (fonts, terminfo, etc.)
- * Returns absolute path to the data directory in @unblessed/core package
+ * Returns absolute path to the data directory in @gavin-lynch/unblessed-core package
  */
 let __dataPath: string | null = null;
 export function getDataPath(): string {

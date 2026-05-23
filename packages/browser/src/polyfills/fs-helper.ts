@@ -4,9 +4,9 @@
  * Provides virtual filesystem with bundled terminfo and font data
  */
 
-import terU14b from "@unblessed/core/data/fonts/ter-u14b.json";
-import terU14n from "@unblessed/core/data/fonts/ter-u14n.json";
-import xtermData from "@unblessed/core/data/terminfo/xterm-256color.json";
+import terU14b from "@gavin-lynch/unblessed-core/data/fonts/ter-u14b.json";
+import terU14n from "@gavin-lynch/unblessed-core/data/fonts/ter-u14n.json";
+import xtermData from "@gavin-lynch/unblessed-core/data/terminfo/xterm-256color.json";
 import { Buffer } from "buffer";
 import type { PathLike } from "fs";
 

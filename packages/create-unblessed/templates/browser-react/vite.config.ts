@@ -3,9 +3,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   optimizeDeps: {
     include: [
-      "@unblessed/browser",
-      "@unblessed/core",
-      "@unblessed/react",
+      "@gavin-lynch/unblessed-browser",
+      "@gavin-lynch/unblessed-core",
+      "@gavin-lynch/unblessed-react",
       "react",
       "xterm",
     ],

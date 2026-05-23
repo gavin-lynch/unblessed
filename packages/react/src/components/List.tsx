@@ -1,11 +1,11 @@
 /**
- * List.tsx - List component and descriptor for @unblessed/react
+ * List.tsx - List component and descriptor for @gavin-lynch/unblessed-react
  *
  * Provides a scrollable, selectable list with keyboard and mouse support.
  */
 
-import { List as ListWidget, type Screen } from "@unblessed/core";
-import { ComputedLayout } from "@unblessed/layout";
+import { List as ListWidget, type Screen } from "@gavin-lynch/unblessed-core";
+import { ComputedLayout } from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
 import type {

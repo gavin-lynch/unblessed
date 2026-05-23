@@ -2,7 +2,7 @@
  * widget-sync.test.ts - Tests for Yoga to widget synchronization
  */
 
-import { Screen } from "@unblessed/core";
+import { Screen } from "@gavin-lynch/unblessed-core";
 import { beforeEach, describe, expect, it } from "vitest";
 import { LayoutManager } from "../src/layout-engine.js";
 import { getComputedLayout } from "../src/widget-sync.js";

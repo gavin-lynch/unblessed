@@ -6,7 +6,7 @@
  * Shows line charts, bar charts, gauges, donut, sparkline, table, log, LCD, and map.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Grid } from "../src/layout/grid.js";
 import { Bar } from "../src/widgets/bar.js";
 import { Donut } from "../src/widgets/donut.js";

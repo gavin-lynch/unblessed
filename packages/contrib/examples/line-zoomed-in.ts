@@ -5,7 +5,7 @@
  * Demonstrates line chart with a narrow Y-axis range (zoomed view).
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Line } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

@@ -1,15 +1,15 @@
-# @unblessed/layout
+# @gavin-lynch/unblessed-layout
 
 Flexbox layout engine for unblessed using Facebook's Yoga layout library.
 
-[![npm version](https://img.shields.io/npm/v/@unblessed/layout)](https://www.npmjs.com/package/@unblessed/layout)
+[![npm version](https://img.shields.io/npm/v/@gavin-lynch/unblessed-layout)](https://www.npmjs.com/package/@gavin-lynch/unblessed-layout)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
 
 > ⚠️ **ALPHA SOFTWARE** - This package is part of the unblessed alpha release. API may change between alpha versions.
 
 ## Overview
 
-`@unblessed/layout` bridges Facebook's Yoga layout engine to unblessed widgets, enabling modern flexbox-style layouts in terminal UIs. It's designed to be the foundation for `@unblessed/react` and other framework integrations.
+`@gavin-lynch/unblessed-layout` bridges Facebook's Yoga layout engine to unblessed widgets, enabling modern flexbox-style layouts in terminal UIs. It's designed to be the foundation for `@gavin-lynch/unblessed-react` and other framework integrations.
 
 **Key Features:**
 
@@ -22,9 +22,9 @@ Flexbox layout engine for unblessed using Facebook's Yoga layout library.
 ## Installation
 
 ```bash
-npm install @unblessed/layout@alpha
+npm install @gavin-lynch/unblessed-layout@alpha
 # or
-pnpm add @unblessed/layout@alpha
+pnpm add @gavin-lynch/unblessed-layout@alpha
 ```
 
 **Requirements:** Node.js >= 22.0.0
@@ -32,8 +32,8 @@ pnpm add @unblessed/layout@alpha
 ## Quick Start
 
 ```typescript
-import { Screen } from "@unblessed/node";
-import { LayoutManager } from "@unblessed/layout";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import { LayoutManager } from "@gavin-lynch/unblessed-layout";
 
 const screen = new Screen();
 const manager = new LayoutManager({ screen });
@@ -278,7 +278,7 @@ manager.performLayout(grid);
 Primary use case - building React/Vue/Svelte renderers:
 
 ```typescript
-// In @unblessed/react reconciler
+// In @gavin-lynch/unblessed-react reconciler
 const manager = new LayoutManager({ screen });
 
 // React creates components → reconciler creates layout nodes
@@ -370,7 +370,7 @@ MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
-- [@unblessed/core](../core) - Core TUI library
-- [@unblessed/node](../node) - Node.js runtime adapter
-- [@unblessed/react](../react) - React renderer (coming soon)
+- [@gavin-lynch/unblessed-core](../core) - Core TUI library
+- [@gavin-lynch/unblessed-node](../node) - Node.js runtime adapter
+- [@gavin-lynch/unblessed-react](../react) - React renderer (coming soon)
 - [Yoga Layout](https://yogalayout.com/) - Layout engine

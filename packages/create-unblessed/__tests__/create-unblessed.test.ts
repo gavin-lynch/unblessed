@@ -32,7 +32,9 @@ describe("create-unblessed", () => {
     const packageJson = await fs.readJson(packageJsonPath);
 
     expect(packageJson.name).toBe("my-node-react-app");
-    expect(packageJson.dependencies).toHaveProperty("@unblessed/react");
+    expect(packageJson.dependencies).toHaveProperty(
+      "@gavin-lynch/unblessed-react",
+    );
   });
 
   it("should create a browser-blessed project", async () => {
@@ -54,6 +56,8 @@ describe("create-unblessed", () => {
     const packageJson = await fs.readJson(packageJsonPath);
 
     expect(packageJson.name).toBe("my-browser-blessed-app");
-    expect(packageJson.dependencies).toHaveProperty("@unblessed/core");
+    expect(packageJson.dependencies).toHaveProperty(
+      "@gavin-lynch/unblessed-core",
+    );
   });
 });

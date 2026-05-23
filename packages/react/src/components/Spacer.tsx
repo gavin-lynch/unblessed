@@ -1,15 +1,15 @@
 /**
- * Spacer.tsx - Spacer component and descriptor for @unblessed/react
+ * Spacer.tsx - Spacer component and descriptor for @gavin-lynch/unblessed-react
  *
  * Spacer is a special Box that grows to fill available space (flexGrow: 1)
  */
 
-import { Box as BoxWidget, Screen } from "@unblessed/core";
+import { Box as BoxWidget, Screen } from "@gavin-lynch/unblessed-core";
 import {
   ComputedLayout,
   FlexboxProps,
   WidgetDescriptor,
-} from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-layout";
 import type { Theme } from "../themes/theme.js";
 
 /**

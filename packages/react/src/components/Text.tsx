@@ -1,13 +1,13 @@
 /**
- * Text.tsx - Text component and descriptor for @unblessed/react
+ * Text.tsx - Text component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { type Screen, Text as TextWidget } from "@unblessed/core";
+import { type Screen, Text as TextWidget } from "@gavin-lynch/unblessed-core";
 import {
   ComputedLayout,
   FlexboxProps,
   WidgetDescriptor,
-} from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef, type PropsWithChildren } from "react";
 import type { TextAnimationConfig } from "../animations/types.js";

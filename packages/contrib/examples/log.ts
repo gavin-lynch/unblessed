@@ -5,7 +5,7 @@
  * Demonstrates log widget with scrolling and colored output.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Log } from "../src/widgets/log.js";
 
 const screen = new Screen({ smartCSR: true });

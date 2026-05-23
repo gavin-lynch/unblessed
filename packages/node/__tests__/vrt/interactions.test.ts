@@ -1,11 +1,11 @@
 /**
- * VRT Interaction Tests for @unblessed/node
+ * VRT Interaction Tests for @gavin-lynch/unblessed-node
  *
  * Tests widget interactions like dragging, scrolling, and focus changes.
  * Uses multi-frame VRT to capture state changes over time.
  */
 
-import { Box, ScrollableText, setRuntime } from "@unblessed/core";
+import { Box, ScrollableText, setRuntime } from "@gavin-lynch/unblessed-core";
 import { describe } from "vitest";
 import { NodeRuntime } from "../../src";
 import { createMultiFrameVRTTest } from "../helpers/vrt-test.js";

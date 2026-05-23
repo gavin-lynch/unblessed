@@ -8,7 +8,7 @@ Learn how to test your unblessed terminal UI applications using the Visual Regre
 
 ## Overview
 
-Testing terminal UIs can be challenging because they involve complex ANSI escape codes, dynamic rendering, and visual layouts. The `@unblessed/vrt` package provides tools for:
+Testing terminal UIs can be challenging because they involve complex ANSI escape codes, dynamic rendering, and visual layouts. The `@gavin-lynch/unblessed-vrt` package provides tools for:
 
 - **Visual regression testing** - Detect UI changes across code versions
 - **Golden snapshot testing** - Compare against known-good baselines
@@ -20,11 +20,11 @@ Testing terminal UIs can be challenging because they involve complex ANSI escape
 Install the VRT package as a dev dependency:
 
 ```bash
-npm install --save-dev @unblessed/vrt@alpha
+npm install --save-dev @gavin-lynch/unblessed-vrt@alpha
 # or
-pnpm add -D @unblessed/vrt@alpha
+pnpm add -D @gavin-lynch/unblessed-vrt@alpha
 # or
-yarn add -D @unblessed/vrt@alpha
+yarn add -D @gavin-lynch/unblessed-vrt@alpha
 ```
 
 ## Quick Start - Golden Snapshot Testing
@@ -33,8 +33,8 @@ The most common pattern is golden snapshot testing - comparing your UI against a
 
 ```typescript
 import { describe, it } from "vitest";
-import { compareWithGolden } from "@unblessed/vrt";
-import { Screen, Box } from "@unblessed/node";
+import { compareWithGolden } from "@gavin-lynch/unblessed-vrt";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 describe("Box Widget", () => {
   it("renders correctly with border", () => {
@@ -111,8 +111,8 @@ UPDATE_SNAPSHOTS=1 npm test
 For complex UIs with user interaction, record the entire session:
 
 ```typescript
-import { VRTRecorder } from "@unblessed/vrt";
-import { Screen, List } from "@unblessed/node";
+import { VRTRecorder } from "@gavin-lynch/unblessed-vrt";
+import { Screen, List } from "@gavin-lynch/unblessed-node";
 
 describe("Interactive List", () => {
   it("records navigation and selection", async () => {
@@ -167,7 +167,7 @@ describe("Interactive List", () => {
 Compare two VRT recordings to detect visual differences:
 
 ```typescript
-import { VRTComparator } from "@unblessed/vrt";
+import { VRTComparator } from "@gavin-lynch/unblessed-vrt";
 
 it("detects visual regressions", () => {
   const result = VRTComparator.compare(
@@ -267,8 +267,8 @@ npx vrt compare expected.vrt.json actual.vrt.json --verbose
 Test individual widgets in isolation:
 
 ```typescript
-import { compareWithGolden } from "@unblessed/vrt";
-import { Screen, ProgressBar } from "@unblessed/node";
+import { compareWithGolden } from "@gavin-lynch/unblessed-vrt";
+import { Screen, ProgressBar } from "@gavin-lynch/unblessed-node";
 
 it("progress bar at 50%", () => {
   const screen = new Screen();

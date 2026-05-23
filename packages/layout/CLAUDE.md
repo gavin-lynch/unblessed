@@ -1,18 +1,18 @@
-# Claude Context for @unblessed/layout
+# Claude Context for @gavin-lynch/unblessed-layout
 
-This document provides architectural context and development guidelines for the `@unblessed/layout` package.
+This document provides architectural context and development guidelines for the `@gavin-lynch/unblessed-layout` package.
 
 ## Overview
 
-`@unblessed/layout` is a **flexbox layout engine** that bridges Facebook's Yoga layout library to unblessed widgets. It enables modern, declarative flexbox-style layouts in terminal UIs while keeping @unblessed/core platform-agnostic and dependency-free.
+`@gavin-lynch/unblessed-layout` is a **flexbox layout engine** that bridges Facebook's Yoga layout library to unblessed widgets. It enables modern, declarative flexbox-style layouts in terminal UIs while keeping @gavin-lynch/unblessed-core platform-agnostic and dependency-free.
 
-**Purpose:** Foundation for framework integrations like @unblessed/react, @unblessed/vue, @unblessed/svelte, etc.
+**Purpose:** Foundation for framework integrations like @gavin-lynch/unblessed-react, @unblessed/vue, @unblessed/svelte, etc.
 
 **Status:** ✅ **Fully functional** - 41 tests passing (100% coverage)
 
 ## The Core Problem This Solves
 
-### Before @unblessed/layout:
+### Before @gavin-lynch/unblessed-layout:
 
 Positioning widgets required imperative code with manual coordinate calculations:
 
@@ -24,7 +24,7 @@ const box3 = new Box({ top: 0, left: 50, width: 30, height: 5 }); // Manual calc
 
 If box1 width changes? Recalculate box2 and box3 positions manually.
 
-### After @unblessed/layout:
+### After @gavin-lynch/unblessed-layout:
 
 Declarative flexbox layout with automatic positioning:
 
@@ -52,7 +52,7 @@ If box1 width changes? Just call `performLayout()` again. Yoga recalculates.
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  LAYER 1: Framework (e.g., @unblessed/react)                 │
+│  LAYER 1: Framework (e.g., @gavin-lynch/unblessed-react)                 │
 │  - React components with flexbox props                       │
 │  - React reconciler manages component lifecycle              │
 │  - Calls LayoutManager to handle layout                      │
@@ -60,7 +60,7 @@ If box1 width changes? Just call `performLayout()` again. Yoga recalculates.
                         │
                         ▼
 ┌──────────────────────────────────────────────────────────────┐
-│  LAYER 2: @unblessed/layout (THIS PACKAGE)                   │
+│  LAYER 2: @gavin-lynch/unblessed-layout (THIS PACKAGE)                   │
 │  - LayoutManager API                                          │
 │  - Yoga node lifecycle management                            │
 │  - Yoga → unblessed widget synchronization                   │
@@ -68,7 +68,7 @@ If box1 width changes? Just call `performLayout()` again. Yoga recalculates.
                         │
                         ▼
 ┌──────────────────────────────────────────────────────────────┐
-│  LAYER 3: @unblessed/core                                    │
+│  LAYER 3: @gavin-lynch/unblessed-core                                    │
 │  - Widgets with top/left/width/height                        │
 │  - Terminal rendering                                        │
 │  - No knowledge of Yoga or flexbox                           │
@@ -130,18 +130,18 @@ node.widget.width = layout.width; // ← OVERWRITTEN every render
 
 - **Rejected:** Too complex, prone to race conditions and bugs
 
-### 2. Separate Package (Not in @unblessed/core)
+### 2. Separate Package (Not in @gavin-lynch/unblessed-core)
 
 **Decision:** Yoga lives in its own package.
 
 **Why:**
 
-- ✅ Keeps @unblessed/core pure (platform-agnostic, zero Yoga dependency)
+- ✅ Keeps @gavin-lynch/unblessed-core pure (platform-agnostic, zero Yoga dependency)
 - ✅ Reusable by multiple frameworks (React, Vue, Svelte)
 - ✅ Users only install Yoga if they need flexbox
 - ✅ Clear separation of concerns
 
-**Alternative considered:** Bundle Yoga in @unblessed/core
+**Alternative considered:** Bundle Yoga in @gavin-lynch/unblessed-core
 
 - **Rejected:** Forces everyone to download Yoga even if not using flexbox
 
@@ -195,8 +195,8 @@ packages/layout/
 **Main class** for creating and managing flexbox layouts.
 
 ```typescript
-import { Screen } from "@unblessed/node";
-import { LayoutManager } from "@unblessed/layout";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import { LayoutManager } from "@gavin-lynch/unblessed-layout";
 
 const screen = new Screen();
 const manager = new LayoutManager({ screen, debug: false });
@@ -493,7 +493,7 @@ Terminal renders new frame
 2. State-driven (React state)
 3. Fully recalculated each time
 
-**For @unblessed/react:** Use hooks like `useInput()` to handle keyboard, update state, let Yoga recalculate.
+**For @gavin-lynch/unblessed-react:** Use hooks like `useInput()` to handle keyboard, update state, let Yoga recalculate.
 
 ### Widget Reuse vs Recreation
 
@@ -615,11 +615,11 @@ for (let i = 0; i < 9; i++) {
 
 ### Test Setup
 
-**Runtime Initialization:** Uses same setup as @unblessed/core tests.
+**Runtime Initialization:** Uses same setup as @gavin-lynch/unblessed-core tests.
 
 ```javascript
 // __tests__/setup.js
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 
 function createMockRuntime() {
   return {
@@ -685,13 +685,13 @@ manager.performLayout(root);
 expect(root.widget.width).toBe(80); // Passes!
 ```
 
-## Integration with @unblessed/react (Future)
+## Integration with @gavin-lynch/unblessed-react (Future)
 
-This package is designed to be used by `@unblessed/react` (Phase 2-4 of PLAN.md):
+This package is designed to be used by `@gavin-lynch/unblessed-react` (Phase 2-4 of PLAN.md):
 
 ```typescript
-// Future: @unblessed/react reconciler
-import { LayoutManager } from "@unblessed/layout";
+// Future: @gavin-lynch/unblessed-react reconciler
+import { LayoutManager } from "@gavin-lynch/unblessed-layout";
 
 const reconciler = createReconciler({
   createInstance(type, props) {
@@ -1008,8 +1008,8 @@ Potential improvements:
   - `styles.ts` - Flexbox property application
   - `reconciler.ts` - React reconciler with Yoga
   - `render-node-to-output.ts` - Yoga → output rendering
-- **@unblessed/core** - Widget API documentation
-- **@unblessed/react** - React renderer built on this layout engine
+- **@gavin-lynch/unblessed-core** - Widget API documentation
+- **@gavin-lynch/unblessed-react** - React renderer built on this layout engine
 
 ## Quick Reference
 
@@ -1048,8 +1048,8 @@ screen.destroy();
 
 ## Summary
 
-**@unblessed/layout** is the bridge between modern flexbox layouts (Yoga) and terminal rendering (unblessed). It enables declarative, automatic positioning while maintaining the principle that **Yoga is always the source of truth**.
+**@gavin-lynch/unblessed-layout** is the bridge between modern flexbox layouts (Yoga) and terminal rendering (unblessed). It enables declarative, automatic positioning while maintaining the principle that **Yoga is always the source of truth**.
 
-This package is the foundation for @unblessed/react and future framework integrations (Vue, Svelte, etc.).
+This package is the foundation for @gavin-lynch/unblessed-react and future framework integrations (Vue, Svelte, etc.).
 
 **Key Takeaway:** Yoga and unblessed don't "overlap" - they work **sequentially**. Yoga calculates positions, unblessed renders at those positions. Simple, predictable, powerful.

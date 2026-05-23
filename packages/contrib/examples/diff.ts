@@ -5,7 +5,7 @@
  * Shows how to use the Diff widget to display code changes
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Diff } from "../src/widgets/diff.js";
 
 // Force exit on SIGINT/SIGTERM for debugging

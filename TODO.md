@@ -47,7 +47,7 @@ Add React hook for programmatic focus management and keyboard navigation.
 
 **Proposed API:**
 ```tsx
-import { useFocus } from '@unblessed/react';
+import { useFocus } from '@gavin-lynch/unblessed-react';
 
 const MyInput = () => {
   const { isFocused, focus, blur } = useFocus();

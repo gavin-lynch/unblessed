@@ -5,7 +5,7 @@
  * Renders a full-screen 24-bit gradient with overlaid text.
  */
 
-import { Box, Screen } from "@unblessed/node";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

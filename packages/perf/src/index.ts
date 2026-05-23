@@ -1,5 +1,5 @@
 /**
- * @unblessed/perf - Performance instrumentation for @unblessed rendering
+ * @gavin-lynch/unblessed-perf - Performance instrumentation for @unblessed rendering
  */
 
 export {

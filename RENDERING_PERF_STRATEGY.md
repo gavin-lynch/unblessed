@@ -90,7 +90,7 @@ Primary target is Node.js terminal rendering. Browser support (xterm.js adapters
 - Dropped frames vs target FPS (configurable: 30/60/120).
 - Bytes written per frame (optional).
 
-## Dev Tooling as @unblessed/perf (Recommended)
+## Dev Tooling as @gavin-lynch/unblessed-perf (Recommended)
 
 ### Design Goal
 
@@ -112,7 +112,7 @@ type RenderObserver = {
   - `Screen.render()` start/end
   - `Program._write()` flush (bytes written)
 
-### @unblessed/perf Responsibilities
+### @gavin-lynch/unblessed-perf Responsibilities
 
 - Collect frame metrics from hooks.
 - Provide FPS stats API and optional overlay widget.
@@ -121,10 +121,10 @@ type RenderObserver = {
 ### Status
 
 - Core hook surface is implemented.
-- `@unblessed/perf` provides a render observer and overlay helper.
+- `@gavin-lynch/unblessed-perf` provides a render observer and overlay helper.
 - Example: `packages/contrib/examples/perf-overlay.ts`.
 
-## Existing Tooling: @unblessed/vrt
+## Existing Tooling: @gavin-lynch/unblessed-vrt
 
 - VRT records `screen.screenshot()` frames and compares regressions.
 - It is orthogonal to FPS measurement.
@@ -132,7 +132,7 @@ type RenderObserver = {
 
 ## Optimization Roadmap (Low Risk)
 
-1. Add hook surface in core and externalize metrics to @unblessed/perf.
+1. Add hook surface in core and externalize metrics to @gavin-lynch/unblessed-perf.
 2. Profile hot paths: ANSI parse, diff, output write.
 3. Reduce allocations in the worst paths.
 4. Introduce shared buffer support for canvas widgets first.
@@ -147,5 +147,5 @@ type RenderObserver = {
 ## Decisions Needed
 
 - Confirm core hook API shape and naming.
-- Decide whether to ship an FPS overlay widget in @unblessed/perf.
+- Decide whether to ship an FPS overlay widget in @gavin-lynch/unblessed-perf.
 - Choose default target FPS threshold for dropped frame reporting.

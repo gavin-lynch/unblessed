@@ -6,7 +6,7 @@
  * Requires optional peer dependencies: marked, marked-terminal, chalk
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Markdown } from "../../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

@@ -5,7 +5,7 @@
  * Demonstrates multiple stacked gauges in a list.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { GaugeList, Grid } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

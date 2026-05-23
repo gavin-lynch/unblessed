@@ -1,15 +1,15 @@
 /**
- * Vite plugin for @unblessed/browser
+ * Vite plugin for @gavin-lynch/unblessed-browser
  *
- * Optional plugin that provides optimized build configuration for @unblessed/browser in Vite projects.
+ * Optional plugin that provides optimized build configuration for @gavin-lynch/unblessed-browser in Vite projects.
  *
  * NOTE: This plugin is now OPTIONAL and provides minimal optimizations.
- * @unblessed/browser works fine without it since BrowserRuntime handles all polyfills.
+ * @gavin-lynch/unblessed-browser works fine without it since BrowserRuntime handles all polyfills.
  *
  * Usage:
  * ```ts
  * // vite.config.ts
- * import blessedBrowser from '@unblessed/browser/vite-plugin';
+ * import blessedBrowser from '@gavin-lynch/unblessed-browser/vite-plugin';
  *
  * export default defineConfig({
  *   plugins: [blessedBrowser()]
@@ -53,9 +53,9 @@ export default function blessedBrowserPlugin(
       const optimizeDepsConfig = optimizeDeps
         ? {
             include: [
-              "@unblessed/core",
-              "@unblessed/contrib",
-              "@unblessed/react",
+              "@gavin-lynch/unblessed-core",
+              "@gavin-lynch/unblessed-contrib",
+              "@gavin-lynch/unblessed-react",
               "react",
               "buffer",
               "events",

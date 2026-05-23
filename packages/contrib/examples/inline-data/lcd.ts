@@ -5,7 +5,7 @@
  * Demonstrates LCD display with data provided in constructor.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Grid, LCD, WorldMap } from "../../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

@@ -1,10 +1,10 @@
-# Claude Context for @unblessed/core
+# Claude Context for @gavin-lynch/unblessed-core
 
-This document provides architectural context and development guidelines for working on the `@unblessed/core` package.
+This document provides architectural context and development guidelines for working on the `@gavin-lynch/unblessed-core` package.
 
 ## Overview
 
-`@unblessed/core` is the **platform-agnostic core** of the Tui terminal UI library. It contains all widget logic, rendering code, and terminal control primitives while having **zero dependencies** on any specific platform (Node.js, browser, etc.).
+`@gavin-lynch/unblessed-core` is the **platform-agnostic core** of the Tui terminal UI library. It contains all widget logic, rendering code, and terminal control primitives while having **zero dependencies** on any specific platform (Node.js, browser, etc.).
 
 **Key Principles:**
 
@@ -72,7 +72,7 @@ export function getRuntime(): Runtime {
 
 **Initialization:**
 
-- Platform packages (@unblessed/node, @unblessed/browser) call `setRuntime()` at startup
+- Platform packages (@gavin-lynch/unblessed-node, @gavin-lynch/unblessed-browser) call `setRuntime()` at startup
 - Core code accesses runtime via `getRuntime()`
 - One runtime per process (Node.js) or browser tab
 
@@ -327,7 +327,7 @@ if (!condition) {
 
 **Problem**: Different platforms have different requirements and dependencies.
 
-**Solution**: Core package has zero dependencies, adapter packages (`@unblessed/node`, `@unblessed/browser`) provide implementations.
+**Solution**: Core package has zero dependencies, adapter packages (`@gavin-lynch/unblessed-node`, `@gavin-lynch/unblessed-browser`) provide implementations.
 
 **Benefits**:
 
@@ -357,7 +357,7 @@ We abstract ALL platform operations behind interfaces that can be implemented di
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│@unblessed/core│────▶│   Runtime    │◀────│   Platform   │
+│@gavin-lynch/unblessed-core│────▶│   Runtime    │◀────│   Platform   │
 │  (widgets)   │     │  (interface) │     │ (Node/Browser)│
 └──────────────┘     └──────────────┘     └──────────────┘
 ```
@@ -366,7 +366,7 @@ We abstract ALL platform operations behind interfaces that can be implemented di
 
 #### Layer 1: Runtime Interface
 
-The Runtime interface (`@unblessed/core/src/runtime.ts`) defines what a runtime MUST provide:
+The Runtime interface (`@gavin-lynch/unblessed-core/src/runtime.ts`) defines what a runtime MUST provide:
 
 ```typescript
 export interface Runtime {
@@ -402,7 +402,7 @@ export interface FileSystemAPI {
 
 #### Layer 2: Runtime Context
 
-A global singleton (`@unblessed/core/src/runtime-context.ts`) that holds the current runtime:
+A global singleton (`@gavin-lynch/unblessed-core/src/runtime-context.ts`) that holds the current runtime:
 
 ```typescript
 let runtime: Runtime | null = null;
@@ -434,7 +434,7 @@ export function getRuntime(): Runtime {
 
 #### Layer 3: Platform Implementations
 
-**A. @unblessed/node - Node.js Runtime**
+**A. @gavin-lynch/unblessed-node - Node.js Runtime**
 
 Simply wraps real Node.js modules:
 
@@ -480,7 +480,7 @@ export function getNodeRuntime(): NodeRuntime {
 - Provides ALL APIs
 - Singleton pattern
 
-**B. @unblessed/browser - Browser Runtime**
+**B. @gavin-lynch/unblessed-browser - Browser Runtime**
 
 Provides polyfills and stubs:
 
@@ -589,19 +589,19 @@ beforeAll(() => {
 
 **Node.js App:**
 
-1. `import { getNodeRuntime } from '@unblessed/node'`
+1. `import { getNodeRuntime } from '@gavin-lynch/unblessed-node'`
 2. `getNodeRuntime()` → Creates NodeRuntime, calls `setRuntime()`
-3. `import { Screen, Box } from '@unblessed/core'`
+3. `import { Screen, Box } from '@gavin-lynch/unblessed-core'`
 4. `new Screen()` → Internally calls `getRuntime()` → gets NodeRuntime
 5. ✅ Works with real fs, process, etc.
 
 **Browser App:**
 
-1. `import '@unblessed/browser'` → Auto-runs at module load!
+1. `import '@gavin-lynch/unblessed-browser'` → Auto-runs at module load!
    - Sets up global polyfills (process, Buffer)
    - Creates BrowserRuntime
    - Calls `setRuntime()`
-2. `import { Screen, Box } from '@unblessed/core'`
+2. `import { Screen, Box } from '@gavin-lynch/unblessed-core'`
 3. `new Screen()` → Internally calls `getRuntime()` → gets BrowserRuntime
 4. ✅ Works with polyfills/stubs
 
@@ -743,11 +743,11 @@ if (hasImageSupport(runtime)) {
 
 The runtime system is a dependency injection pattern where:
 
-1. `@unblessed/core/src/runtime.ts` defines interfaces (what platforms must provide)
-2. `@unblessed/core/src/runtime-context.ts` holds global singleton (getRuntime/setRuntime)
+1. `@gavin-lynch/unblessed-core/src/runtime.ts` defines interfaces (what platforms must provide)
+2. `@gavin-lynch/unblessed-core/src/runtime-context.ts` holds global singleton (getRuntime/setRuntime)
 3. Platform packages implement Runtime interface:
-   - `@unblessed/node` → Real Node.js APIs
-   - `@unblessed/browser` → Polyfills + stubs
+   - `@gavin-lynch/unblessed-node` → Real Node.js APIs
+   - `@gavin-lynch/unblessed-browser` → Polyfills + stubs
    - tests → Real Node.js for testing
 4. Core code uses `getRuntime()` everywhere (never direct imports)
 5. Optional features use type-safe detection
@@ -1007,13 +1007,13 @@ If migrating from blessed:
 1. **Install runtime adapter**:
 
    ```bash
-   npm install @unblessed/node
+   npm install @gavin-lynch/unblessed-node
    ```
 
 2. **Initialize runtime**:
 
    ```typescript
-   import { createNodeRuntime } from "@unblessed/node";
+   import { createNodeRuntime } from "@gavin-lynch/unblessed-node";
    createNodeRuntime();
    ```
 
@@ -1024,7 +1024,7 @@ If migrating from blessed:
    import blessed from "blessed";
 
    // After
-   import { Screen, Box, List } from "@unblessed/core";
+   import { Screen, Box, List } from "@gavin-lynch/unblessed-core";
    ```
 
 4. **API is mostly compatible** - Most blessed code should work with minimal changes
@@ -1043,8 +1043,8 @@ Potential areas for improvement:
 
 **Completed:**
 
-- ✅ Animation system (7 types) - implemented in @unblessed/react
-- ✅ Theme system with runtime switching - implemented in @unblessed/react
+- ✅ Animation system (7 types) - implemented in @gavin-lynch/unblessed-react
+- ✅ Theme system with runtime switching - implemented in @gavin-lynch/unblessed-react
 
 ## Resources
 
@@ -1058,4 +1058,4 @@ Potential areas for improvement:
 - Check the test suite for usage examples
 - Review widget implementations for patterns
 - Read the original blessed documentation (most concepts apply)
-- Look at platform adapter implementations (`@unblessed/node`, `@unblessed/browser`)
+- Look at platform adapter implementations (`@gavin-lynch/unblessed-node`, `@gavin-lynch/unblessed-browser`)

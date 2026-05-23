@@ -2,7 +2,7 @@
  * test-helpers.ts - Utilities for testing React components
  */
 
-import type { Element } from "@unblessed/core";
+import type { Element } from "@gavin-lynch/unblessed-core";
 import type { RenderInstance } from "../src/types.js";
 
 /**

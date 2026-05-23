@@ -10,7 +10,7 @@ export const CODE_EXAMPLES: CodeExample[] = [
     id: "simple-box",
     title: "Simple Box",
     description: "A basic centered box with styled content and borders",
-    code: `import { Box } from "@unblessed/browser";
+    code: `import { Box } from "@gavin-lynch/unblessed-browser";
 
 // Simple centered box
 const box = new Box({

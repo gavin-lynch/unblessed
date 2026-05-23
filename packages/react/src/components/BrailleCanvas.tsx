@@ -1,16 +1,16 @@
 /**
- * BrailleCanvas.tsx - BrailleCanvas component and descriptor for @unblessed/react
+ * BrailleCanvas.tsx - BrailleCanvas component and descriptor for @gavin-lynch/unblessed-react
  */
 
 import {
   BrailleCanvas as BrailleCanvasWidget,
   type Screen,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 import {
   ComputedLayout,
   FlexboxProps,
   WidgetDescriptor,
-} from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef, type PropsWithChildren } from "react";
 import type { Theme } from "../themes/theme.js";

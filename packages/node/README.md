@@ -1,15 +1,15 @@
-# @unblessed/node
+# @gavin-lynch/unblessed-node
 
-Node.js runtime adapter for [@unblessed/core](../core) - Build beautiful terminal UIs with ease.
+Node.js runtime adapter for [@gavin-lynch/unblessed-core](../core) - Build beautiful terminal UIs with ease.
 
-[![npm version](https://img.shields.io/npm/v/@unblessed/node)](https://www.npmjs.com/package/@unblessed/node)
+[![npm version](https://img.shields.io/npm/v/@gavin-lynch/unblessed-node)](https://www.npmjs.com/package/@gavin-lynch/unblessed-node)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
 
 > ⚠️ **ALPHA SOFTWARE** - This package is part of the unblessed alpha release. API may change between alpha versions.
 
 ## Overview
 
-`@unblessed/node` brings the power of `@unblessed/core` terminal UI widgets to Node.js applications. It provides a Node.js runtime adapter that handles all platform-specific operations automatically.
+`@gavin-lynch/unblessed-node` brings the power of `@gavin-lynch/unblessed-core` terminal UI widgets to Node.js applications. It provides a Node.js runtime adapter that handles all platform-specific operations automatically.
 
 **Features:**
 
@@ -22,12 +22,12 @@ Node.js runtime adapter for [@unblessed/core](../core) - Build beautiful termina
 
 ## Why This Package Exists
 
-`@unblessed/node` is a **convenience wrapper** that saves you from runtime initialization boilerplate.
+`@gavin-lynch/unblessed-node` is a **convenience wrapper** that saves you from runtime initialization boilerplate.
 
 **Without this package**, you'd need to manually initialize the runtime:
 
 ```typescript
-import { setRuntime, Screen, Box } from '@unblessed/core';
+import { setRuntime, Screen, Box } from '@gavin-lynch/unblessed-core';
 import fs from 'fs';
 import process from 'process';
 import path from 'path';
@@ -46,10 +46,10 @@ setRuntime({
 const screen = new Screen();
 ```
 
-**With @unblessed/node:**
+**With @gavin-lynch/unblessed-node:**
 
 ```typescript
-import { Screen, Box } from "@unblessed/node"; // Auto-initialized!
+import { Screen, Box } from "@gavin-lynch/unblessed-node"; // Auto-initialized!
 
 const screen = new Screen();
 ```
@@ -61,16 +61,16 @@ const screen = new Screen();
 - ✅ Type safety - full TypeScript support out of the box
 - ✅ Just works - no configuration needed
 
-This package exists to make your life easier while keeping `@unblessed/core` pure and platform-agnostic.
+This package exists to make your life easier while keeping `@gavin-lynch/unblessed-core` pure and platform-agnostic.
 
 ## Installation
 
 ```bash
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 # or
-pnpm add @unblessed/node@alpha
+pnpm add @gavin-lynch/unblessed-node@alpha
 # or
-yarn add @unblessed/node@alpha
+yarn add @gavin-lynch/unblessed-node@alpha
 ```
 
 **Requirements:** Node.js >= 22.0.0
@@ -78,7 +78,7 @@ yarn add @unblessed/node@alpha
 ## Quick Start
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // Runtime auto-initializes - no setup needed!
 
@@ -294,19 +294,19 @@ const box = new Box({
 });
 ```
 
-For complete widget options, see [@unblessed/core types](../core/src/types/options.ts).
+For complete widget options, see [@gavin-lynch/unblessed-core types](../core/src/types/options.ts).
 
 ## Architecture
 
-`@unblessed/node` is a thin wrapper over `@unblessed/core` that:
+`@gavin-lynch/unblessed-node` is a thin wrapper over `@gavin-lynch/unblessed-core` that:
 
 1. **Provides NodeRuntime** - Implements the Runtime interface with Node.js APIs
 2. **Auto-initializes** - Sets up the runtime when you import the package
-3. **Re-exports widgets** - All `@unblessed/core` widgets available directly
+3. **Re-exports widgets** - All `@gavin-lynch/unblessed-core` widgets available directly
 
 ```typescript
 // Internal structure (simplified)
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import fs from "fs";
 import process from "process";
 // ... other Node.js modules
@@ -317,11 +317,11 @@ const runtime = {
   // ... other Node.js APIs
 };
 
-// Initialize @unblessed/core with Node.js runtime
+// Initialize @gavin-lynch/unblessed-core with Node.js runtime
 setRuntime(runtime);
 
 // Re-export all widgets
-export * from "@unblessed/core";
+export * from "@gavin-lynch/unblessed-core";
 ```
 
 This means you get:
@@ -396,27 +396,27 @@ node your-app.js
 
 ## Migration from blessed
 
-`@unblessed/node` is designed to be compatible with blessed:
+`@gavin-lynch/unblessed-node` is designed to be compatible with blessed:
 
 ```typescript
 // Old blessed code
 const blessed = require("blessed");
 const screen = blessed.screen();
 
-// New @unblessed/node code
-import { Screen } from "@unblessed/node";
+// New @gavin-lynch/unblessed-node code
+import { Screen } from "@gavin-lynch/unblessed-node";
 const screen = new Screen();
 ```
 
-Or use `@unblessed/blessed` for 100% backward compatibility:
+Or use `@gavin-lynch/unblessed-blessed` for 100% backward compatibility:
 
 ```bash
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 ```
 
 ## Performance
 
-`@unblessed/node` is optimized for terminal rendering:
+`@gavin-lynch/unblessed-node` is optimized for terminal rendering:
 
 - **Smart CSR** - Only updates changed regions
 - **Efficient diffing** - Minimal escape sequences
@@ -440,7 +440,7 @@ MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
-- [@unblessed/core](../core) - Core TUI library
-- [@unblessed/browser](../browser) - Browser runtime adapter
-- [@unblessed/blessed](../blessed) - Backward-compatible blessed API
+- [@gavin-lynch/unblessed-core](../core) - Core TUI library
+- [@gavin-lynch/unblessed-browser](../browser) - Browser runtime adapter
+- [@gavin-lynch/unblessed-blessed](../blessed) - Backward-compatible blessed API
 - [blessed](https://github.com/chjj/blessed) - Original library

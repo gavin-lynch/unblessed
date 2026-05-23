@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * LCD Demo - @unblessed/contrib LCD widget example
+ * LCD Demo - @gavin-lynch/unblessed-contrib LCD widget example
  *
  * Demonstrates:
  * - 16-segment LED display
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-lcd-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useRef, useState } from "react";
 import { LCD } from "../../contrib/src/index.js";
 import { Box, render, Text, useScreen } from "../src/index.js";

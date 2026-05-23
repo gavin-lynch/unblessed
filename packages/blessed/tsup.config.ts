@@ -24,7 +24,7 @@ export default defineConfig({
   cjsInterop: true,
 
   external: ["pngjs", "omggif"],
-  noExternal: ["@unblessed/core"],
+  noExternal: ["@gavin-lynch/unblessed-core"],
 
   platform: "node",
   target: "node22",
@@ -32,6 +32,6 @@ export default defineConfig({
   onSuccess: async () => {
     await cp("../core/data", "dist/data", { recursive: true });
     console.log("✅ Copied ../core/data/ to dist/data/");
-    console.log("✅ @unblessed/blessed build complete");
+    console.log("✅ @gavin-lynch/unblessed-blessed build complete");
   },
 });

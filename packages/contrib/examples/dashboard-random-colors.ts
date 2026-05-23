@@ -5,7 +5,7 @@
  * Demonstrates a full dashboard with multiple widgets using random colors.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import {
   Bar,
   Donut,

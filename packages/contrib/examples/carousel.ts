@@ -5,8 +5,8 @@
  * Demonstrates cycling through multiple pages of widgets.
  */
 
-import { Box } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { Box } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Carousel, Grid, Line, WorldMap } from "../src/index.js";
 
 function page1(screen: Screen) {

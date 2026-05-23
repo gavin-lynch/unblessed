@@ -13,7 +13,7 @@ The runtime system is the key to unblessed's cross-platform capability. It allow
 ```mermaid
 sequenceDiagram
     participant App as Your App
-    participant Core as @unblessed/core
+    participant Core as @gavin-lynch/unblessed-core
     participant Runtime as Runtime Context
     participant Platform as Platform Runtime
 
@@ -112,7 +112,7 @@ interface BufferAPI {
 All core code accesses platform APIs through the runtime:
 
 ```typescript
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 export class MyWidget extends Element {
   loadData(filename: string) {
@@ -153,7 +153,7 @@ export function getRuntime(): Runtime {
 
 ### Node.js Runtime
 
-`@unblessed/node` provides a Node.js implementation:
+`@gavin-lynch/unblessed-node` provides a Node.js implementation:
 
 ```typescript
 // node-runtime.ts
@@ -189,7 +189,7 @@ export class NodeRuntime implements Runtime {
 
 ### Browser Runtime
 
-`@unblessed/browser` provides polyfills:
+`@gavin-lynch/unblessed-browser` provides polyfills:
 
 ```typescript
 // browser-runtime.ts
@@ -240,8 +240,8 @@ export class BrowserRuntime implements Runtime {
 Each platform package auto-initializes the runtime on import:
 
 ```typescript
-// @unblessed/node/src/auto-init.ts
-import { setRuntime } from "@unblessed/core";
+// @gavin-lynch/unblessed-node/src/auto-init.ts
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { NodeRuntime } from "./node-runtime";
 
 // Initialize runtime when package is imported
@@ -249,19 +249,19 @@ setRuntime(new NodeRuntime());
 ```
 
 ```typescript
-// @unblessed/node/src/index.ts
+// @gavin-lynch/unblessed-node/src/index.ts
 import "./auto-init"; // Runs first
-export * from "@unblessed/core"; // Then export widgets
+export * from "@gavin-lynch/unblessed-core"; // Then export widgets
 ```
 
-When you import from `@unblessed/node`, the runtime is set up before any widgets are created.
+When you import from `@gavin-lynch/unblessed-node`, the runtime is set up before any widgets are created.
 
 ## Testing with Mock Runtimes
 
 The runtime system makes testing easy with mock implementations:
 
 ```typescript
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 
 const mockRuntime: Runtime = {
   fs: {
@@ -290,7 +290,7 @@ To support a new platform (e.g., Deno):
 
 ```typescript
 // @unblessed/deno/src/deno-runtime.ts
-import { Runtime } from "@unblessed/core";
+import { Runtime } from "@gavin-lynch/unblessed-core";
 
 export class DenoRuntime implements Runtime {
   fs = {
@@ -323,7 +323,7 @@ export class DenoRuntime implements Runtime {
 
 ```typescript
 // @unblessed/deno/src/auto-init.ts
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { DenoRuntime } from "./deno-runtime";
 
 setRuntime(new DenoRuntime());
@@ -334,7 +334,7 @@ setRuntime(new DenoRuntime());
 ```typescript
 // @unblessed/deno/src/index.ts
 import "./auto-init";
-export * from "@unblessed/core";
+export * from "@gavin-lynch/unblessed-core";
 ```
 
 Now unblessed works in Deno!
@@ -344,7 +344,7 @@ Now unblessed works in Deno!
 Sometimes you need to detect the current platform:
 
 ```typescript
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 const runtime = getRuntime();
 

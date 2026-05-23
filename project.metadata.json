@@ -8,7 +8,8 @@
     "defaultBranch": "main"
   },
   "npm": {
-    "scope": "@unblessed"
+    "scope": "@gavin-lynch",
+    "packagePrefix": "unblessed"
   },
   "docs": {
     "url": "https://unblessed-docs.vercel.app",

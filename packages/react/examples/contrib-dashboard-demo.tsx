@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Dashboard Demo - @unblessed/contrib widgets combined
+ * Dashboard Demo - @gavin-lynch/unblessed-contrib widgets combined
  *
  * Demonstrates:
  * - Multiple contrib widgets in a dashboard layout
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-dashboard-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useRef, useState } from "react";
 import {
   Bar,

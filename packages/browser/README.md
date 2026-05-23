@@ -1,29 +1,29 @@
-# @unblessed/browser
+# @gavin-lynch/unblessed-browser
 
-Browser runtime adapter for [@unblessed/core](../core) - Run terminal UIs in the browser with xterm.js integration.
+Browser runtime adapter for [@gavin-lynch/unblessed-core](../core) - Run terminal UIs in the browser with xterm.js integration.
 
-[![npm version](https://img.shields.io/npm/v/@unblessed/browser)](https://www.npmjs.com/package/@unblessed/browser)
+[![npm version](https://img.shields.io/npm/v/@gavin-lynch/unblessed-browser)](https://www.npmjs.com/package/@gavin-lynch/unblessed-browser)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
 
 > ⚠️ **ALPHA SOFTWARE** - This package is part of the unblessed alpha release. API may change between alpha versions.
 
 ## Overview
 
-`@unblessed/browser` enables terminal user interface (TUI) applications built with `@unblessed/core` to run in web browsers. It provides:
+`@gavin-lynch/unblessed-browser` enables terminal user interface (TUI) applications built with `@gavin-lynch/unblessed-core` to run in web browsers. It provides:
 
 - **Browser polyfills** for Node.js APIs (fs, process, path, etc.)
 - **xterm.js integration** for terminal rendering
-- **Runtime adapter** that bridges @unblessed/core to the browser environment
-- **Full widget support** - all @unblessed/core widgets work in the browser
+- **Runtime adapter** that bridges @gavin-lynch/unblessed-core to the browser environment
+- **Full widget support** - all @gavin-lynch/unblessed-core widgets work in the browser
 
 ## Installation
 
 ```bash
-npm install @unblessed/browser@alpha xterm
+npm install @gavin-lynch/unblessed-browser@alpha xterm
 # or
-pnpm add @unblessed/browser@alpha xterm
+pnpm add @gavin-lynch/unblessed-browser@alpha xterm
 # or
-yarn add @unblessed/browser@alpha xterm
+yarn add @gavin-lynch/unblessed-browser@alpha xterm
 ```
 
 **Requirements:** Modern browser with ES2020 support (Chrome 90+, Firefox 88+, Safari 14+)
@@ -34,7 +34,7 @@ yarn add @unblessed/browser@alpha xterm
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 import "xterm/css/xterm.css";
 
 // Create xterm.js terminal
@@ -113,13 +113,13 @@ screen.render();
 
 This package includes a full-screen **truecolor dashboard** (browser port of
 [`packages/contrib/examples/dashboard-truecolor.ts`](../contrib/examples/dashboard-truecolor.ts))
-under `example/`. It uses `@unblessed/contrib` charts in a `Grid`, xterm.js with `xterm-addon-fit`, and an
+under `example/`. It uses `@gavin-lynch/unblessed-contrib` charts in a `Grid`, xterm.js with `xterm-addon-fit`, and an
 explicit `setRuntime(new BrowserRuntime())` before constructing widgets.
 
 From the monorepo root (with `pnpm build` run at least once for `dist/` outputs):
 
 ```bash
-pnpm --filter @unblessed/browser dev
+pnpm --filter @gavin-lynch/unblessed-browser dev
 ```
 
 Then open [http://localhost:8080](http://localhost:8080). For the **Tree** widget demo, open [http://localhost:8080/tree.html](http://localhost:8080/tree.html). For the **Lip Gloss (charm)** demo, open [http://localhost:8080/charm.html](http://localhost:8080/charm.html). See `example/README.md` for details.
@@ -131,7 +131,7 @@ Then open [http://localhost:8080](http://localhost:8080). For the **Tree** widge
 Browser-specific Screen class that automatically handles xterm.js integration.
 
 ```typescript
-import { Screen } from "@unblessed/browser";
+import { Screen } from "@gavin-lynch/unblessed-browser";
 import { Terminal } from "xterm";
 
 const term = new Terminal();
@@ -149,7 +149,7 @@ const screen = new Screen({
 - `terminal` (Terminal) - xterm.js Terminal instance - automatically creates XTermAdapter
 - `mouse` (boolean) - Enable mouse events (default: true)
 - `term` (string) - Terminal type string (default: 'xterm-256color')
-- All standard ScreenOptions from @unblessed/core
+- All standard ScreenOptions from @gavin-lynch/unblessed-core
 
 **Returns:** Screen instance with xterm.js integration
 
@@ -158,7 +158,7 @@ const screen = new Screen({
 Low-level adapter for manual setup (rarely needed).
 
 ```typescript
-import { XTermAdapter } from "@unblessed/browser";
+import { XTermAdapter } from "@gavin-lynch/unblessed-browser";
 
 const adapter = new XTermAdapter({
   terminal: term,
@@ -173,21 +173,21 @@ const adapter = new XTermAdapter({
 Access the browser runtime for advanced use cases:
 
 ```typescript
-import { getRuntime } from "@unblessed/core";
+import { getRuntime } from "@gavin-lynch/unblessed-core";
 
 const runtime = getRuntime();
 // Provides: fs, path, process, Buffer, etc.
-// Runtime is automatically initialized when you import @unblessed/browser
+// Runtime is automatically initialized when you import @gavin-lynch/unblessed-browser
 ```
 
-> **Note:** The runtime is automatically initialized when you import from `@unblessed/browser`. You don't need to call any initialization functions.
+> **Note:** The runtime is automatically initialized when you import from `@gavin-lynch/unblessed-browser`. You don't need to call any initialization functions.
 
 ### Widget Re-exports
 
-All @unblessed/core widgets are re-exported for convenience:
+All @gavin-lynch/unblessed-core widgets are re-exported for convenience:
 
 ```typescript
-import { Box, List, Input, Form, Button } from "@unblessed/browser";
+import { Box, List, Input, Form, Button } from "@gavin-lynch/unblessed-browser";
 
 const box = new Box({ parent: screen /* ... */ });
 const list = new List({ parent: screen /* ... */ });
@@ -206,7 +206,7 @@ const list = new List({ parent: screen /* ... */ });
 
 ### ✅ Full Widget Support
 
-All @unblessed/core widgets work in the browser:
+All @gavin-lynch/unblessed-core widgets work in the browser:
 
 - Layout: Box, Layout, Line
 - Input: Input, Textarea, Button, Checkbox, RadioButton, Form
@@ -234,7 +234,7 @@ Full support for:
 ### Interactive Form
 
 ```typescript
-import { Form, Input, Button } from "@unblessed/browser";
+import { Form, Input, Button } from "@gavin-lynch/unblessed-browser";
 
 const form = new Form({
   parent: screen,
@@ -295,7 +295,7 @@ screen.render();
 ### File Manager
 
 ```typescript
-import { FileManager } from "@unblessed/browser";
+import { FileManager } from "@gavin-lynch/unblessed-browser";
 
 const fm = new FileManager({
   parent: screen,
@@ -327,7 +327,7 @@ screen.render();
 ### Real-time Data Display
 
 ```typescript
-import { Log } from "@unblessed/browser";
+import { Log } from "@gavin-lynch/unblessed-browser";
 
 const log = new Log({
   parent: screen,
@@ -365,14 +365,14 @@ setInterval(() => {
 
 ### Vite
 
-The optional **`@unblessed/browser/vite-plugin`** configures common `optimizeDeps` settings and resolves **`marked-terminal`** and **`picture-tuber`** to **browser stubs**. `@unblessed/core` still imports both up front (**Markdown** and **Picture** widgets). The real packages pull Node-only transitive modules (`supports-hyperlinks`, `supports-color`, `stream`/`charm`, PNG/native bits, …) that break Vite browser bundles (`process is not defined`, **`Stream is not a constructor`**, etc.). Without the stubs, optimized dependency chunks fail during pre-bundle / page load.
+The optional **`@gavin-lynch/unblessed-browser/vite-plugin`** configures common `optimizeDeps` settings and resolves **`marked-terminal`** and **`picture-tuber`** to **browser stubs**. `@gavin-lynch/unblessed-core` still imports both up front (**Markdown** and **Picture** widgets). The real packages pull Node-only transitive modules (`supports-hyperlinks`, `supports-color`, `stream`/`charm`, PNG/native bits, …) that break Vite browser bundles (`process is not defined`, **`Stream is not a constructor`**, etc.). Without the stubs, optimized dependency chunks fail during pre-bundle / page load.
 
 Markdown and Picture widgets are **not** fully supported behind these stubs: `marked-terminal` is a noop class; **`picture-tuber`** fails intentionally so Picture falls back to its placeholder if used. Swap the aliases if you ship real browser-safe implementations later.
 
 ```typescript
 // vite.config.ts
 import { defineConfig } from "vite";
-import tuiBrowser from "@unblessed/browser/vite-plugin";
+import tuiBrowser from "@gavin-lynch/unblessed-browser/vite-plugin";
 
 export default defineConfig({
   plugins: [tuiBrowser()],
@@ -384,7 +384,7 @@ Manual tuning example (combine with `tuiBrowser()` as needed):
 ````typescript
 export default defineConfig({
   optimizeDeps: {
-    exclude: ["@unblessed/browser", "@unblessed/core"],
+    exclude: ["@gavin-lynch/unblessed-browser", "@gavin-lynch/unblessed-core"],
   },
   resolve: {
     alias: {
@@ -415,9 +415,9 @@ module.exports = {
 
 ### How It Works
 
-1. **Runtime Abstraction**: @unblessed/core uses a runtime interface for all platform operations
+1. **Runtime Abstraction**: @gavin-lynch/unblessed-core uses a runtime interface for all platform operations
 2. **Browser Runtime**: This package provides browser-compatible implementations
-3. **Automatic Initialization**: Runtime is set up when you import @unblessed/browser
+3. **Automatic Initialization**: Runtime is set up when you import @gavin-lynch/unblessed-browser
 4. **Widget Compatibility**: All widgets use the runtime interface, so they work unchanged
 
 ### Polyfills Provided
@@ -475,6 +475,6 @@ MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
-- [@unblessed/core](../core) - Core TUI library
-- [@unblessed/node](../node) - Node.js runtime adapter
+- [@gavin-lynch/unblessed-core](../core) - Core TUI library
+- [@gavin-lynch/unblessed-node](../node) - Node.js runtime adapter
 - [xterm.js](https://xtermjs.org/) - Terminal emulator for the web

@@ -8,7 +8,7 @@
  * Note: The image file path should be relative to where the script is run.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Picture } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

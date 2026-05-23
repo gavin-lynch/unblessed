@@ -9,7 +9,7 @@
  * TODO: Fix these tests by understanding the Program → screen.key() event flow
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { Box, render, Text, useKeyboard } from "../src";
 

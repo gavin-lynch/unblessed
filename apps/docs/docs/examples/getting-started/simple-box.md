@@ -9,7 +9,7 @@ Create a basic box widget with styling and positioning.
 ## Code
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

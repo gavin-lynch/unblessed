@@ -14,7 +14,7 @@ export async function displayError(
     if (!terminal) return;
 
     terminal.clear();
-    const tui = await import("@unblessed/browser");
+    const tui = await import("@gavin-lynch/unblessed-browser");
 
     screen.current = new tui.Screen({ terminal });
 

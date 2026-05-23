@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Bar Chart Demo - @unblessed/contrib Bar widget example
+ * Bar Chart Demo - @gavin-lynch/unblessed-contrib Bar widget example
  *
  * Demonstrates:
  * - Vertical bar chart
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-bar-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useState } from "react";
 import { Bar, type BarData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive refactoring plan to unify color handling across `@unblessed/core`, `@unblessed/contrib`, and all library utilities. The goal is to create a normalized, well-organized color system that:
+This document outlines a comprehensive refactoring plan to unify color handling across `@gavin-lynch/unblessed-core`, `@gavin-lynch/unblessed-contrib`, and all library utilities. The goal is to create a normalized, well-organized color system that:
 
 1. **Unifies color handling** across core, contrib, and lib utilities
 2. **Integrates with normalized cell structure** (`[attr, ch, truecolorBg, truecolorFg]`)

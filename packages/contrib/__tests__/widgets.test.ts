@@ -1,8 +1,8 @@
 /**
- * Tests for @unblessed/contrib widgets
+ * Tests for @gavin-lynch/unblessed-contrib widgets
  */
 
-import { Screen } from "@unblessed/core";
+import { Screen } from "@gavin-lynch/unblessed-core";
 import { describe, expect, it } from "vitest";
 import {
   Bar,

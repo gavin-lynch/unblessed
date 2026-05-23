@@ -9,13 +9,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Architecture
 
 ```
-@unblessed/core      → Platform-agnostic core (Runtime interface)
-@unblessed/node      → Node.js runtime implementation
-@unblessed/browser   → Browser runtime (XTerm.js integration)
-@unblessed/blessed   → Backward-compatible wrapper
-@unblessed/layout    → Flexbox layout engine (Yoga integration)
-@unblessed/react     → React renderer with JSX support
-@unblessed/vrt       → Visual regression testing tools
+@gavin-lynch/unblessed-core      → Platform-agnostic core (Runtime interface)
+@gavin-lynch/unblessed-node      → Node.js runtime implementation
+@gavin-lynch/unblessed-browser   → Browser runtime (XTerm.js integration)
+@gavin-lynch/unblessed-blessed   → Backward-compatible wrapper
+@gavin-lynch/unblessed-layout    → Flexbox layout engine (Yoga integration)
+@gavin-lynch/unblessed-react     → React renderer with JSX support
+@gavin-lynch/unblessed-vrt       → Visual regression testing tools
 @unblessed/create    → Project scaffolding (not published)
 ```
 
@@ -55,21 +55,21 @@ pnpm install
 pnpm build
 
 # Build specific package
-pnpm --filter @unblessed/core build
-pnpm --filter @unblessed/browser build
+pnpm --filter @gavin-lynch/unblessed-core build
+pnpm --filter @gavin-lynch/unblessed-browser build
 
 # Watch mode for development
-pnpm --filter @unblessed/core build:watch
+pnpm --filter @gavin-lynch/unblessed-core build:watch
 
 # Run all tests
 pnpm test
 
 # Run tests for specific package
-pnpm --filter @unblessed/core test
-pnpm --filter @unblessed/browser test
+pnpm --filter @gavin-lynch/unblessed-core test
+pnpm --filter @gavin-lynch/unblessed-browser test
 
 # Run tests in watch mode
-pnpm --filter @unblessed/core test:watch
+pnpm --filter @gavin-lynch/unblessed-core test:watch
 
 # Run tests with UI
 pnpm test:ui
@@ -87,7 +87,7 @@ pnpm format:check      # Check only
 pnpm --filter benchmarks bench
 
 # Browser playground (development server)
-pnpm --filter @unblessed/browser dev
+pnpm --filter @gavin-lynch/unblessed-browser dev
 # Then visit http://localhost:5173
 
 # Clean build artifacts
@@ -98,13 +98,13 @@ pnpm clean
 
 ```bash
 # Run specific test file
-pnpm --filter @unblessed/core test -- __tests__/widgets/box.test.js
+pnpm --filter @gavin-lynch/unblessed-core test -- __tests__/widgets/box.test.js
 
 # Run tests matching pattern
-pnpm --filter @unblessed/core test -- -t "Screen"
+pnpm --filter @gavin-lynch/unblessed-core test -- -t "Screen"
 
 # Run with coverage for specific file
-pnpm --filter @unblessed/core test:coverage -- __tests__/lib/colors.test.js
+pnpm --filter @gavin-lynch/unblessed-core test:coverage -- __tests__/lib/colors.test.js
 ```
 
 ## Architecture & Key Patterns
@@ -114,7 +114,7 @@ pnpm --filter @unblessed/core test:coverage -- __tests__/lib/colors.test.js
 The core architectural pattern is **runtime dependency injection** for platform abstraction:
 
 ```typescript
-// @unblessed/core defines the Runtime interface
+// @gavin-lynch/unblessed-core defines the Runtime interface
 export interface Runtime {
   fs: FileSystemAPI;
   process: ProcessAPI;
@@ -124,7 +124,7 @@ export interface Runtime {
 }
 
 // Platform packages implement and initialize runtime
-import { setRuntime } from '@unblessed/core';
+import { setRuntime } from '@gavin-lynch/unblessed-core';
 setRuntime(new NodeRuntime());  // or BrowserRuntime()
 
 // Core code accesses runtime via context
@@ -135,45 +135,45 @@ const data = getRuntime().fs.readFileSync(path);
 **Why this matters:**
 - Single codebase works across Node.js, browsers, and future platforms
 - Testable with mock runtimes
-- Zero platform dependencies in @unblessed/core
+- Zero platform dependencies in @gavin-lynch/unblessed-core
 - Easy to add new platforms (Deno, Bun, etc.)
 
 ### Package Responsibilities
 
-**@unblessed/core** - Platform-agnostic core
+**@gavin-lynch/unblessed-core** - Platform-agnostic core
 - All widget logic, rendering engine, event handling
 - Zero platform dependencies
 - Defines Runtime interface
 - Located in: `packages/core/`
 
-**@unblessed/node** - Node.js runtime
+**@gavin-lynch/unblessed-node** - Node.js runtime
 - NodeRuntime implementation
 - Auto-initializes on import
 - Modern, class-based API
 - Located in: `packages/node/`
 
-**@unblessed/browser** - Browser runtime
+**@gavin-lynch/unblessed-browser** - Browser runtime
 - BrowserRuntime with polyfills
 - XTerm.js integration
 - Auto-initializes on import
 - Interactive playground
 - Located in: `packages/browser/`
 
-**@unblessed/blessed** - Compatibility layer
+**@gavin-lynch/unblessed-blessed** - Compatibility layer
 - 100% backward compatible with blessed
-- Thin wrapper over @unblessed/node
+- Thin wrapper over @gavin-lynch/unblessed-node
 - Drop-in replacement
 - 56 type compatibility tests
 - Located in: `packages/blessed/`
 
-**@unblessed/layout** - Flexbox layout engine
+**@gavin-lynch/unblessed-layout** - Flexbox layout engine
 - Yoga-based flexbox layouts
 - Foundation for React integration
 - Sequential layout calculation
 - 41 tests passing
 - Located in: `packages/layout/`
 
-**@unblessed/react** - React renderer
+**@gavin-lynch/unblessed-react** - React renderer
 - JSX component API
 - Automatic flexbox layout
 - 20+ composition helpers
@@ -182,7 +182,7 @@ const data = getRuntime().fs.readFileSync(path);
 - Text truncation (ink-style)
 - Located in: `packages/react/`
 
-**@unblessed/vrt** - Visual regression testing
+**@gavin-lynch/unblessed-vrt** - Visual regression testing
 - CLI tools for snapshot testing
 - Terminal UI testing utilities
 - Located in: `packages/vrt/`
@@ -197,11 +197,11 @@ Runtime packages auto-initialize on import - no manual setup required:
 
 ```typescript
 // ✅ Simply import and use
-import { Screen, Box } from '@unblessed/node';
+import { Screen, Box } from '@gavin-lynch/unblessed-node';
 const screen = new Screen({ smartCSR: true });
 
 // ❌ Old pattern (removed) - no longer needed
-import { initRuntime } from '@unblessed/node';
+import { initRuntime } from '@gavin-lynch/unblessed-node';
 initRuntime();
 ```
 
@@ -230,11 +230,11 @@ Browser Screen automatically detects XTerm.js Terminal instances:
 
 ```typescript
 // ✅ Screen auto-creates XTermAdapter
-import { Screen } from '@unblessed/browser';
+import { Screen } from '@gavin-lynch/unblessed-browser';
 const screen = new Screen({ terminal: term });
 
 // ❌ Old pattern (removed)
-import { createXTermScreen } from '@unblessed/browser';
+import { createXTermScreen } from '@gavin-lynch/unblessed-browser';
 const screen = createXTermScreen({ terminal: term });
 ```
 
@@ -285,7 +285,7 @@ packages/*/
 
 **Testing with Runtime:**
 ```typescript
-import { setRuntime } from '@unblessed/core';
+import { setRuntime } from '@gavin-lynch/unblessed-core';
 import { initTestRuntime } from '../helpers/mock.js';
 
 beforeAll(() => {
@@ -353,16 +353,16 @@ export class MyWidget extends Box {
 ### Adding Runtime API
 
 ```typescript
-// 1. Add to Runtime interface (@unblessed/core/src/runtime.ts)
+// 1. Add to Runtime interface (@gavin-lynch/unblessed-core/src/runtime.ts)
 export interface Runtime {
   newAPI: NewAPIType;
 }
 
 // 2. Implement in platform packages
-// @unblessed/node/src/runtime.ts
+// @gavin-lynch/unblessed-node/src/runtime.ts
 this.newAPI = require('new-api');
 
-// @unblessed/browser/src/browser-runtime.ts
+// @gavin-lynch/unblessed-browser/src/browser-runtime.ts
 this.newAPI = { /* browser polyfill */ };
 
 // 3. Use in core code via getRuntime()
@@ -409,7 +409,7 @@ const matched = colors.match('#ff0000');
 
 ### Platform Agnostic Code
 
-**In @unblessed/core, always use runtime context:**
+**In @gavin-lynch/unblessed-core, always use runtime context:**
 ```typescript
 // ❌ Don't import platform APIs
 import fs from 'fs';
@@ -456,13 +456,13 @@ feat(core)!: redesign widget API
 - `chore` - Other changes
 
 **Scopes:**
-- `core` - @unblessed/core
-- `node` - @unblessed/node
-- `browser` - @unblessed/browser
-- `blessed` - @unblessed/blessed
-- `layout` - @unblessed/layout
-- `react` - @unblessed/react
-- `vrt` - @unblessed/vrt
+- `core` - @gavin-lynch/unblessed-core
+- `node` - @gavin-lynch/unblessed-node
+- `browser` - @gavin-lynch/unblessed-browser
+- `blessed` - @gavin-lynch/unblessed-blessed
+- `layout` - @gavin-lynch/unblessed-layout
+- `react` - @gavin-lynch/unblessed-react
+- `vrt` - @gavin-lynch/unblessed-vrt
 - `deps` - Dependencies
 - `ci` - CI/CD
 - `dx` - Developer experience
@@ -517,13 +517,13 @@ pnpm --filter benchmarks bench
 - ✅ 100% test coverage (2,355/2,355 tests)
 - ✅ Browser support via XTerm.js
 - ✅ Modern build tooling (tsup, pnpm, Turborepo)
-- ✅ @unblessed/blessed compatibility layer
+- ✅ @gavin-lynch/unblessed-blessed compatibility layer
 - ✅ Automated alpha releases via semantic-release
 - ✅ Documentation site deployed to Vercel
 - ✅ Sentry error tracking integration
 - ✅ npm publishing with provenance
-- ✅ Flexbox layout engine (@unblessed/layout)
-- ✅ React renderer (@unblessed/react)
+- ✅ Flexbox layout engine (@gavin-lynch/unblessed-layout)
+- ✅ React renderer (@gavin-lynch/unblessed-react)
 - ✅ Theme system with runtime switching
 - ✅ Animation system (7 types)
 - ✅ Text truncation (ink-style with ANSI preservation)
@@ -550,13 +550,13 @@ pnpm --filter benchmarks bench
 - [packages/browser/CLAUDE.md](./packages/browser/CLAUDE.md) - Browser package details
 
 ### Package Documentation
-- [@unblessed/core](./packages/core/README.md)
-- [@unblessed/node](./packages/node/README.md)
-- [@unblessed/browser](./packages/browser/README.md)
-- [@unblessed/blessed](./packages/blessed/README.md)
-- [@unblessed/layout](./packages/layout/README.md)
-- [@unblessed/react](./packages/react/README.md)
-- [@unblessed/vrt](./packages/vrt/README.md)
+- [@gavin-lynch/unblessed-core](./packages/core/README.md)
+- [@gavin-lynch/unblessed-node](./packages/node/README.md)
+- [@gavin-lynch/unblessed-browser](./packages/browser/README.md)
+- [@gavin-lynch/unblessed-blessed](./packages/blessed/README.md)
+- [@gavin-lynch/unblessed-layout](./packages/layout/README.md)
+- [@gavin-lynch/unblessed-react](./packages/react/README.md)
+- [@gavin-lynch/unblessed-vrt](./packages/vrt/README.md)
 
 ### External Resources
 - [blessed](https://github.com/chjj/blessed) - Original library

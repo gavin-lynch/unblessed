@@ -15,7 +15,7 @@ unblessed provides a flexible widget system that you can extend to create custom
 ### Basic Custom Widget
 
 ```typescript
-import { Box, type BoxOptions } from "@unblessed/node";
+import { Box, type BoxOptions } from "@gavin-lynch/unblessed-node";
 
 interface StatusBarOptions extends BoxOptions {
   status?: string;
@@ -140,7 +140,7 @@ class Badge extends Box {
 Use TypeScript interfaces to define widget-specific options:
 
 ```typescript
-import { Box, type BoxOptions } from "@unblessed/node";
+import { Box, type BoxOptions } from "@gavin-lynch/unblessed-node";
 
 // Extend BoxOptions for type safety
 export interface BadgeOptions extends BoxOptions {
@@ -856,7 +856,7 @@ export class DataTable extends Box {
 
 ```typescript
 import { describe, it, expect, beforeEach } from "vitest";
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Counter } from "./counter.js";
 
 describe("Counter Widget", () => {

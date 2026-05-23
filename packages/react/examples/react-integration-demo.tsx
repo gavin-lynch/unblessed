@@ -12,8 +12,8 @@ import type {
   Box as BoxWidget,
   BrailleCanvas as BrailleCanvasWidget,
   CharCanvas as CharCanvasWidget,
-} from "@unblessed/core";
-import { NodeRuntime } from "@unblessed/node";
+} from "@gavin-lynch/unblessed-core";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import {
   Box,
   BrailleCanvas,
@@ -25,7 +25,7 @@ import {
   rotateColors,
   useScreen,
   useWindowSize,
-} from "@unblessed/react";
+} from "@gavin-lynch/unblessed-react";
 import * as React from "react";
 
 /**

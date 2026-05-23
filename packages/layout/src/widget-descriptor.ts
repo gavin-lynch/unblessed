@@ -13,7 +13,7 @@
  * switch statements throughout the codebase.
  */
 
-import type { Element, Screen } from "@unblessed/core";
+import type { Element, Screen } from "@gavin-lynch/unblessed-core";
 import { merge } from "lodash-es";
 import { ComputedLayout, FlexboxProps } from "./types";
 

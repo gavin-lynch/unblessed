@@ -1,5 +1,5 @@
 {
-  "name": "@unblessed/root",
+  "name": "@gavin-lynch/unblessed-monorepo",
   "version": "1.0.0",
   "private": true,
   "description": "Unblessed TUI library monorepo",
@@ -59,9 +59,9 @@
     "sync:metadata": "node scripts/sync-project-metadata.js"
   },
   "dependencies": {
-    "@unblessed/core": "workspace:*",
-    "@unblessed/node": "workspace:*",
-    "@unblessed/theme": "workspace:*"
+    "@gavin-lynch/unblessed-core": "workspace:*",
+    "@gavin-lynch/unblessed-node": "workspace:*",
+    "@gavin-lynch/unblessed-theme": "workspace:*"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

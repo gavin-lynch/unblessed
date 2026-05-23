@@ -9,7 +9,7 @@ Create a multi-pane layout with header, sidebar, content, and footer.
 ## Code
 
 ```typescript
-import { Screen, Box, List } from "@unblessed/node";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

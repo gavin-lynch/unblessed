@@ -19,12 +19,12 @@ export default defineConfig({
   shims: true,
   cjsInterop: true,
 
-  external: ["@unblessed/core"],
+  external: ["@gavin-lynch/unblessed-core"],
 
   platform: "neutral",
   target: "es2020",
 
   onSuccess: async () => {
-    console.log("✅ @unblessed/layout build complete");
+    console.log("✅ @gavin-lynch/unblessed-layout build complete");
   },
 });

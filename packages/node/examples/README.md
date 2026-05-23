@@ -1,6 +1,6 @@
-# @unblessed/node Examples
+# @gavin-lynch/unblessed-node Examples
 
-Simple examples demonstrating how to use @unblessed/node.
+Simple examples demonstrating how to use @gavin-lynch/unblessed-node.
 
 ## Prerequisites
 
@@ -10,12 +10,12 @@ Simple examples demonstrating how to use @unblessed/node.
 # From the monorepo root
 pnpm install
 
-# Build @unblessed/core and @unblessed/node
+# Build @gavin-lynch/unblessed-core and @gavin-lynch/unblessed-node
 pnpm build
 
 # Or build from packages/node
-pnpm --filter @unblessed/core build
-pnpm --filter @unblessed/node build
+pnpm --filter @gavin-lynch/unblessed-core build
+pnpm --filter @gavin-lynch/unblessed-node build
 ```
 
 ## Running Examples
@@ -138,7 +138,7 @@ Form widget with automatic submission on ENTER key.
 All examples follow this pattern:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // 1. Create screen (runtime auto-initializes on import)
 const screen = new Screen({
@@ -165,10 +165,10 @@ screen.render();
 
 ### Automatic Runtime Initialization
 
-The runtime initializes automatically when you import from `@unblessed/node`. Just import and use:
+The runtime initializes automatically when you import from `@gavin-lynch/unblessed-node`. Just import and use:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // That's it! Runtime is ready. Just use the widgets:
 const screen = new Screen();
@@ -250,5 +250,5 @@ button.key("enter", () => {
 ## Next Steps
 
 - Check the [API documentation](../README.md) for all available widgets
-- Explore widget options in [@unblessed/core types](../../core/src/types/options.ts)
+- Explore widget options in [@gavin-lynch/unblessed-core types](../../core/src/types/options.ts)
 - Look at the test suite for more usage examples

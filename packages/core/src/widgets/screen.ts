@@ -52,7 +52,7 @@ import Node from "./node.js";
  *
  * @example Basic setup
  * ```typescript
- * import { Screen, Box } from '@unblessed/node';
+ * import { Screen, Box } from '@gavin-lynch/unblessed-node';
  *
  * const screen = new Screen({
  *   smartCSR: true,

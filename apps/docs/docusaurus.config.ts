@@ -119,7 +119,7 @@ const config: Config = {
   },
 
   plugins: [
-    // Node polyfills + stubs for @unblessed/browser in the LiveDemo client bundle
+    // Node polyfills + stubs for @gavin-lynch/unblessed-browser in the LiveDemo client bundle
     browserPolyfillsPlugin,
 
     // Image zoom on click
@@ -230,7 +230,7 @@ const config: Config = {
           position: "right",
         },
         {
-          href: "https://www.npmjs.com/package/@unblessed/core",
+          href: "https://www.npmjs.com/package/@gavin-lynch/unblessed-core",
           label: "npm",
           position: "right",
         },
@@ -285,20 +285,20 @@ const config: Config = {
           title: "Packages",
           items: [
             {
-              label: "@unblessed/node",
-              href: "https://www.npmjs.com/package/@unblessed/node",
+              label: "@gavin-lynch/unblessed-node",
+              href: "https://www.npmjs.com/package/@gavin-lynch/unblessed-node",
             },
             {
-              label: "@unblessed/browser",
-              href: "https://www.npmjs.com/package/@unblessed/browser",
+              label: "@gavin-lynch/unblessed-browser",
+              href: "https://www.npmjs.com/package/@gavin-lynch/unblessed-browser",
             },
             {
-              label: "@unblessed/blessed",
-              href: "https://www.npmjs.com/package/@unblessed/blessed",
+              label: "@gavin-lynch/unblessed-blessed",
+              href: "https://www.npmjs.com/package/@gavin-lynch/unblessed-blessed",
             },
             {
-              label: "@unblessed/vrt",
-              href: "https://www.npmjs.com/package/@unblessed/vrt",
+              label: "@gavin-lynch/unblessed-vrt",
+              href: "https://www.npmjs.com/package/@gavin-lynch/unblessed-vrt",
             },
           ],
         },

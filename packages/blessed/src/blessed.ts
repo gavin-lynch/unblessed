@@ -1,13 +1,13 @@
 /**
- * @unblessed/blessed - 100% backward compatible blessed API
+ * @gavin-lynch/unblessed-blessed - 100% backward compatible blessed API
  *
- * This package wraps @unblessed/core to provide the exact same API as the original
+ * This package wraps @gavin-lynch/unblessed-core to provide the exact same API as the original
  * blessed library. It's a drop-in replacement for users migrating from blessed.
  */
 
-import type { Runtime } from "@unblessed/core";
-import * as TuiTypes from "@unblessed/core";
-import { setRuntime } from "@unblessed/core";
+import type { Runtime } from "@gavin-lynch/unblessed-core";
+import * as TuiTypes from "@gavin-lynch/unblessed-core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { Buffer } from "buffer";
 import * as child_process from "child_process";
 import { EventEmitter } from "events";
@@ -55,7 +55,7 @@ export class NodeRuntime implements Runtime {
 
 setRuntime(new NodeRuntime());
 
-export * from "@unblessed/core";
+export * from "@gavin-lynch/unblessed-core";
 
 /**
  * WidgetFactory type - matches old blessed pattern
@@ -405,7 +405,7 @@ function createBlessedFunction(): BlessedFunction {
 // Create and export the blessed function
 const blessed = createBlessedFunction();
 
-// Default export (CommonJS: const blessed = require('@unblessed/blessed'))
+// Default export (CommonJS: const blessed = require('@gavin-lynch/unblessed-blessed'))
 export default blessed;
 
 // Named exports matching old blessed

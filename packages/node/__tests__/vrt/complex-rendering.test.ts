@@ -1,10 +1,10 @@
 /**
- * VRT Complex Rendering Tests for @unblessed/node
+ * VRT Complex Rendering Tests for @gavin-lynch/unblessed-node
  *
  * Tests complex rendering scenarios like overlapping widgets, shadows, and layering.
  */
 
-import { Box, setRuntime } from "@unblessed/core";
+import { Box, setRuntime } from "@gavin-lynch/unblessed-core";
 import { describe } from "vitest";
 import { NodeRuntime } from "../../src";
 import { createVRTTest } from "../helpers/vrt-test.js";

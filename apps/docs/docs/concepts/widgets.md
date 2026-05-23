@@ -124,7 +124,7 @@ const box = new Box({
 The fundamental rectangular widget:
 
 ```typescript
-import { Box } from "@unblessed/node";
+import { Box } from "@gavin-lynch/unblessed-node";
 
 const box = new Box({
   parent: screen,
@@ -150,7 +150,7 @@ const box = new Box({
 Interactive scrollable list:
 
 ```typescript
-import { List } from "@unblessed/node";
+import { List } from "@gavin-lynch/unblessed-node";
 
 const list = new List({
   parent: screen,
@@ -182,7 +182,7 @@ list.on("select", (item, index) => {
 Tabular data display:
 
 ```typescript
-import { Table } from "@unblessed/node";
+import { Table } from "@gavin-lynch/unblessed-node";
 
 const table = new Table({
   parent: screen,
@@ -211,7 +211,7 @@ const table = new Table({
 Container for input widgets:
 
 ```typescript
-import { Form, Textbox, Button } from "@unblessed/node";
+import { Form, Textbox, Button } from "@gavin-lynch/unblessed-node";
 
 const form = new Form({
   parent: screen,
@@ -253,7 +253,7 @@ submitButton.on("press", () => {
 Text input widgets:
 
 ```typescript
-import { Textbox, Textarea } from "@unblessed/node";
+import { Textbox, Textarea } from "@gavin-lynch/unblessed-node";
 
 // Single-line input
 const textbox = new Textbox({
@@ -285,7 +285,7 @@ textbox.on("submit", (value) => {
 Clickable button:
 
 ```typescript
-import { Button } from "@unblessed/node";
+import { Button } from "@gavin-lynch/unblessed-node";
 
 const button = new Button({
   parent: screen,
@@ -314,7 +314,7 @@ button.on("press", () => {
 Progress indicator:
 
 ```typescript
-import { ProgressBar } from "@unblessed/node";
+import { ProgressBar } from "@gavin-lynch/unblessed-node";
 
 const progress = new ProgressBar({
   parent: screen,
@@ -498,7 +498,7 @@ const box = new Box({
 Extend existing widgets to create custom ones:
 
 ```typescript
-import { Box, type BoxOptions } from "@unblessed/node";
+import { Box, type BoxOptions } from "@gavin-lynch/unblessed-node";
 
 export interface StatusBoxOptions extends BoxOptions {
   status?: "success" | "error" | "warning";

@@ -1,7 +1,7 @@
 /**
- * xterm.js adapter for @unblessed/core
+ * xterm.js adapter for @gavin-lynch/unblessed-core
  *
- * This adapter bridges @unblessed/core's Program interface to xterm.js Terminal,
+ * This adapter bridges @gavin-lynch/unblessed-core's Program interface to xterm.js Terminal,
  * enabling terminal UI applications to run in the browser.
  */
 
@@ -21,12 +21,12 @@ export interface XTermAdapterOptions {
 }
 
 /**
- * XTermAdapter bridges @unblessed/core's Program API to xterm.js
+ * XTermAdapter bridges @gavin-lynch/unblessed-core's Program API to xterm.js
  *
  * Usage:
  * ```ts
  * import { Terminal } from 'xterm';
- * import { XTermAdapter } from '@unblessed/browser';
+ * import { XTermAdapter } from '@gavin-lynch/unblessed-browser';
  *
  * const term = new Terminal();
  * term.open(document.getElementById('terminal'));

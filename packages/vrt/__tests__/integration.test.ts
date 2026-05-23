@@ -4,7 +4,7 @@
  * Tests the VRT infrastructure itself (recorder, player, comparator).
  */
 
-import { Box, Screen } from "@unblessed/core";
+import { Box, Screen } from "@gavin-lynch/unblessed-core";
 import { describe, expect, it } from "vitest";
 import { VRTComparator, VRTPlayer, VRTRecorder } from "../src/index.js";
 

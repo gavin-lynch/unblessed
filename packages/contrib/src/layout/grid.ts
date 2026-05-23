@@ -2,4 +2,4 @@ export {
   Grid,
   type GridOptions,
   type WidgetConstructor,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";

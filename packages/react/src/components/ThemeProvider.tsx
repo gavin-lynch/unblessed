@@ -113,7 +113,7 @@ export function useTheme(): [
 
   if (!context) {
     throw new Error(
-      "useTheme must be used within a component rendered by @unblessed/react's render() function",
+      "useTheme must be used within a component rendered by @gavin-lynch/unblessed-react's render() function",
     );
   }
 

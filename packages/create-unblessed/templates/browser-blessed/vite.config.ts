@@ -2,6 +2,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   optimizeDeps: {
-    include: ["@unblessed/browser", "@unblessed/core", "xterm"],
+    include: [
+      "@gavin-lynch/unblessed-browser",
+      "@gavin-lynch/unblessed-core",
+      "xterm",
+    ],
   },
 });

@@ -4,7 +4,7 @@
  * Renders a subset of dashboard widgets with truecolor and writes an SGR dump.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { writeFileSync } from "fs";
 import { Grid } from "../src/layout/grid.js";
 import { Bar } from "../src/widgets/bar.js";

@@ -28,26 +28,26 @@
 
 ## 📦 Packages
 
-> **Note:** Packages are currently in alpha. Use `@alpha` tag when installing: `npm install @unblessed/node@alpha`
+> **Note:** Packages are currently in alpha. Use `@alpha` tag when installing: `npm install @gavin-lynch/unblessed-node@alpha`
 
-The unblessed project is organized as a monorepo with eight packages:
+The unblessed project is organized as a monorepo. Published under **`@gavin-lynch`** on npm (see [PUBLISHING.md](./PUBLISHING.md)):
 
-### [@unblessed/core](packages/core)
+### [@gavin-lynch/unblessed-core](packages/core)
 
 Platform-agnostic core library with all widget logic, rendering, and events.
 
 ```bash
-npm install @unblessed/core@alpha
+npm install @gavin-lynch/unblessed-core@alpha
 ```
 
 **Use when:** Building custom runtime adapters or need platform-agnostic code.
 
-### [@unblessed/node](packages/node)
+### [@gavin-lynch/unblessed-node](packages/node)
 
 Modern Node.js runtime with clean, class-based API.
 
 ```bash
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 ```
 
 **Use when:** Building new Node.js terminal applications (recommended).
@@ -55,7 +55,7 @@ npm install @unblessed/node@alpha
 **Example:**
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -78,12 +78,12 @@ screen.key(["escape", "q"], () => process.exit(0));
 screen.render();
 ```
 
-### [@unblessed/browser](packages/browser)
+### [@gavin-lynch/unblessed-browser](packages/browser)
 
 Browser runtime with XTerm.js integration for web-based terminals.
 
 ```bash
-npm install @unblessed/browser@alpha xterm
+npm install @gavin-lynch/unblessed-browser@alpha xterm
 ```
 
 **Use when:** Building terminal UIs in the browser.
@@ -92,7 +92,7 @@ npm install @unblessed/browser@alpha xterm
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 
 const term = new Terminal();
 term.open(document.getElementById("terminal"));
@@ -108,14 +108,14 @@ const box = new Box({
 screen.render();
 ```
 
-> **Interactive Playground:** Clone the repo and run `pnpm --filter @unblessed/browser dev` to try the browser playground at http://localhost:5173
+> **Interactive Playground:** Clone the repo and run `pnpm --filter @gavin-lynch/unblessed-browser dev` to try the browser playground at http://localhost:5173
 
-### [@unblessed/blessed](packages/blessed)
+### [@gavin-lynch/unblessed-blessed](packages/blessed)
 
 100% backward-compatible blessed API for seamless migration.
 
 ```bash
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 ```
 
 **Use when:** Migrating from blessed or need exact API compatibility.
@@ -123,7 +123,7 @@ npm install @unblessed/blessed@alpha
 **Example:**
 
 ```javascript
-const blessed = require("@unblessed/blessed");
+const blessed = require("@gavin-lynch/unblessed-blessed");
 
 const screen = blessed.screen({ smartCSR: true });
 const box = blessed.box({
@@ -134,22 +134,22 @@ const box = blessed.box({
 screen.render();
 ```
 
-### [@unblessed/layout](packages/layout)
+### [@gavin-lynch/unblessed-layout](packages/layout)
 
 Flexbox layout engine using Facebook's Yoga.
 
 ```bash
-npm install @unblessed/layout@alpha
+npm install @gavin-lynch/unblessed-layout@alpha
 ```
 
 **Use when:** Building custom layouts or integrating with React.
 
-### [@unblessed/react](packages/react)
+### [@gavin-lynch/unblessed-react](packages/react)
 
 React renderer with JSX components and automatic flexbox layout.
 
 ```bash
-npm install @unblessed/react@alpha react
+npm install @gavin-lynch/unblessed-react@alpha react
 ```
 
 **Use when:** Building terminal UIs with React and JSX.
@@ -157,7 +157,7 @@ npm install @unblessed/react@alpha react
 **Example:**
 
 ```tsx
-import { render, Box, Text } from "@unblessed/react";
+import { render, Box, Text } from "@gavin-lynch/unblessed-react";
 
 const App = () => (
   <Box flexDirection="column" padding={1}>
@@ -173,22 +173,42 @@ const App = () => (
 render(<App />);
 ```
 
-### [@unblessed/vrt](packages/vrt)
+### [@gavin-lynch/unblessed-contrib](packages/contrib)
+
+Dashboard widgets and charts (blessed-contrib style) built on core.
+
+```bash
+npm install @gavin-lynch/unblessed-contrib @gavin-lynch/unblessed-core @gavin-lynch/unblessed-node @gavin-lynch/unblessed-theme@alpha
+```
+
+**Use when:** Building dashboards with bar/line/gauge/grid widgets.
+
+### [@gavin-lynch/unblessed-theme](packages/theme)
+
+Design tokens and `createTheme()` for consistent styling.
+
+```bash
+npm install @gavin-lynch/unblessed-theme@alpha
+```
+
+**Use when:** Theming contrib widgets or browser demos.
+
+### [@gavin-lynch/unblessed-vrt](packages/vrt)
 
 Visual regression testing tools for terminal UIs.
 
 ```bash
-npm install @unblessed/vrt@alpha
+npm install @gavin-lynch/unblessed-vrt@alpha
 ```
 
 **Use when:** Testing terminal UI snapshots.
 
-### [@unblessed/perf](packages/perf)
+### [@gavin-lynch/unblessed-perf](packages/perf)
 
 Performance instrumentation tools for render timing and FPS tracking.
 
 ```bash
-npm install @unblessed/perf@alpha
+npm install @gavin-lynch/unblessed-perf@alpha
 ```
 
 **Use when:** Profiling render performance or collecting FPS stats.
@@ -197,14 +217,14 @@ npm install @unblessed/perf@alpha
 
 ### For New Projects
 
-Start with **@unblessed/node** for the best experience:
+Start with **@gavin-lynch/unblessed-node** for the best experience:
 
 ```bash
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 ```
 
 ```typescript
-import { Screen, Box, List } from "@unblessed/node";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   smartCSR: true,
@@ -233,15 +253,15 @@ screen.render();
 
 ### For Existing Blessed Projects
 
-Migrate seamlessly with **@unblessed/blessed**:
+Migrate seamlessly with **@gavin-lynch/unblessed-blessed**:
 
 ```bash
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 ```
 
 ```diff
 - const blessed = require('blessed');
-+ const blessed = require('@unblessed/blessed');
++ const blessed = require('@gavin-lynch/unblessed-blessed');
 ```
 
 That's it! Your code should work without any other changes.
@@ -252,7 +272,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 
 ```
 ┌─────────────────────────────────────────┐
-│           @unblessed/core (Platform Agnostic)  │
+│           @gavin-lynch/unblessed-core (Platform Agnostic)  │
 │  • All widget logic                      │
 │  • Rendering engine                      │
 │  • Event handling                        │
@@ -261,7 +281,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
          ┌────────┴────────┐
          ▼                 ▼
 ┌─────────────────┐ ┌─────────────────┐
-│   @unblessed/node     │ │  @unblessed/browser   │
+│   @gavin-lynch/unblessed-node     │ │  @gavin-lynch/unblessed-browser   │
 │ • NodeRuntime   │ │ • BrowserRuntime│
 │ • Native fs/tty │ │ • XTerm.js      │
 │ • Process APIs  │ │ • Polyfills     │
@@ -270,7 +290,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
          └────────┬────────┘
                   ▼
          ┌─────────────────┐
-         │  @unblessed/blessed   │
+         │  @gavin-lynch/unblessed-blessed   │
          │  (Compatibility)│
          └─────────────────┘
 ```
@@ -282,10 +302,10 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 
 ### Package Documentation
 
-- [@unblessed/core](packages/core/README.md) - Core library documentation
-- [@unblessed/node](packages/node/README.md) - Node.js runtime documentation
-- [@unblessed/browser](packages/browser/README.md) - Browser runtime documentation
-- [@unblessed/blessed](packages/blessed/README.md) - Blessed compatibility guide
+- [@gavin-lynch/unblessed-core](packages/core/README.md) - Core library documentation
+- [@gavin-lynch/unblessed-node](packages/node/README.md) - Node.js runtime documentation
+- [@gavin-lynch/unblessed-browser](packages/browser/README.md) - Browser runtime documentation
+- [@gavin-lynch/unblessed-blessed](packages/blessed/README.md) - Blessed compatibility guide
 
 ## 🎯 Project Status
 
@@ -294,7 +314,7 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 **🔗 Links:**
 
 - 📚 [Documentation](https://unblessed-docs.vercel.app)
-- 📦 [npm Registry](https://www.npmjs.com/package/@unblessed/node)
+- 📦 [npm Registry](https://www.npmjs.com/package/@gavin-lynch/unblessed-node)
 - 🐙 [GitHub](https://github.com/gavin-lynch/unblessed)
 
 ### ✅ Completed
@@ -309,8 +329,8 @@ unblessed uses a **runtime dependency injection** pattern for platform abstracti
 - **Automated releases** via semantic-release
 - **Published to npm** with provenance
 - **Documentation site** deployed to Vercel
-- **Flexbox layout engine** (@unblessed/layout)
-- **React renderer** (@unblessed/react)
+- **Flexbox layout engine** (@gavin-lynch/unblessed-layout)
+- **React renderer** (@gavin-lynch/unblessed-react)
 - **Theme system** with runtime switching
 - **Animation system** (7 types)
 - **Text truncation** (ink-style with ANSI preservation)
@@ -342,7 +362,7 @@ As an alpha release, please be aware of the following:
 
 **Testing:**
 
-- @unblessed/blessed integration tests in progress
+- @gavin-lynch/unblessed-blessed integration tests in progress
 - Some complex blessed examples may need adjustments
 - Browser package E2E tests cover common scenarios but not all edge cases
 
@@ -436,9 +456,9 @@ pnpm build
 pnpm test
 
 # Run specific package tests
-pnpm --filter @unblessed/core test
-pnpm --filter @unblessed/node test
-pnpm --filter @unblessed/browser test
+pnpm --filter @gavin-lynch/unblessed-core test
+pnpm --filter @gavin-lynch/unblessed-node test
+pnpm --filter @gavin-lynch/unblessed-browser test
 ```
 
 ### Monorepo Commands
@@ -490,9 +510,9 @@ Based on the original [blessed](https://github.com/chjj/blessed) library by Chri
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/gavin-lynch/unblessed)
-- [npm: @unblessed/node](https://www.npmjs.com/package/@unblessed/node)
-- [npm: @unblessed/browser](https://www.npmjs.com/package/@unblessed/browser)
-- [npm: @unblessed/blessed](https://www.npmjs.com/package/@unblessed/blessed)
+- [npm: @gavin-lynch/unblessed-node](https://www.npmjs.com/package/@gavin-lynch/unblessed-node)
+- [npm: @gavin-lynch/unblessed-browser](https://www.npmjs.com/package/@gavin-lynch/unblessed-browser)
+- [npm: @gavin-lynch/unblessed-blessed](https://www.npmjs.com/package/@gavin-lynch/unblessed-blessed)
 - [Original blessed](https://github.com/chjj/blessed)
 
 ---

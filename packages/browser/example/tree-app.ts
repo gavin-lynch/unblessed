@@ -13,7 +13,7 @@ import {
   TreePresets,
   UnicodeIcons,
   type TreeNode,
-} from "@unblessed/browser";
+} from "@gavin-lynch/unblessed-browser";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 

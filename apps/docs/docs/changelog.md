@@ -85,19 +85,19 @@ The alpha channel is for early adopters and testing:
 
 - **Stability:** Core features stable, API may have minor changes
 - **Updates:** Frequent releases with new features
-- **Installation:** `npm install @unblessed/node@alpha`
+- **Installation:** `npm install @gavin-lynch/unblessed-node@alpha`
 
 ### Future Channels
 
 **Beta** - API locked, production testing
 
 - Coming soon for v1.0 prep
-- Installation: `npm install @unblessed/node@beta`
+- Installation: `npm install @gavin-lynch/unblessed-node@beta`
 
 **Stable** - Production-ready releases
 
 - Coming with v1.0
-- Installation: `npm install @unblessed/node`
+- Installation: `npm install @gavin-lynch/unblessed-node`
 
 ## Versioning
 
@@ -142,7 +142,7 @@ When upgrading between versions:
 ## Stay Updated
 
 - **GitHub Releases:** [Watch repository](https://github.com/vdeantoni/unblessed)
-- **npm:** `npm outdated @unblessed/node`
+- **npm:** `npm outdated @gavin-lynch/unblessed-node`
 - **Discussions:** [GitHub Discussions](https://github.com/vdeantoni/unblessed/discussions)
 
 ## Report Issues
@@ -150,7 +150,7 @@ When upgrading between versions:
 Found a bug in a specific version?
 
 - [Report on GitHub Issues](https://github.com/vdeantoni/unblessed/issues)
-- Include your version: `npm list @unblessed/node`
+- Include your version: `npm list @gavin-lynch/unblessed-node`
 - Check if it's fixed in latest alpha
 
 ## Previous Versions

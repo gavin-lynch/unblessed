@@ -2,4 +2,4 @@ export {
   StackedBar,
   type StackedBarData,
   type StackedBarOptions,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";

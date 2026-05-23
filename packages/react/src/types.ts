@@ -1,8 +1,13 @@
 /**
- * types.ts - Type definitions for @unblessed/react
+ * types.ts - Type definitions for @gavin-lynch/unblessed-react
  */
 
-import type { KeyEvent, MouseEvent, Runtime, Screen } from "@unblessed/core";
+import type {
+  KeyEvent,
+  MouseEvent,
+  Runtime,
+  Screen,
+} from "@gavin-lynch/unblessed-core";
 import type { ReactNode } from "react";
 import type { Theme } from "./themes/theme.js";
 
@@ -12,7 +17,7 @@ import type { Theme } from "./themes/theme.js";
 export interface RenderOptions {
   /**
    * Runtime instance
-   * Create this from @unblessed/node or @unblessed/browser
+   * Create this from @gavin-lynch/unblessed-node or @gavin-lynch/unblessed-browser
    */
   runtime: Runtime;
 

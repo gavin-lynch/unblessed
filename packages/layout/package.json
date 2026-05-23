@@ -1,5 +1,5 @@
 {
-  "name": "@unblessed/layout",
+  "name": "@gavin-lynch/unblessed-layout",
   "description": "Flexbox layout engine for unblessed using Yoga",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
@@ -62,13 +62,13 @@
     "yoga-layout": "^3.2.1"
   },
   "devDependencies": {
-    "@unblessed/core": "workspace:*",
-    "@unblessed/node": "workspace:*",
+    "@gavin-lynch/unblessed-core": "workspace:*",
+    "@gavin-lynch/unblessed-node": "workspace:*",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4"
   },
   "peerDependencies": {
-    "@unblessed/core": "workspace:^"
+    "@gavin-lynch/unblessed-core": "workspace:^"
   },
   "engines": {
     "node": ">= 22.0.0"

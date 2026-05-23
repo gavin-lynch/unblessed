@@ -1,6 +1,6 @@
-# @unblessed/react Examples
+# @gavin-lynch/unblessed-react Examples
 
-Interactive examples demonstrating @unblessed/react features.
+Interactive examples demonstrating @gavin-lynch/unblessed-react features.
 
 ## Running Examples
 
@@ -136,9 +136,9 @@ A simple game demonstrating keyboard event handling:
 - Dynamic message updates
 - Real-time grid rendering
 
-### contrib-\*-demo.tsx - @unblessed/contrib Widget Examples
+### contrib-\*-demo.tsx - @gavin-lynch/unblessed-contrib Widget Examples
 
-Examples demonstrating the use of @unblessed/contrib widgets within React:
+Examples demonstrating the use of @gavin-lynch/unblessed-contrib widgets within React:
 
 **contrib-line-demo.tsx** - Line chart with multiple series, real-time updates, axis labels, and legend
 
@@ -172,7 +172,7 @@ Examples demonstrating the use of @unblessed/contrib widgets within React:
 Template:
 
 ```tsx
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { render, Box, Text } from "../src/index.js";
 
 const MyExample = () => {
@@ -206,10 +206,10 @@ screen.render();
 
 ### Using Contrib Widgets in React
 
-Contrib widgets (from @unblessed/contrib) are not React components, but can be used via the `ContribWidgetWrapper` helper:
+Contrib widgets (from @gavin-lynch/unblessed-contrib) are not React components, but can be used via the `ContribWidgetWrapper` helper:
 
 ```tsx
-import { Line } from "@unblessed/contrib";
+import { Line } from "@gavin-lynch/unblessed-contrib";
 import { ContribWidgetWrapper } from "./contrib-wrapper";
 
 function MyChart() {

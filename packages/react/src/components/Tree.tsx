@@ -1,5 +1,5 @@
 /**
- * Tree.tsx - Tree component and descriptor for @unblessed/react
+ * Tree.tsx - Tree component and descriptor for @gavin-lynch/unblessed-react
  *
  * Provides a collapsible, hierarchical tree view with keyboard and mouse support.
  */
@@ -11,8 +11,8 @@ import {
   type TreeConfig,
   type TreeIconRule,
   type TreeNode,
-} from "@unblessed/core";
-import { ComputedLayout } from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-core";
+import { ComputedLayout } from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
 import type {

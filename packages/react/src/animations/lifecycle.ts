@@ -10,7 +10,7 @@ import {
   generateRainbow,
   makeAnimatable,
   rotateColors,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 import {
   generateMultiColorGradient,
   getBorderGenerator,

@@ -1,15 +1,15 @@
-# Claude Context for @unblessed/browser
+# Claude Context for @gavin-lynch/unblessed-browser
 
-This document provides architectural context and development guidelines for the `@unblessed/browser` package.
+This document provides architectural context and development guidelines for the `@gavin-lynch/unblessed-browser` package.
 
 ## Overview
 
-`@unblessed/browser` is a **browser runtime adapter** that enables @unblessed/core TUI applications to run in web browsers. It provides:
+`@gavin-lynch/unblessed-browser` is a **browser runtime adapter** that enables @gavin-lynch/unblessed-core TUI applications to run in web browsers. It provides:
 
 - Browser-compatible implementations of Node.js APIs
 - XTerm.js integration for terminal rendering
 - Automatic polyfill setup (process, Buffer, fs, path, etc.)
-- Full widget support - all @unblessed/core widgets work unchanged
+- Full widget support - all @gavin-lynch/unblessed-core widgets work unchanged
 
 **Status:** ✅ **Fully functional** - All tests passing, dev server running
 
@@ -17,7 +17,7 @@ This document provides architectural context and development guidelines for the 
 
 ### Core Principle: Browser Compatibility Layer
 
-`@unblessed/browser` bridges `@unblessed/core` (platform-agnostic) to the browser environment by:
+`@gavin-lynch/unblessed-browser` bridges `@gavin-lynch/unblessed-core` (platform-agnostic) to the browser environment by:
 
 1. **Providing BrowserRuntime** - Implements the Runtime interface with browser polyfills
 2. **XTermAdapter** - Bridges Program API to xterm.js Terminal
@@ -50,7 +50,7 @@ This document provides architectural context and development guidelines for the 
 **Index** (`src/index.ts`)
 
 - Entry point with runtime initialization
-- Re-exports all @unblessed/core widgets
+- Re-exports all @gavin-lynch/unblessed-core widgets
 - Exports browser-specific Screen and XTermAdapter
 
 **Vite Plugin** (`src/vite-plugin/index.ts`)
@@ -92,11 +92,11 @@ This document provides architectural context and development guidelines for the 
 
 ### Critical: Auto Initialization
 
-The runtime MUST be initialized **before** any @unblessed/core modules load:
+The runtime MUST be initialized **before** any @gavin-lynch/unblessed-core modules load:
 
 ```typescript
 // src/runtime/auto-init.ts
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 
 // Create BrowserRuntime with polyfills
 const runtime = new BrowserRuntime();
@@ -105,7 +105,7 @@ setRuntime(runtime); // Register globally
 console.log("[tui-browser] Runtime initialized");
 ```
 
-**Why?** When `export * from '@unblessed/core'` executes in index.ts, widget modules load and some access `getRuntime()` during initialization. Without prior setup, you get "Runtime not initialized" errors.
+**Why?** When `export * from '@gavin-lynch/unblessed-core'` executes in index.ts, widget modules load and some access `getRuntime()` during initialization. Without prior setup, you get "Runtime not initialized" errors.
 
 ## Global Polyfills
 
@@ -172,7 +172,7 @@ this.util = browserUtil as Runtime["util"];
 
 ### XTermAdapter
 
-Implements a minimal Program-like interface for @unblessed/core:
+Implements a minimal Program-like interface for @gavin-lynch/unblessed-core:
 
 ```typescript
 export class XTermAdapter extends EventEmitter {
@@ -216,9 +216,9 @@ function encodeMouseEvent(e: MouseEvent, action: string): string {
 The browser can't access real files, so we bundle necessary data:
 
 ```typescript
-import xtermData from "@unblessed/core/data/terminfo/xterm-256color.json";
-import terU14n from "@unblessed/core/data/fonts/ter-u14n.json";
-import terU14b from "@unblessed/core/data/fonts/ter-u14b.json";
+import xtermData from "@gavin-lynch/unblessed-core/data/terminfo/xterm-256color.json";
+import terU14n from "@gavin-lynch/unblessed-core/data/fonts/ter-u14n.json";
+import terU14b from "@gavin-lynch/unblessed-core/data/fonts/ter-u14b.json";
 
 // In BrowserRuntime
 this.fs = {
@@ -255,7 +255,7 @@ this.fs = {
 
 **Cause:** Runtime accessed before auto-initialization completes.
 
-**Solution:** Runtime auto-initializes when you import from `@unblessed/browser`. Ensure you import from `@unblessed/browser` (not `@unblessed/core` directly) at the entry point of your application.
+**Solution:** Runtime auto-initializes when you import from `@gavin-lynch/unblessed-browser`. Ensure you import from `@gavin-lynch/unblessed-browser` (not `@gavin-lynch/unblessed-core` directly) at the entry point of your application.
 
 ### Issue: "process is not defined"
 
@@ -297,9 +297,9 @@ globalThis.Buffer = Buffer; // Executes SECOND
 
 ### Adding New Runtime APIs
 
-If @unblessed/core needs a new Node.js API:
+If @gavin-lynch/unblessed-core needs a new Node.js API:
 
-1. **Add to Runtime interface** in @unblessed/core:
+1. **Add to Runtime interface** in @gavin-lynch/unblessed-core:
 
 ```typescript
 export interface Runtime {
@@ -387,7 +387,7 @@ export default defineConfig({
 
 ## Vite Plugin
 
-The browser runtime must be initialized **before** any `@unblessed/core` code executes. However, ESM import hoisting means imports are always executed before module-level code, making it impossible to guarantee initialization order with normal bundling.
+The browser runtime must be initialized **before** any `@gavin-lynch/unblessed-core` code executes. However, ESM import hoisting means imports are always executed before module-level code, making it impossible to guarantee initialization order with normal bundling.
 
 ### The Solution
 
@@ -399,17 +399,17 @@ The vite plugin injects runtime initialization code directly into the HTML `<hea
 
 ```typescript
 import { defineConfig } from "vite";
-import tuiBrowser from "@unblessed/browser/vite-plugin";
+import tuiBrowser from "@gavin-lynch/unblessed-browser/vite-plugin";
 
 export default defineConfig({
   plugins: [tuiBrowser()],
 });
 ```
 
-**2. Use @unblessed/browser in your app:**
+**2. Use @gavin-lynch/unblessed-browser in your app:**
 
 ```typescript
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 
@@ -441,7 +441,7 @@ screen.render();
    - Imports `BrowserRuntime` and `setRuntime`
    - Sets up global polyfills (`Buffer`, `process`)
    - Creates and registers the runtime via `setRuntime()`
-3. **Main app loads** - Your bundled app loads and can safely use `@unblessed/core` widgets
+3. **Main app loads** - Your bundled app loads and can safely use `@gavin-lynch/unblessed-core` widgets
 
 ### Plugin Options
 
@@ -465,8 +465,8 @@ If you're not using Vite or want to initialize manually, you can do it in your H
   <head>
     <script type="module">
       import { Buffer } from "buffer";
-      import { setRuntime } from "@unblessed/core";
-      import { BrowserRuntime } from "@unblessed/browser";
+      import { setRuntime } from "@gavin-lynch/unblessed-core";
+      import { BrowserRuntime } from "@gavin-lynch/unblessed-browser";
 
       // Set up polyfills
       globalThis.Buffer = Buffer;
@@ -488,7 +488,7 @@ If you're not using Vite or want to initialize manually, you can do it in your H
 
 **"Runtime not initialized" error:**
 
-This means the runtime wasn't set up before `@unblessed/core` tried to use it. Make sure:
+This means the runtime wasn't set up before `@gavin-lynch/unblessed-core` tried to use it. Make sure:
 
 1. The vite plugin is installed and configured in vite.config.ts
 2. The plugin is listed **before** other plugins that might bundle code
@@ -567,7 +567,7 @@ Reusable test utilities:
 
 ### Architecture Considerations
 
-- Keep runtime adapter thin - complex logic in @unblessed/core
+- Keep runtime adapter thin - complex logic in @gavin-lynch/unblessed-core
 - Minimize browser-specific code
 - Test in multiple browsers (not just Chrome)
 - Consider bundle size impact of new features
@@ -587,7 +587,7 @@ const screen = new Screen({
 ### Inspect Runtime State
 
 ```typescript
-import { getRuntime } from "@unblessed/core";
+import { getRuntime } from "@gavin-lynch/unblessed-core";
 
 const runtime = getRuntime();
 console.log("Platform:", runtime.process.platform);
@@ -631,13 +631,13 @@ console.log("FS methods:", Object.keys(runtime.fs));
 - [Node.js Process API](https://nodejs.org/api/process.html)
 - [Buffer polyfill](https://github.com/feross/buffer)
 - [path-browserify](https://github.com/browserify/path-browserify)
-- [@unblessed/core CLAUDE.md](../core/CLAUDE.md)
+- [@gavin-lynch/unblessed-core CLAUDE.md](../core/CLAUDE.md)
 
 ## Getting Help
 
 When debugging issues:
 
-1. Check if @unblessed/browser is imported (runtime auto-initializes on import)
+1. Check if @gavin-lynch/unblessed-browser is imported (runtime auto-initializes on import)
 2. Verify global polyfills are set (`process`, `Buffer`)
 3. Look for ESM hoisting issues (imports before polyfills)
 4. Test in a clean browser profile (disable extensions)
@@ -645,12 +645,12 @@ When debugging issues:
 
 ## Summary
 
-The key to @unblessed/browser is understanding the **initialization order**:
+The key to @gavin-lynch/unblessed-browser is understanding the **initialization order**:
 
 1. Global polyfills set up (process, Buffer)
 2. Runtime created and registered
-3. @unblessed/core modules loaded
+3. @gavin-lynch/unblessed-core modules loaded
 4. XTerm adapter bridges to browser
 5. Widgets work unchanged!
 
-Always remember: **Runtime MUST be ready BEFORE any @unblessed/core module tries to use it.**
+Always remember: **Runtime MUST be ready BEFORE any @gavin-lynch/unblessed-core module tries to use it.**

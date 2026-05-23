@@ -1,13 +1,13 @@
 /**
- * @unblessed/layout - Flexbox layout engine for unblessed
+ * @gavin-lynch/unblessed-layout - Flexbox layout engine for unblessed
  *
  * This package provides a bridge between Facebook's Yoga layout engine
  * and unblessed widgets, enabling flexbox-style layouts in terminal UIs.
  *
  * @example Basic usage
  * ```typescript
- * import { Screen } from '@unblessed/node';
- * import { LayoutManager } from '@unblessed/layout';
+ * import { Screen } from '@gavin-lynch/unblessed-node';
+ * import { LayoutManager } from '@gavin-lynch/unblessed-layout';
  *
  * const screen = new Screen();
  * const manager = new LayoutManager({ screen });

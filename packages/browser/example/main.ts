@@ -9,7 +9,7 @@ if (typeof document === "undefined") {
     "This example runs in a browser: xterm.js needs `document` and `window`.",
     "",
     "From the repository root:",
-    "  pnpm --filter @unblessed/browser dev",
+    "  pnpm --filter @gavin-lynch/unblessed-browser dev",
     "Then open http://localhost:8080",
     "",
     "Do not run: bun main.ts  or  node main.ts",

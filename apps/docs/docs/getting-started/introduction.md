@@ -14,7 +14,7 @@ unblessed is a complete modernization of the popular [blessed](https://github.co
 
 - **TypeScript-First**: Built from the ground up with TypeScript in strict mode
 - **Cross-Platform**: Run your TUI apps in Node.js AND browsers with XTerm.js
-- **100% Compatible**: Drop-in replacement for blessed via `@unblessed/blessed`
+- **100% Compatible**: Drop-in replacement for blessed via `@gavin-lynch/unblessed-blessed`
 - **CursedWind**: Tailwind-style `className` utilities for terminal styling (`bg-blue`, `p-2`, `border-round`, …)
 - **Modern Tooling**: ESM + CJS builds, comprehensive tests, semantic versioning
 - **Modular**: Install only what you need
@@ -22,7 +22,7 @@ unblessed is a complete modernization of the popular [blessed](https://github.co
 ## Quick Example
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -4,7 +4,7 @@
  * Walks layout tree and starts/stops animations based on configs stored on nodes.
  */
 
-import type { LayoutNode } from "@unblessed/layout";
+import type { LayoutNode } from "@gavin-lynch/unblessed-layout";
 import { startAnimations, stopAnimations } from "./lifecycle.js";
 
 /**

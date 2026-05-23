@@ -9,6 +9,6 @@
     "clean": "rimraf results"
   },
   "dependencies": {
-    "@unblessed/blessed": "workspace:*"
+    "@gavin-lynch/unblessed-blessed": "workspace:*"
   }
 }

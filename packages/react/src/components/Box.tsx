@@ -1,13 +1,13 @@
 /**
- * Box.tsx - Box component and descriptor for @unblessed/react
+ * Box.tsx - Box component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { Box as BoxWidget, type Screen } from "@unblessed/core";
+import { Box as BoxWidget, type Screen } from "@gavin-lynch/unblessed-core";
 import {
   ComputedLayout,
   FlexboxProps,
   WidgetDescriptor,
-} from "@unblessed/layout";
+} from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef, type PropsWithChildren } from "react";
 import type { Theme } from "../themes/theme.js";

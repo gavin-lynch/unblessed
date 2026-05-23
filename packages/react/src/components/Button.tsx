@@ -1,9 +1,12 @@
 /**
- * Button.tsx - Button component and descriptor for @unblessed/react
+ * Button.tsx - Button component and descriptor for @gavin-lynch/unblessed-react
  */
 
-import { Button as ButtonWidget, type Screen } from "@unblessed/core";
-import { ComputedLayout } from "@unblessed/layout";
+import {
+  Button as ButtonWidget,
+  type Screen,
+} from "@gavin-lynch/unblessed-core";
+import { ComputedLayout } from "@gavin-lynch/unblessed-layout";
 import type { ReactNode } from "react";
 import { forwardRef, type PropsWithChildren } from "react";
 import type { InteractiveWidgetProps } from "../widget-descriptors/common-props.js";

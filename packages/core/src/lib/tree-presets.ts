@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { Tree, TreePresets } from '@unblessed/node';
+ * import { Tree, TreePresets } from '@gavin-lynch/unblessed-node';
  *
  * const tree = new Tree({
  *   ...TreePresets.Modern,
@@ -370,7 +370,7 @@ export const Classic: TreePreset = {
  *
  * @example
  * ```typescript
- * import { Tree, TreePresets } from '@unblessed/node';
+ * import { Tree, TreePresets } from '@gavin-lynch/unblessed-node';
  *
  * // Use a preset directly
  * const tree = new Tree({

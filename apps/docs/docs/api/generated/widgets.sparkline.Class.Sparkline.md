@@ -19,7 +19,7 @@ Almost all other widgets inherit from Box, making it the foundation of the widge
 ## Examples
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen();
 

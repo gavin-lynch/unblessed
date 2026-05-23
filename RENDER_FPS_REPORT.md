@@ -13,7 +13,7 @@ Provide a clean, low‑overhead way to measure rendering performance (FPS, frame
 
 ## Options Overview
 
-### Option A — Built into `@unblessed/core` (Recommended)
+### Option A — Built into `@gavin-lynch/unblessed-core` (Recommended)
 
 Add a lightweight “frame metrics” module in core and expose it via `Screen`.
 
@@ -39,7 +39,7 @@ Add a lightweight “frame metrics” module in core and expose it via `Screen`.
 - Enable via `screen.options.debugPerformance` or env `UNBLESSED_FPS=1`.
 - Expose API: `screen.getRenderStats()` and `screen.resetRenderStats()`.
 
-### Option B — Separate package `@unblessed/perf`
+### Option B — Separate package `@gavin-lynch/unblessed-perf`
 
 Provide a plugin that instruments core at runtime.
 

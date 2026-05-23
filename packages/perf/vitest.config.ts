@@ -8,7 +8,7 @@ const corePath = fileURLToPath(
 export default defineConfig({
   resolve: {
     alias: {
-      "@unblessed/core": corePath,
+      "@gavin-lynch/unblessed-core": corePath,
     },
   },
   test: {

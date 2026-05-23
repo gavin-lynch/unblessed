@@ -3,7 +3,7 @@
  * Debug test for map hanging issue
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { WorldMap } from "./src/index.js";
 
 console.log("[Test] Starting map test...");

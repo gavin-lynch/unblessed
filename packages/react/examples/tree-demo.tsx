@@ -14,8 +14,8 @@
  *   q/Esc    - Quit
  */
 
-import { NerdIcons, TreePresets } from "@unblessed/core";
-import { NodeRuntime } from "@unblessed/node";
+import { NerdIcons, TreePresets } from "@gavin-lynch/unblessed-core";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useState } from "react";
 import { Box, List, render, Tree, useKeyboard } from "../dist/index.js";
 

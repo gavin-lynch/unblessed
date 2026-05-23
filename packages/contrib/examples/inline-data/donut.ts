@@ -5,7 +5,7 @@
  * Demonstrates donut chart with data provided in constructor.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Donut } from "../../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

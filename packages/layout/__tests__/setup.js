@@ -1,8 +1,8 @@
 /**
- * Test setup for @unblessed/layout
+ * Test setup for @gavin-lynch/unblessed-layout
  */
 
-import { setRuntime } from "@unblessed/core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import * as child_process from "child_process";
 import { EventEmitter } from "events";
 import * as fs from "fs";

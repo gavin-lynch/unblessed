@@ -1,1 +1,1 @@
-export { LCD, type LCDOptions } from "@unblessed/core";
+export { LCD, type LCDOptions } from "@gavin-lynch/unblessed-core";

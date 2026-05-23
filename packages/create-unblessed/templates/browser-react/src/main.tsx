@@ -1,5 +1,5 @@
-import { Screen } from "@unblessed/browser";
-import { Box, render, Text } from "@unblessed/react";
+import { Screen } from "@gavin-lynch/unblessed-browser";
+import { Box, render, Text } from "@gavin-lynch/unblessed-react";
 import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 

@@ -1,1 +1,5 @@
-export { Tabs, type TabItem, type TabsOptions } from "@unblessed/core";
+export {
+  Tabs,
+  type TabItem,
+  type TabsOptions,
+} from "@gavin-lynch/unblessed-core";

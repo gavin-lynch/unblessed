@@ -1,10 +1,10 @@
 /**
- * Vitest setup file for @unblessed/vrt tests
- * Manually initializes Node.js runtime (avoids circular dependency with @unblessed/node)
+ * Vitest setup file for @gavin-lynch/unblessed-vrt tests
+ * Manually initializes Node.js runtime (avoids circular dependency with @gavin-lynch/unblessed-node)
  */
 
-import type { Runtime } from "@unblessed/core";
-import { setRuntime } from "@unblessed/core";
+import type { Runtime } from "@gavin-lynch/unblessed-core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 import { Buffer } from "buffer";
 import * as child_process from "child_process";
 import { EventEmitter } from "events";

@@ -3,4 +3,4 @@ export {
   WorldMap,
   type MapMarker,
   type MapOptions,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";

@@ -14,7 +14,7 @@
  * Run with:
  *   node --import tsx --no-warnings interactive-demo.tsx
  */
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import * as React from "react";
 import { useState } from "react";
 

@@ -2,11 +2,14 @@
 /**
  * Perf overlay example
  *
- * Shows live FPS stats using @unblessed/perf.
+ * Shows live FPS stats using @gavin-lynch/unblessed-perf.
  */
 
-import { Box, Screen } from "@unblessed/node";
-import { createPerfOverlay, installRenderPerfObserver } from "@unblessed/perf";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
+import {
+  createPerfOverlay,
+  installRenderPerfObserver,
+} from "@gavin-lynch/unblessed-perf";
 import { appendFileSync, writeFileSync } from "fs";
 
 const screen = new Screen({

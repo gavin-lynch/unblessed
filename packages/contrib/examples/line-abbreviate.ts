@@ -5,7 +5,7 @@
  * Demonstrates line chart with number abbreviation (1k, 1m, etc.).
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Line } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

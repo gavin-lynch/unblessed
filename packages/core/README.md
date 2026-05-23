@@ -1,4 +1,4 @@
-# @unblessed/core
+# @gavin-lynch/unblessed-core
 
 Platform-agnostic TUI (Text User Interface) core library with runtime dependency injection.
 
@@ -6,7 +6,7 @@ Platform-agnostic TUI (Text User Interface) core library with runtime dependency
 
 ## Overview
 
-`@unblessed/core` is a modern, TypeScript-based terminal UI library that provides a complete set of widgets and terminal control primitives. Unlike traditional terminal libraries, it's designed to be truly platform-agnostic through runtime dependency injection, allowing it to run in Node.js, browsers, and other JavaScript environments.
+`@gavin-lynch/unblessed-core` is a modern, TypeScript-based terminal UI library that provides a complete set of widgets and terminal control primitives. Unlike traditional terminal libraries, it's designed to be truly platform-agnostic through runtime dependency injection, allowing it to run in Node.js, browsers, and other JavaScript environments.
 
 ## Features
 
@@ -21,29 +21,29 @@ Platform-agnostic TUI (Text User Interface) core library with runtime dependency
 
 ## Installation
 
-**Important**: `@unblessed/core` is a low-level package. Most users should install a platform adapter instead:
+**Important**: `@gavin-lynch/unblessed-core` is a low-level package. Most users should install a platform adapter instead:
 
 ```bash
 # For Node.js applications (recommended)
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 
 # For browser applications (recommended)
-npm install @unblessed/browser@alpha
+npm install @gavin-lynch/unblessed-browser@alpha
 
 # For backward compatibility with blessed
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 ```
 
-Only install `@unblessed/core` directly if you're creating a custom runtime adapter.
+Only install `@gavin-lynch/unblessed-core` directly if you're creating a custom runtime adapter.
 
 ## Quick Start
 
 ### Node.js (Recommended)
 
-Use `@unblessed/node` which includes the runtime and auto-initializes:
+Use `@gavin-lynch/unblessed-node` which includes the runtime and auto-initializes:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // No initialization needed - runtime auto-initializes on import!
 
@@ -77,11 +77,11 @@ screen.render();
 
 ### Browser (Recommended)
 
-Use `@unblessed/browser` with xterm.js:
+Use `@gavin-lynch/unblessed-browser` with xterm.js:
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 
 // Runtime auto-initializes on import
 
@@ -98,13 +98,13 @@ const box = new Box({
 screen.render();
 ```
 
-### Using @unblessed/core Directly (Advanced)
+### Using @gavin-lynch/unblessed-core Directly (Advanced)
 
 Only needed if you're building a custom runtime adapter:
 
 ```typescript
-import { Screen, Box } from "@unblessed/core";
-import { setRuntime } from "@unblessed/core";
+import { Screen, Box } from "@gavin-lynch/unblessed-core";
+import { setRuntime } from "@gavin-lynch/unblessed-core";
 
 // Provide your custom runtime implementation
 const myRuntime = {
@@ -127,7 +127,7 @@ const screen = new Screen();
 
 ### Runtime Dependency Injection
 
-`@unblessed/core` uses a runtime abstraction layer that defines interfaces for all platform-specific operations:
+`@gavin-lynch/unblessed-core` uses a runtime abstraction layer that defines interfaces for all platform-specific operations:
 
 ```typescript
 interface Runtime {
@@ -142,15 +142,15 @@ interface Runtime {
 }
 ```
 
-Platform adapters (`@unblessed/node`, `@unblessed/browser`) provide concrete implementations:
+Platform adapters (`@gavin-lynch/unblessed-node`, `@gavin-lynch/unblessed-browser`) provide concrete implementations:
 
 ```typescript
-// @unblessed/node provides Node.js implementations
-import { createNodeRuntime } from "@unblessed/node";
+// @gavin-lynch/unblessed-node provides Node.js implementations
+import { createNodeRuntime } from "@gavin-lynch/unblessed-node";
 createNodeRuntime();
 
-// @unblessed/browser provides browser polyfills
-import { createBrowserRuntime } from "@unblessed/browser";
+// @gavin-lynch/unblessed-browser provides browser polyfills
+import { createBrowserRuntime } from "@gavin-lynch/unblessed-browser";
 createBrowserRuntime();
 ```
 
@@ -200,7 +200,7 @@ createBrowserRuntime();
 Low-level terminal control:
 
 ```typescript
-import { Program } from "@unblessed/core";
+import { Program } from "@gavin-lynch/unblessed-core";
 
 const program = new Program({
   input: process.stdin,
@@ -218,7 +218,7 @@ program.clear();
 Terminal capability database:
 
 ```typescript
-import { Tput } from "@unblessed/core";
+import { Tput } from "@gavin-lynch/unblessed-core";
 
 const tput = new Tput({
   terminal: "xterm-256color",
@@ -235,7 +235,7 @@ tput.setaf(4); // Set foreground color to blue
 Color conversion and manipulation:
 
 ```typescript
-import { colors } from "@unblessed/core";
+import { colors } from "@gavin-lynch/unblessed-core";
 
 // Convert hex to terminal color
 const color = colors.convert("#ff0000"); // Returns closest terminal color
@@ -352,7 +352,7 @@ screen.key("M-x", () => {
 ### Image Rendering
 
 ```typescript
-import { ANSIImage } from "@unblessed/core";
+import { ANSIImage } from "@gavin-lynch/unblessed-core";
 
 const image = new ANSIImage({
   parent: screen,
@@ -366,7 +366,7 @@ const image = new ANSIImage({
 ### Forms and Input Validation
 
 ```typescript
-import { Form, Textbox, Button } from "@unblessed/core";
+import { Form, Textbox, Button } from "@gavin-lynch/unblessed-core";
 
 const form = new Form({
   parent: screen,
@@ -405,7 +405,7 @@ form.on("submit", (data) => {
 ### Scrollable Content
 
 ```typescript
-import { ScrollableBox } from "@unblessed/core";
+import { ScrollableBox } from "@gavin-lynch/unblessed-core";
 
 const box = new ScrollableBox({
   parent: screen,
@@ -433,7 +433,7 @@ box.setScrollPerc(50); // Scroll to 50%
 Control how text is wrapped or truncated when it exceeds the widget width:
 
 ```typescript
-import { Box, Text } from "@unblessed/core";
+import { Box, Text } from "@gavin-lynch/unblessed-core";
 
 // Traditional word wrapping (default)
 const wrappedBox = new Box({
@@ -492,7 +492,7 @@ const coloredText = new Box({
 **Text Utilities:**
 
 ```typescript
-import { truncateText } from "@unblessed/core/lib/text-utils";
+import { truncateText } from "@gavin-lynch/unblessed-core/lib/text-utils";
 
 // Use truncation utilities directly
 const truncated = truncateText("Long text", 10, {
@@ -505,7 +505,7 @@ const truncated = truncateText("Long text", 10, {
 ### Terminal Emulation
 
 ```typescript
-import { Terminal } from "@unblessed/core";
+import { Terminal } from "@gavin-lynch/unblessed-core";
 
 const terminal = new Terminal({
   parent: screen,
@@ -529,7 +529,7 @@ For complete API documentation, see the TypeScript definitions included with the
 ## Package Structure
 
 ```
-@unblessed/core/
+@gavin-lynch/unblessed-core/
 ├── dist/
 │   ├── index.js          # Main entry point
 │   ├── runtime.js        # Runtime interfaces
@@ -554,7 +554,7 @@ The library includes comprehensive tests covering:
 
 ## Browser Support
 
-When using `@unblessed/browser`, the library provides browser-compatible implementations using:
+When using `@gavin-lynch/unblessed-browser`, the library provides browser-compatible implementations using:
 
 - Canvas rendering for terminal output
 - WebSocket connections for PTY
@@ -563,9 +563,9 @@ When using `@unblessed/browser`, the library provides browser-compatible impleme
 
 ## Related Packages
 
-- [`@unblessed/node`](../node) - Node.js runtime adapter
-- [`@unblessed/browser`](../browser) - Browser runtime adapter with xterm.js integration
-- [`@unblessed/blessed`](../blessed) - Backward-compatible blessed API
+- [`@gavin-lynch/unblessed-node`](../node) - Node.js runtime adapter
+- [`@gavin-lynch/unblessed-browser`](../browser) - Browser runtime adapter with xterm.js integration
+- [`@gavin-lynch/unblessed-blessed`](../blessed) - Backward-compatible blessed API
 
 ## Acknowledgments
 

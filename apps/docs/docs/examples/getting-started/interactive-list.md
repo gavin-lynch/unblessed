@@ -9,7 +9,7 @@ Create an interactive list widget with keyboard and mouse support.
 ## Code
 
 ```typescript
-import { Screen, List, Box } from "@unblessed/node";
+import { Screen, List, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 

@@ -11,7 +11,7 @@
  * Run with:
  * node --import tsx --no-warnings theme-demo.tsx
  */
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import * as React from "react";
 import {
   Box,

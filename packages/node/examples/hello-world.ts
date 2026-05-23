@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Simple Hello World example using @unblessed/node
+ * Simple Hello World example using @gavin-lynch/unblessed-node
  *
  * Run with:
  *   pnpm example:hello-world
@@ -27,7 +27,7 @@ const box = new Box({
   height: "50%",
   content:
     "{bold}{cyan-fg}🤖 Hello, World!{/cyan-fg}{/bold}\n\n" +
-    "This is a simple example of using @unblessed/node.\n\n" +
+    "This is a simple example of using @gavin-lynch/unblessed-node.\n\n" +
     "Press {inverse} q {/inverse} or {inverse} Escape {/inverse} to quit.",
   tags: true,
   border: {

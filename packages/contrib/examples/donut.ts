@@ -5,7 +5,7 @@
  * Demonstrates donut chart with animated updates.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Donut } from "../src/widgets/donut.js";
 
 const screen = new Screen({ smartCSR: true });

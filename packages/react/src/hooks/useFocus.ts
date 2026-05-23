@@ -1,12 +1,12 @@
 /**
- * useFocus.ts - Focus management hooks for @unblessed/react
+ * useFocus.ts - Focus management hooks for @gavin-lynch/unblessed-react
  *
  * Provides React hooks that wrap the blessed focus management system.
- * These hooks leverage the battle-tested focus system from @unblessed/core
+ * These hooks leverage the battle-tested focus system from @gavin-lynch/unblessed-core
  * (originally from blessed) rather than reimplementing it.
  */
 
-import type { Element } from "@unblessed/core";
+import type { Element } from "@gavin-lynch/unblessed-core";
 import {
   useCallback,
   useEffect,
@@ -79,7 +79,7 @@ export interface UseFocusResult {
  *
  * @example
  * ```tsx
- * import { useFocus, Box } from '@unblessed/react';
+ * import { useFocus, Box } from '@gavin-lynch/unblessed-react';
  * import { useRef } from 'react';
  *
  * function MyInput() {

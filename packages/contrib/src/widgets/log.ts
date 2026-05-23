@@ -2,7 +2,10 @@
  * log.ts - Contrib log compatibility wrapper
  */
 
-import { LogList as CoreLogList, type LogListOptions } from "@unblessed/core";
+import {
+  LogList as CoreLogList,
+  type LogListOptions,
+} from "@gavin-lynch/unblessed-core";
 
 export type LogOptions = LogListOptions;
 

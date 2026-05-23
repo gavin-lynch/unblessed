@@ -36,7 +36,7 @@ import Tput from "./tput.js";
  *
  * @example Basic usage
  * ```typescript
- * import { Screen } from '@unblessed/node';
+ * import { Screen } from '@gavin-lynch/unblessed-node';
  *
  * const screen = new Screen();
  * const program = screen.program;  // Access Program instance

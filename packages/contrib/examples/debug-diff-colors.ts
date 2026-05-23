@@ -9,8 +9,8 @@
  * 4. Actual rendered output
  */
 
-import { getRuntime } from "@unblessed/core";
-import { Screen } from "@unblessed/node";
+import { getRuntime } from "@gavin-lynch/unblessed-core";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import chalk from "chalk";
 import x256 from "x256";
 import { Diff } from "../src/widgets/diff.js";

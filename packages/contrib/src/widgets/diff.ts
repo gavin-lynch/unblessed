@@ -1,1 +1,1 @@
-export { Diff, type DiffOptions } from "@unblessed/core";
+export { Diff, type DiffOptions } from "@gavin-lynch/unblessed-core";

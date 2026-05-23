@@ -16,7 +16,7 @@ Let's create an interactive dashboard with a list, status box, and keyboard cont
 mkdir my-tui-app
 cd my-tui-app
 pnpm init
-pnpm add @unblessed/node tsx
+pnpm add @gavin-lynch/unblessed-node tsx
 ```
 
 ### 2. Create the App
@@ -24,7 +24,7 @@ pnpm add @unblessed/node tsx
 Create `index.ts`:
 
 ```typescript
-import { Screen, Box, List } from "@unblessed/node";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-node";
 
 // Create screen
 const screen = new Screen({

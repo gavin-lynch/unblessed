@@ -1,5 +1,5 @@
 /**
- * theme.ts - Theme type system for @unblessed/react
+ * theme.ts - Theme type system for @gavin-lynch/unblessed-react
  *
  * Three-layer design token architecture with cascading defaults:
  * 1. Primitives - Color scales (gray50-900, blue50-900, etc.)

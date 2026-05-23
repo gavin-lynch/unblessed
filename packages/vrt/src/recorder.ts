@@ -2,7 +2,7 @@
  * VRT Recorder - Capture terminal UI screenshots over time
  */
 
-import type { Screen } from "@unblessed/core";
+import type { Screen } from "@gavin-lynch/unblessed-core";
 import { writeFileSync } from "fs";
 import type { VRTFrame, VRTRecorderOptions, VRTRecording } from "./types.js";
 

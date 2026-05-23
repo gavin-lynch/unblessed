@@ -35,10 +35,13 @@ export default {
       1,
       "always",
       [
-        "core", // @unblessed/core
-        "node", // @unblessed/node
-        "blessed", // @unblessed/blessed
-        "browser", // @unblessed/browser
+        "core", // @gavin-lynch/unblessed-core
+        "node", // @gavin-lynch/unblessed-node
+        "blessed", // @gavin-lynch/unblessed-blessed
+        "browser",
+        "contrib",
+        "theme",
+        "perf",
         "deps", // Dependency updates
         "release", // Release-related
         "ci", // CI/CD

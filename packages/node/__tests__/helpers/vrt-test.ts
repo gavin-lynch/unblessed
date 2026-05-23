@@ -1,12 +1,12 @@
 /**
- * VRT Test Helper for @unblessed/node
+ * VRT Test Helper for @gavin-lynch/unblessed-node
  *
  * Provides utilities for creating visual regression tests with golden snapshot workflow.
  */
 
-import { Screen } from "@unblessed/core";
-import type { VRTRecording } from "@unblessed/vrt";
-import { compareWithGolden } from "@unblessed/vrt";
+import { Screen } from "@gavin-lynch/unblessed-core";
+import type { VRTRecording } from "@gavin-lynch/unblessed-vrt";
+import { compareWithGolden } from "@gavin-lynch/unblessed-vrt";
 import { EventEmitter } from "events";
 import { it } from "vitest";
 
@@ -32,7 +32,7 @@ function createMockOutputStream() {
  * @example
  * ```typescript
  * import { createVRTTest } from '../helpers/vrt-test.js';
- * import { Box } from '@unblessed/core';
+ * import { Box } from '@gavin-lynch/unblessed-core';
  *
  * createVRTTest('box with border renders correctly', async (screen) => {
  *   const box = new Box({
@@ -93,7 +93,7 @@ export function createVRTTest(
         ],
       };
 
-      // Use golden snapshot workflow from @unblessed/vrt
+      // Use golden snapshot workflow from @gavin-lynch/unblessed-vrt
       const result = compareWithGolden(fixturePath, recording, name);
 
       // Throw error if comparison failed

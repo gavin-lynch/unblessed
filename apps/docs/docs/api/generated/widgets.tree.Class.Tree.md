@@ -13,7 +13,7 @@ Tree lines (├─, └─, │) can be displayed to show hierarchy.
 ## Example
 
 ```typescript
-import { Screen, Tree } from "@unblessed/node";
+import { Screen, Tree } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen();
 

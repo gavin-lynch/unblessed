@@ -25,6 +25,6 @@ export default defineConfig({
   target: "es2020",
 
   onSuccess: async () => {
-    console.log("✅ @unblessed/react build complete");
+    console.log("✅ @gavin-lynch/unblessed-react build complete");
   },
 });

@@ -16,7 +16,7 @@
  *   or
  *   node --import tsx --no-warnings text-wrap-demo.tsx
  */
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import * as React from "react";
 import { Box, render, Text } from "../dist/index.js";
 

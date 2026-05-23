@@ -4,7 +4,7 @@
  * Renders each widget in isolation and writes minimal SGR + meta snapshots.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { writeFileSync } from "fs";
 import { Bar } from "../src/widgets/bar.js";
 import { Donut } from "../src/widgets/donut.js";

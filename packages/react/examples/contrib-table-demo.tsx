@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Table Demo - @unblessed/contrib Table widget example
+ * Table Demo - @gavin-lynch/unblessed-contrib Table widget example
  *
  * Demonstrates:
  * - Tabular data display
@@ -12,7 +12,7 @@
  * Run with: tsx packages/react/examples/contrib-table-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useState } from "react";
 import { Table, type TableData } from "../../contrib/src/index.js";
 import { Box, render, Text } from "../src/index.js";

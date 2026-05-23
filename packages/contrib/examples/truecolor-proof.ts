@@ -5,7 +5,7 @@
  * Renders explicit RGB colors and dumps an SGR screenshot for inspection.
  */
 
-import { Box, Screen } from "@unblessed/node";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
 import { writeFileSync } from "fs";
 
 if (!process.env.COLORTERM) {

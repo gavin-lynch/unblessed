@@ -5,7 +5,7 @@
  * Demonstrates line chart with multiple data series.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Line } from "../src/widgets/line.js";
 
 const screen = new Screen({ smartCSR: true });

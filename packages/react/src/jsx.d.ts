@@ -1,5 +1,5 @@
 /**
- * jsx.d.ts - JSX type definitions for @unblessed/react
+ * jsx.d.ts - JSX type definitions for @gavin-lynch/unblessed-react
  *
  * Declares the custom intrinsic JSX elements that our reconciler handles.
  * Uses React module augmentation for compatibility with the new JSX transform.

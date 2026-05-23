@@ -19,7 +19,7 @@ Program is typically created and managed by Screen. You rarely instantiate it di
 ## Examples
 
 ```typescript
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen();
 const program = screen.program; // Access Program instance

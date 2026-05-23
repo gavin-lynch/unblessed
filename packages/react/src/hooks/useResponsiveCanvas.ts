@@ -5,7 +5,7 @@
  * accounting for borders, padding, and other decorations.
  */
 
-import type { Element } from "@unblessed/core";
+import type { Element } from "@gavin-lynch/unblessed-core";
 import { useEffect, useRef, useState } from "react";
 
 export interface UseResponsiveCanvasOptions {

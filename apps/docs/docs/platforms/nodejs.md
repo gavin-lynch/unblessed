@@ -9,17 +9,17 @@ Using unblessed in Node.js applications.
 ## Installation
 
 ```bash
-npm install @unblessed/node
+npm install @gavin-lynch/unblessed-node
 # or
-pnpm add @unblessed/node
+pnpm add @gavin-lynch/unblessed-node
 # or
-yarn add @unblessed/node
+yarn add @gavin-lynch/unblessed-node
 ```
 
 ## Quick Start
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // Create screen
 const screen = new Screen({
@@ -48,11 +48,11 @@ screen.render();
 
 ## Runtime Auto-Initialization
 
-`@unblessed/node` automatically initializes the Node.js runtime when imported:
+`@gavin-lynch/unblessed-node` automatically initializes the Node.js runtime when imported:
 
 ```typescript
 // Happens automatically on import
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 // Runtime is ready - no manual setup needed!
 const screen = new Screen();
@@ -67,7 +67,7 @@ const screen = new Screen();
 Full access to Node.js TTY capabilities:
 
 ```typescript
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   input: process.stdin, // Custom input stream
@@ -115,7 +115,7 @@ process.on("uncaughtException", (error) => {
 Read files for content or configuration:
 
 ```typescript
-import { Box } from "@unblessed/node";
+import { Box } from "@gavin-lynch/unblessed-node";
 import { readFileSync } from "fs";
 
 const content = readFileSync("./data.txt", "utf8");
@@ -240,7 +240,7 @@ const screen = new Screen({
 Automatic terminal detection:
 
 ```typescript
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({
   smartCSR: true, // Auto-detected based on terminal
@@ -510,7 +510,7 @@ screen.on("resize", () => {
 Get full type safety:
 
 ```typescript
-import { Screen, Box, type BoxOptions } from "@unblessed/node";
+import { Screen, Box, type BoxOptions } from "@gavin-lynch/unblessed-node";
 
 const options: BoxOptions = {
   parent: screen,

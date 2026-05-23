@@ -4,13 +4,13 @@
  * Based on blessed-contrib's utils.js
  */
 
-import type { ColorInput } from "@unblessed/core";
+import type { ColorInput } from "@gavin-lynch/unblessed-core";
 import {
   abbreviateNumber as coreAbbreviateNumber,
   getInnerBoxSize as coreGetInnerBoxSize,
   mergeRecursive as coreMergeRecursive,
   truncateAnsiLines as coreTruncateAnsiLines,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 import {
   getColorCode as getColorCodeNew,
   toColorTag as toColorTagNew,
@@ -51,7 +51,7 @@ export const abbreviateNumber = coreAbbreviateNumber;
  * uses x256 for blessed-contrib compatibility.
  *
  * @deprecated This function now wraps the unified color system. Consider using
- * getColorCodeNew() directly or the unified color system from @unblessed/core.
+ * getColorCodeNew() directly or the unified color system from @gavin-lynch/unblessed-core.
  */
 export function getColorCode(color: ColorInput): string | number | number[] {
   return getColorCodeNew(color);
@@ -63,7 +63,7 @@ export function getColorCode(color: ColorInput): string | number | number[] {
  * Note: RGB arrays use x256 library to match blessed-contrib behavior exactly.
  *
  * @deprecated This function now wraps the unified color system. Consider using
- * toColorTagNew() directly or the unified color system from @unblessed/core.
+ * toColorTagNew() directly or the unified color system from @gavin-lynch/unblessed-core.
  */
 export function toColorTag(color: ColorInput): string {
   return toColorTagNew(color);

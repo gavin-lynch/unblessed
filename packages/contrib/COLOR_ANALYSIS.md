@@ -6,7 +6,7 @@
 
 - **256-color mode**: `\x1b[38;5;{code}m` (foreground) / `\x1b[48;5;{code}m` (background)
 - **RGB → 256 conversion**:
-  - **Before**: `colors.match()` from `@unblessed/core`
+  - **Before**: `colors.match()` from `@gavin-lynch/unblessed-core`
   - **After**: `x256()` library (to match blessed-contrib)
 
 ### What We're NOT Using

@@ -745,7 +745,7 @@ box.style.fg = 196; // Color index
 **Debug**:
 
 ```typescript
-import colors from "@unblessed/core/lib/colors";
+import colors from "@gavin-lynch/unblessed-core/lib/colors";
 
 const converted = colors.convert("#ff0000");
 console.log("Color value:", converted);
@@ -798,7 +798,7 @@ screen.key("q", () => {
 });
 
 // ✅ Solution: Platform-specific code
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 screen.key("q", () => {
   const runtime = getRuntime();
@@ -830,7 +830,7 @@ async function loadFile(path: string) {
 **Debug**:
 
 ```typescript
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 const runtime = getRuntime();
 console.log("Platform:", runtime.process.platform);
@@ -1079,7 +1079,7 @@ setInterval(profileMemory, 5000);
 
 ```typescript
 // Minimal example that reproduces the issue
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ debug: true, dump: true });
 
@@ -1106,7 +1106,7 @@ console.log("Coordinates:", box.lpos);
 
 When reporting issues, include:
 
-- **unblessed version**: `npm list @unblessed/core`
+- **unblessed version**: `npm list @gavin-lynch/unblessed-core`
 - **Node.js version**: `node --version`
 - **Platform**: macOS / Linux / Windows
 - **Terminal**: iTerm2, gnome-terminal, Windows Terminal, etc.
@@ -1120,7 +1120,7 @@ When reporting issues, include:
 
 ```bash
 # Check versions
-npm list @unblessed/core
+npm list @gavin-lynch/unblessed-core
 node --version
 
 # Enable debug output

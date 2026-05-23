@@ -43,7 +43,7 @@ The Tree widget extends `List` to provide a navigable, collapsible tree structur
 The fastest way to get a beautiful tree:
 
 ```typescript
-import { Screen, Tree, TreePresets } from "@unblessed/node";
+import { Screen, Tree, TreePresets } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -106,7 +106,7 @@ screen.render();
 ## Basic Usage
 
 ```typescript
-import { Screen, Tree } from "@unblessed/node";
+import { Screen, Tree } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 
@@ -159,7 +159,7 @@ Presets provide pre-configured `template`, `style`, and `iconRules` for common t
 A clean, IDE-like style with Nerd Font icons and space-based indentation.
 
 ```typescript
-import { Screen, Tree, TreePresets } from "@unblessed/node";
+import { Screen, Tree, TreePresets } from "@gavin-lynch/unblessed-node";
 
 const tree = new Tree({
   ...TreePresets.Modern,
@@ -193,7 +193,7 @@ const tree = new Tree({
 Traditional blessed-contrib compatible style with tree lines and `[+]/[-]` indicators.
 
 ```typescript
-import { Screen, Tree, TreePresets } from "@unblessed/node";
+import { Screen, Tree, TreePresets } from "@gavin-lynch/unblessed-node";
 
 const tree = new Tree({
   ...TreePresets.Classic,
@@ -251,7 +251,7 @@ const tree = new Tree({
 The preset module exports icon collections for custom use:
 
 ```typescript
-import { NerdIcons, UnicodeIcons } from "@unblessed/node";
+import { NerdIcons, UnicodeIcons } from "@gavin-lynch/unblessed-node";
 
 // Combine icons for status indicators
 const data = {
@@ -752,7 +752,7 @@ import {
   TreePresets,
   NerdIcons,
   UnicodeIcons,
-} from "@unblessed/node";
+} from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true, title: "File Explorer" });
 
@@ -869,7 +869,7 @@ const tree = new Tree({
 ### Hybrid Preset (Classic + Icons)
 
 ```typescript
-import { TreePresets, NerdIcons } from "@unblessed/node";
+import { TreePresets, NerdIcons } from "@gavin-lynch/unblessed-node";
 
 const tree = new Tree({
   // Start with Classic template (tree lines, [+]/[-])

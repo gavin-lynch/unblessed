@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * hello-react.tsx - Example showcasing @unblessed/react with various border styles
+ * hello-react.tsx - Example showcasing @gavin-lynch/unblessed-react with various border styles
  *
  * Demonstrates:
  * - Various border styles (single, double, round, bold)
@@ -16,7 +16,7 @@
  *   or
  *   node --import tsx --no-warnings hello-react.tsx
  */
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import * as React from "react";
 import {
   BigText,
@@ -50,7 +50,9 @@ const App: React.FC = () => {
       {/* Header with input */}
       <Box flexDirection="column" padding={1} border={1} gap={1} minHeight={10}>
         <Input />
-        <Text color="$semantic.primary">@unblessed/react Border Showcase</Text>
+        <Text color="$semantic.primary">
+          @gavin-lynch/unblessed-react Border Showcase
+        </Text>
       </Box>
 
       {/* Border styles */}

@@ -1,5 +1,5 @@
 {
-  "name": "@unblessed/perf",
+  "name": "@gavin-lynch/unblessed-perf",
   "description": "Performance instrumentation tools for @unblessed render pipeline",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
@@ -59,10 +59,10 @@
     "format:check": "prettier --check ."
   },
   "peerDependencies": {
-    "@unblessed/core": "workspace:^"
+    "@gavin-lynch/unblessed-core": "workspace:^"
   },
   "devDependencies": {
-    "@unblessed/core": "workspace:*",
+    "@gavin-lynch/unblessed-core": "workspace:*",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4"
   },

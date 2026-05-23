@@ -1,7 +1,7 @@
 /**
  * Browser stub for the Node/stream-based {@link https://www.npmjs.com/package/picture-tuber picture-tuber} package.
  *
- * `@unblessed/core` statically imports `picture-tuber` for the Picture widget. The real package uses
+ * `@gavin-lynch/unblessed-core` statically imports `picture-tuber` for the Picture widget. The real package uses
  * `charm`, Node `stream.Stream`, PNG decoders (`fs`/zlib variants), etc., which breaks Vite's browser graph.
  *
  * This factory matches the callable default export Picture expects; it rejects on `end()` so the widget falls

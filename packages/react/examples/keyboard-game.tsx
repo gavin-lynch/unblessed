@@ -15,7 +15,7 @@
  *   node --import tsx --no-warnings keyboard-game.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import React, { useEffect, useState } from "react";
 import { BigText, Box, render, Text } from "../dist/index.js";
 

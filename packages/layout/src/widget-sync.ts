@@ -2,7 +2,7 @@
  * widget-sync.ts - Synchronize Yoga layout to unblessed widgets
  */
 
-import { Box, Element, Screen } from "@unblessed/core";
+import { Box, Element, Screen } from "@gavin-lynch/unblessed-core";
 import Yoga from "yoga-layout";
 import type { ComputedLayout, LayoutNode } from "./types.js";
 

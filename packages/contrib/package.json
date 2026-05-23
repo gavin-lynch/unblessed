@@ -1,6 +1,6 @@
 {
-  "name": "@unblessed/contrib",
-  "description": "Dashboard widgets and charts for @unblessed/core - port of blessed-contrib",
+  "name": "@gavin-lynch/unblessed-contrib",
+  "description": "Dashboard widgets and charts for @gavin-lynch/unblessed-core - port of blessed-contrib",
   "version": "1.0.0-alpha.23",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
@@ -62,8 +62,8 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@unblessed/core": "workspace:*",
-    "@unblessed/theme": "workspace:*",
+    "@gavin-lynch/unblessed-core": "workspace:*",
+    "@gavin-lynch/unblessed-theme": "workspace:*",
     "chalk": "^5.0.0",
     "cli-highlight": "^2.1.11",
     "diff": "^8.0.0",
@@ -75,8 +75,8 @@
   },
   "devDependencies": {
     "@types/marked-terminal": "^6.1.1",
-    "@unblessed/node": "workspace:*",
-    "@unblessed/perf": "workspace:*",
+    "@gavin-lynch/unblessed-node": "workspace:*",
+    "@gavin-lynch/unblessed-perf": "workspace:*",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "tsx": "^4.20.6"

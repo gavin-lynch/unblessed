@@ -1,5 +1,5 @@
 /**
- * Runtime abstraction layer for @unblessed/core
+ * Runtime abstraction layer for @gavin-lynch/unblessed-core
  *
  * @remarks
  * The Runtime interface provides platform-specific APIs through dependency injection.
@@ -13,13 +13,13 @@
  * - **Dependency Injection**: Core code uses runtime instead of direct imports
  *
  * **Platform adapters**:
- * - `@unblessed/node`: Wraps real Node.js APIs (fs, path, process, child_process, tty, etc.)
- * - `@unblessed/browser`: Provides browser polyfills and virtual filesystem
+ * - `@gavin-lynch/unblessed-node`: Wraps real Node.js APIs (fs, path, process, child_process, tty, etc.)
+ * - `@gavin-lynch/unblessed-browser`: Provides browser polyfills and virtual filesystem
  * - Tests: Uses real Node.js APIs for testing
  *
  * @example Using runtime in code
  * ```typescript
- * import { getRuntime } from '@unblessed/core/runtime-context';
+ * import { getRuntime } from '@gavin-lynch/unblessed-core/runtime-context';
  *
  * function loadTerminfo(term: string): Buffer {
  *   const runtime = getRuntime();
@@ -37,7 +37,7 @@
  *
  * @example Feature detection for optional APIs
  * ```typescript
- * import { getRuntime, hasImageSupport } from '@unblessed/core';
+ * import { getRuntime, hasImageSupport } from '@gavin-lynch/unblessed-core';
  *
  * function canRenderImages(): boolean {
  *   const runtime = getRuntime();
@@ -68,7 +68,7 @@
  *
  * @example Platform detection
  * ```typescript
- * import { getRuntime } from '@unblessed/core/runtime-context';
+ * import { getRuntime } from '@gavin-lynch/unblessed-core/runtime-context';
  *
  * const runtime = getRuntime();
  *
@@ -98,7 +98,7 @@ import type * as util from "util";
 
 /**
  * Complete runtime abstraction interface
- * All @unblessed/core modules accept this interface for platform operations
+ * All @gavin-lynch/unblessed-core modules accept this interface for platform operations
  *
  * Core APIs (always required):
  * - fs, path, process, buffer, url, utils

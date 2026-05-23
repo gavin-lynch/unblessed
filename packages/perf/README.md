@@ -1,9 +1,9 @@
-# @unblessed/perf
+# @gavin-lynch/unblessed-perf
 
 Performance instrumentation tools for the @unblessed render pipeline.
 
 This package provides a lightweight FPS and frame timing collector that hooks into
-`@unblessed/core` with near-zero overhead when disabled. It is designed to keep
+`@gavin-lynch/unblessed-core` with near-zero overhead when disabled. It is designed to keep
 profiling logic out of core while still exposing high-quality metrics for debugging
 and regression analysis.
 
@@ -20,18 +20,18 @@ For a broader visual gallery, see `packages/contrib/README.md`.
 ## Install
 
 ```bash
-pnpm add -D @unblessed/perf
+pnpm add -D @gavin-lynch/unblessed-perf
 ```
 
 ## Usage
 
 ```ts
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import {
   createPerfOverlay,
   installRenderPerfObserver,
   removeRenderObserver,
-} from "@unblessed/perf";
+} from "@gavin-lynch/unblessed-perf";
 
 const screen = new Screen({ smartCSR: true });
 const perf = installRenderPerfObserver({ targetFps: 60 });
@@ -58,7 +58,7 @@ removeRenderObserver();
 1. Install the observer in your app entry.
 2. Use the overlay while developing or profiling.
 3. Capture stats before/after renderer changes.
-4. Use `@unblessed/vrt` to ensure visual output does not regress.
+4. Use `@gavin-lynch/unblessed-vrt` to ensure visual output does not regress.
 
 ## API
 
@@ -125,8 +125,11 @@ Creates a small overlay box that displays live stats and refreshes on an interva
 ## Example: Overlay + Animation
 
 ```ts
-import { Box, Screen } from "@unblessed/node";
-import { createPerfOverlay, installRenderPerfObserver } from "@unblessed/perf";
+import { Box, Screen } from "@gavin-lynch/unblessed-node";
+import {
+  createPerfOverlay,
+  installRenderPerfObserver,
+} from "@gavin-lynch/unblessed-perf";
 
 const screen = new Screen({ smartCSR: true });
 const perf = installRenderPerfObserver({ targetFps: 60 });
@@ -168,4 +171,4 @@ screen.render();
 ## Notes
 
 - This package measures render timing via core hooks; it does not use screenshots.
-- Visual regression testing is handled separately by `@unblessed/vrt`.
+- Visual regression testing is handled separately by `@gavin-lynch/unblessed-vrt`.

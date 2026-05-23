@@ -2,7 +2,7 @@
  * integration.test.ts - Integration tests for complex layout scenarios
  */
 
-import { Screen } from "@unblessed/core";
+import { Screen } from "@gavin-lynch/unblessed-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { LayoutManager } from "../src/layout-engine.js";
 

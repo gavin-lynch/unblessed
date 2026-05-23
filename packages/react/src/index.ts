@@ -1,11 +1,11 @@
 /**
- * @unblessed/react - React renderer for unblessed
+ * @gavin-lynch/unblessed-react - React renderer for unblessed
  *
  * Build terminal UIs with React and flexbox layouts.
  *
  * @example
  * ```tsx
- * import { render, Box, Text } from '@unblessed/react';
+ * import { render, Box, Text } from '@gavin-lynch/unblessed-react';
  *
  * const App = () => (
  *   <Box flexDirection="row" gap={2} padding={1}>
@@ -89,7 +89,7 @@ export type {
 // Theme utilities (for advanced usage)
 export { isThemeReference, resolveColor } from "./themes/theme-utils.js";
 
-// Re-export animation utilities from @unblessed/core for convenience
+// Re-export animation utilities from @gavin-lynch/unblessed-core for convenience
 export {
   AnimationController,
   Spring,
@@ -102,7 +102,7 @@ export {
   makeAnimatable,
   rotateColors,
   type AnimatableMethods,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";
 
 // Declarative animation system
 export {

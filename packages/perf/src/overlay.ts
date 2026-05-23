@@ -1,5 +1,5 @@
-import type { Screen as UnblessedScreen } from "@unblessed/core";
-import { Box } from "@unblessed/core";
+import type { Screen as UnblessedScreen } from "@gavin-lynch/unblessed-core";
+import { Box } from "@gavin-lynch/unblessed-core";
 import type { RenderPerfObserver } from "./observer.js";
 
 export interface PerfOverlayOptions {

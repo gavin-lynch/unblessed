@@ -22,8 +22,8 @@ import {
   Screen,
   setRuntime,
   Spring,
-} from "@unblessed/core";
-import { NodeRuntime } from "@unblessed/node"; // Initialize runtime
+} from "@gavin-lynch/unblessed-core";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node"; // Initialize runtime
 
 // Initialize runtime
 setRuntime(new NodeRuntime());

@@ -9,11 +9,11 @@ Running unblessed in web browsers with XTerm.js.
 ## Installation
 
 ```bash
-npm install @unblessed/browser xterm
+npm install @gavin-lynch/unblessed-browser xterm
 # or
-pnpm add @unblessed/browser xterm
+pnpm add @gavin-lynch/unblessed-browser xterm
 # or
-yarn add @unblessed/browser xterm
+yarn add @gavin-lynch/unblessed-browser xterm
 ```
 
 ## Quick Start
@@ -38,7 +38,7 @@ yarn add @unblessed/browser xterm
 ```typescript
 import { Terminal } from "xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 
 // Create XTerm terminal
 const term = new Terminal({
@@ -79,10 +79,10 @@ screen.render();
 
 ## Runtime Auto-Initialization
 
-`@unblessed/browser` automatically initializes the browser runtime:
+`@gavin-lynch/unblessed-browser` automatically initializes the browser runtime:
 
 ```typescript
-import { Screen } from "@unblessed/browser";
+import { Screen } from "@gavin-lynch/unblessed-browser";
 
 // Runtime is automatically initialized with polyfills
 // - File system polyfills with bundled terminfo
@@ -101,7 +101,7 @@ The Screen automatically detects and wraps XTerm.js:
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen } from "@unblessed/browser";
+import { Screen } from "@gavin-lynch/unblessed-browser";
 
 const term = new Terminal();
 term.open(element);
@@ -354,7 +354,7 @@ Optimize bundle size:
 
 ```typescript
 // Only import what you need
-import { Screen, Box, List } from "@unblessed/browser";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-browser";
 
 // Tree-shaking removes unused widgets
 // Final bundle: ~150KB gzipped (including XTerm.js)
@@ -367,7 +367,7 @@ import { Screen, Box, List } from "@unblessed/browser";
 ```typescript
 import { Terminal } from "xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { Screen, Box, List } from "@unblessed/browser";
+import { Screen, Box, List } from "@gavin-lynch/unblessed-browser";
 
 const term = new Terminal();
 const fitAddon = new FitAddon();
@@ -424,7 +424,7 @@ screen.render();
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen, Box, Textbox } from "@unblessed/browser";
+import { Screen, Box, Textbox } from "@gavin-lynch/unblessed-browser";
 
 const term = new Terminal();
 term.open(document.getElementById("terminal"));

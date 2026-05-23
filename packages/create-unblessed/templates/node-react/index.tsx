@@ -1,5 +1,5 @@
-import { Screen } from "@unblessed/node";
-import { Box, render, Text } from "@unblessed/react";
+import { Screen } from "@gavin-lynch/unblessed-node";
+import { Box, render, Text } from "@gavin-lynch/unblessed-react";
 
 const screen = new Screen();
 

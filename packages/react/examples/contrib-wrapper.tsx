@@ -1,11 +1,11 @@
 /**
- * contrib-wrapper.tsx - Generic wrapper for @unblessed/contrib widgets
+ * contrib-wrapper.tsx - Generic wrapper for @gavin-lynch/unblessed-contrib widgets
  *
  * This helper component allows using contrib widgets (which are not React components)
  * within React applications by wrapping them in a Box and managing their lifecycle.
  */
 
-import type { Element } from "@unblessed/core";
+import type { Element } from "@gavin-lynch/unblessed-core";
 import { useEffect, useRef } from "react";
 import { Box, useScreen, useWidget } from "../src/index.js";
 
@@ -29,7 +29,7 @@ export interface ContribWidgetWrapperProps {
  *
  * @example
  * ```tsx
- * import { Line } from '@unblessed/contrib';
+ * import { Line } from '@gavin-lynch/unblessed-contrib';
  *
  * <ContribWidgetWrapper
  *   createWidget={(opts) => new Line(opts)}

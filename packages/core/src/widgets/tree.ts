@@ -37,7 +37,7 @@ interface DisplayNode extends TreeNode {
  *
  * @example Basic usage
  * ```typescript
- * import { Screen, Tree } from '@unblessed/node';
+ * import { Screen, Tree } from '@gavin-lynch/unblessed-node';
  *
  * const screen = new Screen();
  *

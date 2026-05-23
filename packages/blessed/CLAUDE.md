@@ -1,6 +1,6 @@
-# @unblessed/blessed - Backward Compatible Blessed API
+# @gavin-lynch/unblessed-blessed - Backward Compatible Blessed API
 
-This package provides 100% backward compatibility with the original [blessed](https://github.com/chjj/blessed) library. It's a thin wrapper over `@unblessed/core` that matches the exact API structure of blessed, making it a true drop-in replacement.
+This package provides 100% backward compatibility with the original [blessed](https://github.com/chjj/blessed) library. It's a thin wrapper over `@gavin-lynch/unblessed-core` that matches the exact API structure of blessed, making it a true drop-in replacement.
 
 ## Purpose
 
@@ -12,21 +12,21 @@ const blessed = require("blessed");
 const screen = blessed.screen();
 const box = blessed.box({ parent: screen, content: "Hello" });
 
-// After: @unblessed/blessed (exact same code works!)
-const blessed = require("@unblessed/blessed");
+// After: @gavin-lynch/unblessed-blessed (exact same code works!)
+const blessed = require("@gavin-lynch/unblessed-blessed");
 const screen = blessed.screen();
 const box = blessed.box({ parent: screen, content: "Hello" });
 ```
 
 **For new projects:**
-We recommend using `@unblessed/node` directly with its modern class-based API instead of this compatibility layer.
+We recommend using `@gavin-lynch/unblessed-node` directly with its modern class-based API instead of this compatibility layer.
 
 ## Architecture
 
 ```
-@unblessed/blessed
+@gavin-lynch/unblessed-blessed
     ↓ (thin wrapper)
-@unblessed/core
+@gavin-lynch/unblessed-core
 ```
 
 ### Wrapper Strategy
@@ -85,7 +85,7 @@ const box: blessed.Widgets.BoxElement = blessed.box({ ... });
 const options: blessed.Widgets.BoxOptions = { ... };
 ```
 
-Our `Widgets` namespace provides type aliases that map to @unblessed/core types, ensuring TypeScript compatibility.
+Our `Widgets` namespace provides type aliases that map to @gavin-lynch/unblessed-core types, ensuring TypeScript compatibility.
 
 ## API Coverage
 
@@ -136,7 +136,7 @@ All 27 widget types from original blessed:
 Each widget is available in multiple ways for compatibility:
 
 ```javascript
-const blessed = require('@unblessed/blessed');
+const blessed = require('@gavin-lynch/unblessed-blessed');
 
 // 1. Via blessed object (lowercase)
 const box1 = blessed.box({ ... });
@@ -145,11 +145,11 @@ const box1 = blessed.box({ ... });
 const box2 = blessed.Box({ ... });
 
 // 3. Via named import (lowercase)
-const { box } = require('@unblessed/blessed');
+const { box } = require('@gavin-lynch/unblessed-blessed');
 const box3 = box({ ... });
 
 // 4. Via named import (PascalCase)
-const { Box } = require('@unblessed/blessed');
+const { Box } = require('@gavin-lynch/unblessed-blessed');
 const box4 = Box({ ... });
 
 // 5. Via class constructor
@@ -170,7 +170,7 @@ export default defineConfig({
     tput: "bin/tput.ts", // CLI tool
   },
   format: ["cjs", "esm"],
-  external: ["@unblessed/core"], // Don't bundle, use as peer dep
+  external: ["@gavin-lynch/unblessed-core"], // Don't bundle, use as peer dep
   onSuccess: async () => {
     // Copy terminfo/font data for CLI tool
     await cp("../core/data", "dist/usr", { recursive: true });
@@ -193,7 +193,7 @@ export default defineConfig({
 
 ```json
 {
-  "name": "@unblessed/blessed",
+  "name": "@gavin-lynch/unblessed-blessed",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -236,7 +236,7 @@ We use type-only imports from `@types/blessed` to verify compile-time type compa
 
 ```typescript
 import type * as BlessedOriginal from "blessed";
-import * as BlessedTui from "@unblessed/blessed";
+import * as BlessedTui from "@gavin-lynch/unblessed-blessed";
 
 // Verify types are compatible
 expectTypeOf(BlessedTui.box()).toMatchTypeOf<
@@ -247,7 +247,7 @@ expectTypeOf(
 ).toMatchTypeOf<BlessedOriginal.Widgets.Screen>();
 ```
 
-This ensures that any code written for `@types/blessed` will work with `@unblessed/blessed` without TypeScript errors.
+This ensures that any code written for `@types/blessed` will work with `@gavin-lynch/unblessed-blessed` without TypeScript errors.
 
 ## What's Complete
 
@@ -264,11 +264,11 @@ This ensures that any code written for `@types/blessed` will work with `@unbless
 ## What's Pending
 
 - ⚠️ **Integration tests** - Test with real blessed examples from the wild
-- ⚠️ **Examples** - Migration examples showing blessed → @unblessed/blessed
+- ⚠️ **Examples** - Migration examples showing blessed → @gavin-lynch/unblessed-blessed
 - ⚠️ **CLI tests** - Test the tput binary
 - 📝 **Migration guide** - Document any subtle differences
 - 📝 **Changelog** - Track any breaking changes vs original blessed
-- 📝 **Publishing** - Publish to npm as @unblessed/blessed
+- 📝 **Publishing** - Publish to npm as @gavin-lynch/unblessed-blessed
 
 ## Known Differences
 
@@ -277,8 +277,8 @@ This ensures that any code written for `@types/blessed` will work with `@unbless
 **Original blessed:**
 No explicit initialization, runtime is set up via direct Node.js imports.
 
-**@unblessed/blessed:**
-Runtime auto-initializes when you import the package (via @unblessed/core). This is transparent to users but worth noting.
+**@gavin-lynch/unblessed-blessed:**
+Runtime auto-initializes when you import the package (via @gavin-lynch/unblessed-core). This is transparent to users but worth noting.
 
 ### Widget Attachment
 
@@ -292,7 +292,7 @@ const box = blessed.box({ screen: screen, ... });
 const box = blessed.box({ parent: screen, ... });
 ```
 
-**@unblessed/blessed:**
+**@gavin-lynch/unblessed-blessed:**
 Only `parent:` property works. The `screen` property is ignored. This matches blessed's recommended pattern and simplifies the API.
 
 ## Development
@@ -319,7 +319,7 @@ pnpm test:watch
 ### CommonJS (Classic Blessed Style)
 
 ```javascript
-const blessed = require("@unblessed/blessed");
+const blessed = require("@gavin-lynch/unblessed-blessed");
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -348,7 +348,7 @@ screen.render();
 ### ESM (Modern Style)
 
 ```javascript
-import blessed from "@unblessed/blessed";
+import blessed from "@gavin-lynch/unblessed-blessed";
 
 const screen = blessed.screen({ smartCSR: true });
 const box = blessed.box({
@@ -363,8 +363,8 @@ screen.render();
 ### TypeScript
 
 ```typescript
-import blessed from "@unblessed/blessed";
-import type { Widgets } from "@unblessed/blessed";
+import blessed from "@gavin-lynch/unblessed-blessed";
+import type { Widgets } from "@gavin-lynch/unblessed-blessed";
 
 const screen: Widgets.Screen = blessed.screen({
   smartCSR: true,
@@ -388,10 +388,10 @@ screen.render();
 
 ### For New Projects
 
-**Don't use @unblessed/blessed.** Use `@unblessed/node` instead:
+**Don't use @gavin-lynch/unblessed-blessed.** Use `@gavin-lynch/unblessed-node` instead:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen({ smartCSR: true });
 const box = new Box({
@@ -412,22 +412,22 @@ screen.render();
 
 ### For Migrating from Blessed
 
-**Use @unblessed/blessed** for a smooth transition:
+**Use @gavin-lynch/unblessed-blessed** for a smooth transition:
 
-1. Replace `require('blessed')` with `require('@unblessed/blessed')`
+1. Replace `require('blessed')` with `require('@gavin-lynch/unblessed-blessed')`
 2. Test your application
-3. Gradually migrate to `@unblessed/node` class-based API when ready
+3. Gradually migrate to `@gavin-lynch/unblessed-node` class-based API when ready
 
 ## Related Packages
 
-- **@unblessed/core** - Platform-agnostic core (internal)
-- **@unblessed/node** - Modern Node.js API (recommended for new code)
-- **@unblessed/browser** - Browser runtime with XTerm.js
+- **@gavin-lynch/unblessed-core** - Platform-agnostic core (internal)
+- **@gavin-lynch/unblessed-node** - Modern Node.js API (recommended for new code)
+- **@gavin-lynch/unblessed-browser** - Browser runtime with XTerm.js
 - **blessed** - Original library (now deprecated)
 
 ## Contributing
 
-When making changes to @unblessed/blessed:
+When making changes to @gavin-lynch/unblessed-blessed:
 
 1. **Maintain 100% API compatibility** with original blessed
 2. **Add tests** for any new behavior

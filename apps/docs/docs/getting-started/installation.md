@@ -11,11 +11,11 @@ Install unblessed based on your platform.
 For server-side terminal applications:
 
 ```bash
-pnpm add @unblessed/node
+pnpm add @gavin-lynch/unblessed-node
 # or
-npm install @unblessed/node
+npm install @gavin-lynch/unblessed-node
 # or
-yarn add @unblessed/node
+yarn add @gavin-lynch/unblessed-node
 ```
 
 **TypeScript types are included** - no need for separate `@types` packages.
@@ -25,9 +25,9 @@ yarn add @unblessed/node
 For browser-based terminal applications with XTerm.js:
 
 ```bash
-pnpm add @unblessed/browser xterm @xterm/addon-fit
+pnpm add @gavin-lynch/unblessed-browser xterm @xterm/addon-fit
 # or
-npm install @unblessed/browser xterm @xterm/addon-fit
+npm install @gavin-lynch/unblessed-browser xterm @xterm/addon-fit
 ```
 
 You'll also need to include the XTerm.js CSS:
@@ -41,16 +41,16 @@ import "xterm/css/xterm.css";
 For existing blessed applications (100% backward compatible):
 
 ```bash
-pnpm add @unblessed/blessed
+pnpm add @gavin-lynch/unblessed-blessed
 # or
-npm install @unblessed/blessed
+npm install @gavin-lynch/unblessed-blessed
 ```
 
 Simply replace your blessed imports:
 
 ```diff
 - import blessed from 'blessed';
-+ import blessed from '@unblessed/blessed';
++ import blessed from '@gavin-lynch/unblessed-blessed';
 ```
 
 ## Requirements
@@ -65,7 +65,7 @@ Create a simple test file:
 
 ```typescript
 // test.ts
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 const screen = new Screen();
 const box = new Box({

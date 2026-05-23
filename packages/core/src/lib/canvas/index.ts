@@ -49,7 +49,7 @@ import { DrawilleCanvas } from "./drawille.js";
  * @example
  * ```ts
  * // Create a character canvas (for bar charts)
- * import { AnsiTermCanvas } from '@unblessed/core';
+ * import { AnsiTermCanvas } from '@gavin-lynch/unblessed-core';
  *
  * const canvas = new Canvas(40, 12, AnsiTermCanvas);
  * const ctx = canvas.getContext();

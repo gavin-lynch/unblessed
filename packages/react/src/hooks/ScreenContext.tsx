@@ -2,7 +2,7 @@
  * ScreenContext.tsx - Screen context for accessing screen instance in components
  */
 
-import type { Screen } from "@unblessed/core";
+import type { Screen } from "@gavin-lynch/unblessed-core";
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -62,7 +62,7 @@ export function useScreen(): Screen {
 
   if (!context) {
     throw new Error(
-      "useScreen must be used within a component rendered by @unblessed/react's render() function",
+      "useScreen must be used within a component rendered by @gavin-lynch/unblessed-react's render() function",
     );
   }
 

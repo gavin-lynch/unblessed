@@ -5,7 +5,7 @@
  * Demonstrates a single gauge with stacked percentages.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { Gauge, Grid } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

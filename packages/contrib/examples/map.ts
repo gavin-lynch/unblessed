@@ -5,7 +5,7 @@
  * Demonstrates world map with markers.
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import { WorldMap } from "../src/index.js";
 
 const screen = new Screen({ smartCSR: true });

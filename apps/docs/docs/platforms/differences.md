@@ -27,7 +27,7 @@ Key differences between Node.js and Browser platforms.
 ### Node.js
 
 ```bash
-pnpm add @unblessed/node
+pnpm add @gavin-lynch/unblessed-node
 ```
 
 Includes:
@@ -39,7 +39,7 @@ Includes:
 ### Browser
 
 ```bash
-pnpm add @unblessed/browser xterm
+pnpm add @gavin-lynch/unblessed-browser xterm
 ```
 
 Includes:
@@ -55,7 +55,7 @@ Includes:
 Automatic runtime initialization:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 
 // Runtime auto-initialized with Node.js APIs
 const screen = new Screen();
@@ -67,7 +67,7 @@ Requires XTerm.js terminal:
 
 ```typescript
 import { Terminal } from "xterm";
-import { Screen, Box } from "@unblessed/browser";
+import { Screen, Box } from "@gavin-lynch/unblessed-browser";
 
 // Create and mount terminal
 const term = new Terminal();
@@ -237,7 +237,7 @@ Most code works identically:
 
 ```typescript
 // Works in both Node.js and Browser!
-import { Screen, Box, List } from "@unblessed/node"; // or browser
+import { Screen, Box, List } from "@gavin-lynch/unblessed-node"; // or browser
 
 const screen = new Screen(/* platform-specific options */);
 
@@ -263,7 +263,7 @@ screen.render();
 Detect current platform:
 
 ```typescript
-import { getRuntime } from "@unblessed/core/runtime-context";
+import { getRuntime } from "@gavin-lynch/unblessed-core/runtime-context";
 
 const runtime = getRuntime();
 
@@ -285,7 +285,7 @@ async function initApp() {
   if (typeof window !== "undefined") {
     // Browser
     const { Terminal } = await import("xterm");
-    const { Screen } = await import("@unblessed/browser");
+    const { Screen } = await import("@gavin-lynch/unblessed-browser");
 
     const term = new Terminal();
     term.open(document.getElementById("terminal"));
@@ -293,7 +293,7 @@ async function initApp() {
     return new Screen({ terminal: term });
   } else {
     // Node.js
-    const { Screen } = await import("@unblessed/node");
+    const { Screen } = await import("@gavin-lynch/unblessed-node");
     return new Screen();
   }
 }
@@ -313,11 +313,11 @@ pnpm add xterm @xterm/addon-fit
 
 ```typescript
 // Before
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 
 // After
 import { Terminal } from "xterm";
-import { Screen } from "@unblessed/browser";
+import { Screen } from "@gavin-lynch/unblessed-browser";
 ```
 
 3. **Create terminal**:
@@ -369,10 +369,10 @@ pnpm remove xterm
 ```typescript
 // Before
 import { Terminal } from "xterm";
-import { Screen } from "@unblessed/browser";
+import { Screen } from "@gavin-lynch/unblessed-browser";
 
 // After
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 ```
 
 3. **Simplify screen creation**:

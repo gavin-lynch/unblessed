@@ -1,4 +1,4 @@
-# Running @unblessed/contrib Examples
+# Running @gavin-lynch/unblessed-contrib Examples
 
 ## Prerequisites
 
@@ -32,8 +32,8 @@ From the project root:
 
 ```bash
 # Run examples using pnpm
-pnpm --filter @unblessed/contrib exec tsx examples/bar.ts
-pnpm --filter @unblessed/contrib exec tsx examples/dashboard.ts
+pnpm --filter @gavin-lynch/unblessed-contrib exec tsx examples/bar.ts
+pnpm --filter @gavin-lynch/unblessed-contrib exec tsx examples/dashboard.ts
 ```
 
 ### Option 3: Using node with tsx
@@ -99,7 +99,7 @@ The `table.ts` example supports:
 
 ## Troubleshooting
 
-### Error: Cannot find module '@unblessed/node'
+### Error: Cannot find module '@gavin-lynch/unblessed-node'
 
 This usually means:
 
@@ -108,7 +108,7 @@ This usually means:
 
 ```bash
 # ✅ Recommended: Use pnpm exec
-pnpm --filter @unblessed/contrib exec tsx examples/bar.ts
+pnpm --filter @gavin-lynch/unblessed-contrib exec tsx examples/bar.ts
 
 # ✅ Or use tsx directly (if installed)
 tsx packages/contrib/examples/bar.ts
@@ -126,12 +126,12 @@ Install tsx globally or use pnpm:
 npm install -g tsx
 
 # Or use pnpm exec (no global install needed)
-pnpm --filter @unblessed/contrib exec tsx examples/bar.ts
+pnpm --filter @gavin-lynch/unblessed-contrib exec tsx examples/bar.ts
 ```
 
 ### Error: Runtime not initialized
 
-This shouldn't happen with the examples, but if you see this error, make sure you're importing from `@unblessed/node` for the Screen component.
+This shouldn't happen with the examples, but if you see this error, make sure you're importing from `@gavin-lynch/unblessed-node` for the Screen component.
 
 ### Terminal Display Issues
 
@@ -150,7 +150,7 @@ If you've made changes to the source code, rebuild first:
 pnpm build
 
 # Or build just the contrib package
-pnpm --filter @unblessed/contrib build
+pnpm --filter @gavin-lynch/unblessed-contrib build
 ```
 
 ## Example Output

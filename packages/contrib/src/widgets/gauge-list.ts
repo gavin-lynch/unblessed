@@ -3,4 +3,4 @@ export {
   type GaugeListItem,
   type GaugeListOptions,
   type GaugeListStackItem,
-} from "@unblessed/core";
+} from "@gavin-lynch/unblessed-core";

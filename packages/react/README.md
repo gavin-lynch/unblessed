@@ -1,15 +1,15 @@
-# @unblessed/react
+# @gavin-lynch/unblessed-react
 
 React renderer for unblessed with flexbox layout support.
 
-[![npm version](https://img.shields.io/npm/v/@unblessed/react)](https://www.npmjs.com/package/@unblessed/react)
+[![npm version](https://img.shields.io/npm/v/@gavin-lynch/unblessed-react)](https://www.npmjs.com/package/@gavin-lynch/unblessed-react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
 
 > ⚠️ **ALPHA SOFTWARE / WORK IN PROGRESS** - This package is under active development. Core functionality is implemented but not all features are complete yet.
 
 ## Overview
 
-`@unblessed/react` enables building terminal UIs using React components and JSX, with automatic flexbox layout powered by Yoga.
+`@gavin-lynch/unblessed-react` enables building terminal UIs using React components and JSX, with automatic flexbox layout powered by Yoga.
 
 **Features:**
 
@@ -24,19 +24,19 @@ React renderer for unblessed with flexbox layout support.
 ## Installation
 
 ```bash
-npm install @unblessed/react@alpha react
+npm install @gavin-lynch/unblessed-react@alpha react
 # or
-pnpm add @unblessed/react@alpha react
+pnpm add @gavin-lynch/unblessed-react@alpha react
 ```
 
 **Also install a runtime:**
 
 ```bash
 # For Node.js
-npm install @unblessed/node@alpha
+npm install @gavin-lynch/unblessed-node@alpha
 
 # For browser
-npm install @unblessed/browser@alpha
+npm install @gavin-lynch/unblessed-browser@alpha
 ```
 
 **Requirements:**
@@ -47,7 +47,7 @@ npm install @unblessed/browser@alpha
 ## Quick Start
 
 ```tsx
-import { render, Box, Text, Spacer } from "@unblessed/react";
+import { render, Box, Text, Spacer } from "@gavin-lynch/unblessed-react";
 
 const App = () => (
   <Box flexDirection="column" padding={1} gap={1}>
@@ -68,7 +68,7 @@ const App = () => (
 render(<App />);
 ```
 
-**Note:** The runtime (`@unblessed/node` or `@unblessed/browser`) auto-initializes when imported, so you don't need explicit initialization.
+**Note:** The runtime (`@gavin-lynch/unblessed-node` or `@gavin-lynch/unblessed-browser`) auto-initializes when imported, so you don't need explicit initialization.
 
 **Important:** Borders require `border={1}` (or `borderTop={1}`, etc.) so that Yoga reserves space for them. Without this, only `borderStyle` and `borderColor` won't work properly.
 
@@ -338,7 +338,13 @@ const Centered = () => (
 ### Interactive Form
 
 ```tsx
-import { BigText, Box, Text, Button, Input } from "@unblessed/react";
+import {
+  BigText,
+  Box,
+  Text,
+  Button,
+  Input,
+} from "@gavin-lynch/unblessed-react";
 
 const LoginForm = () => (
   <Box flexDirection="column" padding={2} gap={1}>
@@ -434,7 +440,7 @@ All components support React-style event handlers that are automatically bound t
 
 ```tsx
 import React, { useState } from "react";
-import { render, Box, Text, Button, Input } from "@unblessed/react";
+import { render, Box, Text, Button, Input } from "@gavin-lynch/unblessed-react";
 
 const Counter = () => {
   const [count, setCount] = useState(0);
@@ -480,12 +486,16 @@ render(<Counter />);
 
 ## Theme System
 
-@unblessed/react includes a comprehensive theme system with design tokens, runtime theme switching, and automatic terminal color reduction.
+@gavin-lynch/unblessed-react includes a comprehensive theme system with design tokens, runtime theme switching, and automatic terminal color reduction.
 
 ### Quick Start
 
 ```tsx
-import { render, unblessedTheme, matrixTheme } from "@unblessed/react";
+import {
+  render,
+  unblessedTheme,
+  matrixTheme,
+} from "@gavin-lynch/unblessed-react";
 
 // Use default theme
 render(<App />, { theme: unblessedTheme });
@@ -512,7 +522,11 @@ render(<App />, { theme: matrixTheme });
 ### Runtime Theme Switching
 
 ```tsx
-import { useTheme, unblessedTheme, matrixTheme } from "@unblessed/react";
+import {
+  useTheme,
+  unblessedTheme,
+  matrixTheme,
+} from "@gavin-lynch/unblessed-react";
 
 function App() {
   const [theme, setTheme] = useTheme();
@@ -603,7 +617,7 @@ Hardcoded Fallbacks (lowest priority)
 ### Creating Custom Themes
 
 ```tsx
-import { Theme, unblessedTheme } from "@unblessed/react";
+import { Theme, unblessedTheme } from "@gavin-lynch/unblessed-react";
 
 const myTheme: Theme = {
   name: "my-theme",
@@ -643,10 +657,10 @@ See `examples/theme-demo.tsx` for a comprehensive demonstration.
 
 ## Architecture
 
-@unblessed/react builds on top of:
+@gavin-lynch/unblessed-react builds on top of:
 
-- **@unblessed/core** - Widget library and terminal rendering
-- **@unblessed/layout** - Yoga flexbox layout engine
+- **@gavin-lynch/unblessed-core** - Widget library and terminal rendering
+- **@gavin-lynch/unblessed-layout** - Yoga flexbox layout engine
 - **react-reconciler** - React's custom renderer API
 
 ### Widget Descriptor Pattern
@@ -700,7 +714,7 @@ yogaNode.setHeight(50);
 yogaNode.calculateLayout(); // Computes layout
 ```
 
-#### 2. **LayoutNode** (from `@unblessed/layout`)
+#### 2. **LayoutNode** (from `@gavin-lynch/unblessed-layout`)
 
 Wraps YogaNode with metadata, bridging React props to Yoga calculations and unblessed widgets.
 
@@ -715,7 +729,7 @@ interface LayoutNode {
 }
 ```
 
-#### 3. **DOMNode** (from `@unblessed/react`)
+#### 3. **DOMNode** (from `@gavin-lynch/unblessed-react`)
 
 Virtual DOM element used by React reconciler. Wraps LayoutNode with React-specific data.
 
@@ -728,7 +742,7 @@ interface DOMNode {
 }
 ```
 
-#### 4. **Widget/Element** (from `@unblessed/core`)
+#### 4. **Widget/Element** (from `@gavin-lynch/unblessed-core`)
 
 The actual terminal UI widget that renders to screen. Created after Yoga calculates layout.
 
@@ -850,7 +864,7 @@ MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
-- [@unblessed/core](../core) - Core TUI library
-- [@unblessed/layout](../layout) - Flexbox layout engine
-- [@unblessed/node](../node) - Node.js runtime
-- [@unblessed/browser](../browser) - Browser runtime
+- [@gavin-lynch/unblessed-core](../core) - Core TUI library
+- [@gavin-lynch/unblessed-layout](../layout) - Flexbox layout engine
+- [@gavin-lynch/unblessed-node](../node) - Node.js runtime
+- [@gavin-lynch/unblessed-browser](../browser) - Browser runtime

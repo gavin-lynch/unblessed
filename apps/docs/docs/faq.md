@@ -14,7 +14,7 @@ unblessed is a modern, TypeScript-first terminal UI library for building interac
 
 ### Is unblessed compatible with blessed?
 
-Yes! The `@unblessed/blessed` package provides 100% backward compatibility with blessed. You can drop it in as a replacement and your existing code should work without changes. See the [Migration Guide](/docs/getting-started/migration-from-blessed).
+Yes! The `@gavin-lynch/unblessed-blessed` package provides 100% backward compatibility with blessed. You can drop it in as a replacement and your existing code should work without changes. See the [Migration Guide](/docs/getting-started/migration-from-blessed).
 
 ### Why choose unblessed over blessed?
 
@@ -38,10 +38,10 @@ unblessed requires **Node.js >= 22.0.0**. This is due to modern JavaScript featu
 
 It depends on your use case:
 
-- **`@unblessed/node`** - For new Node.js projects (recommended)
-- **`@unblessed/browser`** - For browser-based terminal UIs
-- **`@unblessed/blessed`** - For migrating from blessed
-- **`@unblessed/core`** - Only if building custom runtime adapters
+- **`@gavin-lynch/unblessed-node`** - For new Node.js projects (recommended)
+- **`@gavin-lynch/unblessed-browser`** - For browser-based terminal UIs
+- **`@gavin-lynch/unblessed-blessed`** - For migrating from blessed
+- **`@gavin-lynch/unblessed-core`** - Only if building custom runtime adapters
 
 ### Do I need to install types separately?
 
@@ -55,10 +55,10 @@ Absolutely! unblessed works perfectly with plain JavaScript. TypeScript definiti
 
 ### Do I need to initialize the runtime?
 
-No! The runtime auto-initializes when you import from `@unblessed/node` or `@unblessed/browser`. Just import and use:
+No! The runtime auto-initializes when you import from `@gavin-lynch/unblessed-node` or `@gavin-lynch/unblessed-browser`. Just import and use:
 
 ```typescript
-import { Screen, Box } from "@unblessed/node";
+import { Screen, Box } from "@gavin-lynch/unblessed-node";
 // Runtime is ready - no setup needed
 const screen = new Screen();
 ```
@@ -112,7 +112,7 @@ node --loader esbuild-register app.ts
 
 ### Can I really run terminal UIs in browsers?
 
-Yes! The `@unblessed/browser` package uses XTerm.js to create a terminal emulator in the browser. Your unblessed widgets render inside it just like in a real terminal.
+Yes! The `@gavin-lynch/unblessed-browser` package uses XTerm.js to create a terminal emulator in the browser. Your unblessed widgets render inside it just like in a real terminal.
 
 ### What doesn't work in browsers?
 
@@ -235,10 +235,10 @@ const box = new Box({
 
 ### How do I test terminal UIs?
 
-Use the `@unblessed/vrt` package for visual regression testing:
+Use the `@gavin-lynch/unblessed-vrt` package for visual regression testing:
 
 ```typescript
-import { compareWithGolden } from "@unblessed/vrt";
+import { compareWithGolden } from "@gavin-lynch/unblessed-vrt";
 
 it("renders correctly", () => {
   const screen = new Screen();
@@ -376,7 +376,7 @@ Check the [repository](https://github.com/vdeantoni/unblessed) for contribution 
 
 Please include:
 
-- unblessed version (`npm list @unblessed/node`)
+- unblessed version (`npm list @gavin-lynch/unblessed-node`)
 - Node.js version (`node --version`)
 - Terminal emulator and OS
 - Minimal code to reproduce

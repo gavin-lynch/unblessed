@@ -1,15 +1,15 @@
-# @unblessed/blessed
+# @gavin-lynch/unblessed-blessed
 
-100% backward-compatible blessed API wrapper for [@unblessed/core](../node).
+100% backward-compatible blessed API wrapper for [@gavin-lynch/unblessed-core](../node).
 
-[![npm version](https://img.shields.io/npm/v/@unblessed/blessed)](https://www.npmjs.com/package/@unblessed/blessed)
+[![npm version](https://img.shields.io/npm/v/@gavin-lynch/unblessed-blessed)](https://www.npmjs.com/package/@gavin-lynch/unblessed-blessed)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
 
 > ⚠️ **ALPHA SOFTWARE** - This package is part of the unblessed alpha release. API may change between alpha versions.
 
 ## Overview
 
-`@unblessed/blessed` provides a 100% backward-compatible API with the original [blessed](https://github.com/chjj/blessed) library. It's a thin wrapper over `@unblessed/core` that maintains the exact same API surface, making migration seamless.
+`@gavin-lynch/unblessed-blessed` provides a 100% backward-compatible API with the original [blessed](https://github.com/chjj/blessed) library. It's a thin wrapper over `@gavin-lynch/unblessed-core` that maintains the exact same API surface, making migration seamless.
 
 **Use this package if:**
 
@@ -18,7 +18,7 @@
 - ✅ You need to maintain API compatibility
 - ✅ You're migrating gradually from blessed
 
-**Use [@unblessed/node](../node) instead if:**
+**Use [@gavin-lynch/unblessed-node](../node) instead if:**
 
 - 🚀 You're starting a new project
 - 🎯 You want a modern, typed API
@@ -27,11 +27,11 @@
 ## Installation
 
 ```bash
-npm install @unblessed/blessed@alpha
+npm install @gavin-lynch/unblessed-blessed@alpha
 # or
-pnpm add @unblessed/blessed@alpha
+pnpm add @gavin-lynch/unblessed-blessed@alpha
 # or
-yarn add @unblessed/blessed@alpha
+yarn add @gavin-lynch/unblessed-blessed@alpha
 ```
 
 **Requirements:** Node.js >= 22.0.0
@@ -41,7 +41,7 @@ yarn add @unblessed/blessed@alpha
 ### CommonJS (Original blessed style)
 
 ```javascript
-const blessed = require("@unblessed/blessed");
+const blessed = require("@gavin-lynch/unblessed-blessed");
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -54,7 +54,7 @@ const box = blessed.box({
   left: "center",
   width: "50%",
   height: "50%",
-  content: "{bold}Hello from @unblessed/blessed!{/bold}",
+  content: "{bold}Hello from @gavin-lynch/unblessed-blessed!{/bold}",
   tags: true,
   border: {
     type: "line",
@@ -79,9 +79,9 @@ screen.render();
 ### ES Modules
 
 ```typescript
-import blessed from "@unblessed/blessed";
+import blessed from "@gavin-lynch/unblessed-blessed";
 // or
-import * as blessed from "@unblessed/blessed";
+import * as blessed from "@gavin-lynch/unblessed-blessed";
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -114,7 +114,7 @@ The Blessed Guide includes:
 
 ## API Compatibility
 
-`@unblessed/blessed` maintains 100% API compatibility with blessed:
+`@gavin-lynch/unblessed-blessed` maintains 100% API compatibility with blessed:
 
 ### Widget Factory Functions
 
@@ -166,36 +166,36 @@ blessed.helpers; // Helper functions
 
 ### Drop-in Replacement
 
-Simply replace `blessed` with `@unblessed/blessed`:
+Simply replace `blessed` with `@gavin-lynch/unblessed-blessed`:
 
 ```diff
 - const blessed = require('blessed');
-+ const blessed = require('@unblessed/blessed');
++ const blessed = require('@gavin-lynch/unblessed-blessed');
 ```
 
 That's it! Your code should work without any other changes.
 
 ### Gradual Migration
 
-You can migrate to `@unblessed/node` gradually:
+You can migrate to `@gavin-lynch/unblessed-node` gradually:
 
-1. **Step 1**: Replace `blessed` with `@unblessed/blessed` (no code changes)
+1. **Step 1**: Replace `blessed` with `@gavin-lynch/unblessed-blessed` (no code changes)
 2. **Step 2**: Test thoroughly
-3. **Step 3**: Optionally migrate to `@unblessed/node` for modern API
+3. **Step 3**: Optionally migrate to `@gavin-lynch/unblessed-node` for modern API
 
 ```javascript
-// @unblessed/blessed (backward compatible)
-const blessed = require("@unblessed/blessed");
+// @gavin-lynch/unblessed-blessed (backward compatible)
+const blessed = require("@gavin-lynch/unblessed-blessed");
 const screen = blessed.screen();
 
-// @unblessed/node (modern API)
-import { Screen } from "@unblessed/node";
+// @gavin-lynch/unblessed-node (modern API)
+import { Screen } from "@gavin-lynch/unblessed-node";
 const screen = new Screen();
 ```
 
 ## Differences from Original blessed
 
-While `@unblessed/blessed` maintains API compatibility, there are some under-the-hood improvements:
+While `@gavin-lynch/unblessed-blessed` maintains API compatibility, there are some under-the-hood improvements:
 
 **Improvements:**
 
@@ -218,11 +218,11 @@ While `@unblessed/blessed` maintains API compatibility, there are some under-the
 
 ## TypeScript Support
 
-`@unblessed/blessed` includes complete TypeScript definitions:
+`@gavin-lynch/unblessed-blessed` includes complete TypeScript definitions:
 
 ```typescript
-import blessed from "@unblessed/blessed";
-import type { Widgets } from "@unblessed/blessed";
+import blessed from "@gavin-lynch/unblessed-blessed";
+import type { Widgets } from "@gavin-lynch/unblessed-blessed";
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -249,10 +249,10 @@ const box: Widgets.BoxElement = blessed.box({
 **Cons:**
 
 - ❌ Uses older factory function API
-- ❌ Less modern than `@unblessed/node`
+- ❌ Less modern than `@gavin-lynch/unblessed-node`
 - ❌ Slightly larger bundle (includes compatibility layer)
 
-For new projects, we recommend [@unblessed/node](../node) for a cleaner, more modern API.
+For new projects, we recommend [@gavin-lynch/unblessed-node](../node) for a cleaner, more modern API.
 
 ## Examples
 
@@ -261,7 +261,7 @@ All original blessed examples should work. Here are a few:
 ### List Widget
 
 ```javascript
-const blessed = require("@unblessed/blessed");
+const blessed = require("@gavin-lynch/unblessed-blessed");
 
 const screen = blessed.screen();
 
@@ -295,7 +295,7 @@ screen.render();
 ### Form Widget
 
 ```javascript
-const blessed = require("@unblessed/blessed");
+const blessed = require("@gavin-lynch/unblessed-blessed");
 
 const screen = blessed.screen();
 
@@ -350,17 +350,17 @@ screen.render();
 Make sure you have the latest version:
 
 ```bash
-npm update @unblessed/blessed
+npm update @gavin-lynch/unblessed-blessed
 ```
 
 **TypeScript errors?**
 
-Include `@unblessed/blessed` types:
+Include `@gavin-lynch/unblessed-blessed` types:
 
 ```json
 {
   "compilerOptions": {
-    "types": ["@unblessed/blessed"]
+    "types": ["@gavin-lynch/unblessed-blessed"]
   }
 }
 ```
@@ -376,8 +376,8 @@ node --version
 ## Resources
 
 - [blessed Documentation](https://github.com/chjj/blessed) - Original blessed docs
-- [@unblessed/node](../node) - Modern alternative
-- [@unblessed/core](../core) - Core library
+- [@gavin-lynch/unblessed-node](../node) - Modern alternative
+- [@gavin-lynch/unblessed-core](../core) - Core library
 - [Examples](../node/examples) - Working examples
 
 ## License
@@ -386,7 +386,7 @@ MIT © [Gavin Brady Lynch](https://github.com/gavin-lynch)
 
 ## Related
 
-- [@unblessed/node](../node) - Node.js runtime adapter (modern API)
-- [@unblessed/core](../core) - Core TUI library
-- [@unblessed/browser](../browser) - Browser runtime adapter
+- [@gavin-lynch/unblessed-node](../node) - Node.js runtime adapter (modern API)
+- [@gavin-lynch/unblessed-core](../core) - Core TUI library
+- [@gavin-lynch/unblessed-browser](../browser) - Browser runtime adapter
 - [blessed](https://github.com/chjj/blessed) - Original library

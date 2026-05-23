@@ -6,7 +6,7 @@
  * Requires: marked, marked-terminal, chalk (peer dependencies)
  */
 
-import { Screen } from "@unblessed/node";
+import { Screen } from "@gavin-lynch/unblessed-node";
 import chalk from "chalk";
 import { Markdown } from "../src/widgets/markdown.js";
 

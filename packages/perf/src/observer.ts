@@ -1,5 +1,5 @@
-import type { RenderObserver } from "@unblessed/core";
-import { setRenderObserver } from "@unblessed/core";
+import type { RenderObserver } from "@gavin-lynch/unblessed-core";
+import { setRenderObserver } from "@gavin-lynch/unblessed-core";
 
 export interface RenderPerfObserverOptions {
   maxSamples?: number;

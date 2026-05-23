@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Line Chart Demo - @unblessed/contrib Line widget example
+ * Line Chart Demo - @gavin-lynch/unblessed-contrib Line widget example
  *
  * Demonstrates:
  * - Line chart with multiple series
@@ -11,7 +11,7 @@
  * Run with: tsx packages/react/examples/contrib-line-demo.tsx
  */
 
-import { NodeRuntime } from "@unblessed/node";
+import { NodeRuntime } from "@gavin-lynch/unblessed-node";
 import { useEffect, useRef, useState } from "react";
 import { Line, type LineSeriesData } from "../../contrib/src/index.js";
 import { Box, render, Text, useScreen } from "../src/index.js";
