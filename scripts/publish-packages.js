@@ -7,7 +7,25 @@
  */
 
 import { execSync } from "child_process";
-import { readFileSync } from "fs";
+import { appendFileSync, readFileSync } from "fs";
+import { homedir } from "os";
+import { join } from "path";
+
+const npmToken = process.env.NPM_TOKEN || process.env.NODE_AUTH_TOKEN;
+
+if (!npmToken) {
+  console.error(
+    "\n❌ NPM_TOKEN (or NODE_AUTH_TOKEN) is required to publish packages.\n" +
+      "   Add an npm automation token with publish access to @gavin-lynch as the\n" +
+      "   NPM_TOKEN repository secret (see PUBLISHING.md).\n",
+  );
+  process.exit(1);
+}
+
+appendFileSync(
+  join(homedir(), ".npmrc"),
+  `\n//registry.npmjs.org/:_authToken=${npmToken}\n`,
+);
 
 /** npm package name → packages/ directory */
 const PUBLISH_ORDER = [
@@ -66,7 +84,8 @@ for (const { name, dir } of PUBLISH_ORDER) {
         cwd: process.cwd(),
         env: {
           ...process.env,
-          NODE_AUTH_TOKEN: process.env.NPM_TOKEN || process.env.NODE_AUTH_TOKEN,
+          NODE_AUTH_TOKEN: npmToken,
+          NPM_TOKEN: npmToken,
         },
       },
     );
