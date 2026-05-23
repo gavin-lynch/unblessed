@@ -1,7 +1,7 @@
 {
   "name": "@gavin-lynch/unblessed-react",
   "description": "React renderer for unblessed with flexbox layout support",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {

@@ -1,7 +1,7 @@
 {
   "name": "@gavin-lynch/unblessed-browser",
   "description": "Browser runtime adapter for @gavin-lynch/unblessed-core TUI library with xterm.js integration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {

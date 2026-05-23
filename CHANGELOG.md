@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/gavin-lynch/unblessed/compare/v1.0.0...v1.0.1) (2026-05-23)
+
+
+### Bug Fixes
+
+* restore green test suite and publish readiness after scope migration ([b1307eb](https://github.com/gavin-lynch/unblessed/commit/b1307eb5d3b4676fdeb6e4e02e33810e229a3787))
+
 # 1.0.0 (2026-05-23)
 
 
