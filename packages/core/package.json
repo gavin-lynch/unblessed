@@ -1,7 +1,7 @@
 {
   "name": "@gavin-lynch/unblessed-core",
   "description": "Platform-agnostic terminal UI core library with runtime dependency injection",
-  "version": "1.0.0-alpha.23",
+  "version": "1.0.0",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {
