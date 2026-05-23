@@ -6,8 +6,14 @@
  * tabs, stacked labels, dialog, lists, color grid, and cards.
  */
 
-import { Box, BrowserRuntime, Screen, setRuntime } from "@unblessed/browser";
-import { createTheme } from "@unblessed/theme";
+import {
+  Box,
+  BrowserRuntime,
+  Screen,
+  setRuntime,
+} from "@gavin-lynch/unblessed-browser";
+import { unicode } from "@gavin-lynch/unblessed-core";
+import { createTheme } from "@gavin-lynch/unblessed-theme";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 
@@ -18,7 +24,9 @@ setRuntime(new BrowserRuntime());
 const fitAddon = new FitAddon();
 const term = new Terminal({
   fontSize: 13,
-  fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+  allowProposedApi: true,
+  fontFamily:
+    'Menlo, Monaco, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", monospace',
   theme: {
     background: "#101010",
     foreground: "#e0e0e0",
@@ -38,6 +46,7 @@ const screen = new Screen({
   terminal: term,
   smartCSR: true,
   mouse: true,
+  fullUnicode: true,
   color: {
     mode: "truecolor",
     allowTruecolorFromContent: true,
@@ -92,9 +101,28 @@ const theme = createTheme({
 });
 
 const colors = theme.tokens.colors as ThemeColors;
-const statusBgStyle = theme.utils.parseClasses("bg-statusBg").style ?? {
-  bg: colors.statusBg,
-};
+
+// Lip Gloss example palette (dark background)
+const lip = {
+  subtle: "#383838",
+  highlight: "#7D56F4",
+  special: "#73F59F",
+  dialogBorder: "#874BFD",
+  titleFg: "#FFF7DB",
+  historyFg: "#FAFAFA",
+  statusBarBg: "#353533",
+  statusBarFg: "#C1C6B2",
+  statusBadge: "#FF5F87",
+  encodingBadge: "#A550DF",
+  fishCakeBadge: "#6124DF",
+  badgeFg: "#FFFDF5",
+  buttonInactive: "#888B7E",
+  listDone: "#696969",
+  gradientFrom: "#EDFF82",
+  gradientTo: "#F25D94",
+} as const;
+
+const statusBgStyle = { bg: lip.statusBarBg, fg: lip.statusBarFg };
 const promptStyle = theme.utils.parseClasses("fg-muted bg-bg").style ?? {
   fg: "#929292",
   bg: colors.bg,
@@ -112,18 +140,18 @@ const rounded = {
 };
 
 function fg(rgb: RGB, text: string): string {
-  return `\x1b[38;2;${rgb[0]};${rgb[1]};${rgb[2]}m${text}\x1b[39m`;
+  return `\x1b[38;2;${rgb[0]};${rgb[1]};${rgb[2]}m${text}`;
 }
 
 function bg(rgb: RGB, text: string): string {
-  return `\x1b[48;2;${rgb[0]};${rgb[1]};${rgb[2]}m${text}\x1b[49m`;
+  return `\x1b[48;2;${rgb[0]};${rgb[1]};${rgb[2]}m${text}`;
 }
 
 function chip(bgRgb: RGB, fgRgb: RGB, text: string): string {
   return (
     `\x1b[48;2;${bgRgb[0]};${bgRgb[1]};${bgRgb[2]}m` +
     `\x1b[38;2;${fgRgb[0]};${fgRgb[1]};${fgRgb[2]}m` +
-    `${text}\x1b[39m\x1b[49m`
+    text
   );
 }
 
@@ -135,6 +163,92 @@ function hexToRgb(hex: string): RGB {
   const b = value & 0xff;
   return [r, g, b];
 }
+
+function blend1D(steps: number, from: RGB, to: RGB): RGB[] {
+  if (steps <= 1) return [from];
+  const out: RGB[] = [];
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1);
+    out.push([
+      Math.round(from[0] + (to[0] - from[0]) * t),
+      Math.round(from[1] + (to[1] - from[1]) * t),
+      Math.round(from[2] + (to[2] - from[2]) * t),
+    ]);
+  }
+  return out;
+}
+
+function makeColorGrid(xSteps: number, ySteps: number): RGB[][] {
+  const left = blend1D(ySteps, hexToRgb("#F25D94"), hexToRgb("#643AFF"));
+  const right = blend1D(ySteps, hexToRgb("#EDFF82"), hexToRgb("#14F9D5"));
+  return left.map((leftColor, y) => blend1D(xSteps, leftColor, right[y]!));
+}
+
+function applyGradient(text: string, fromHex: string, toHex: string): string {
+  const chars = [...text];
+  if (chars.length === 0) return "";
+  const gradient = blend1D(chars.length, hexToRgb(fromHex), hexToRgb(toHex));
+  return chars
+    .map(
+      (ch, i) =>
+        `\x1b[38;2;${gradient[i]![0]};${gradient[i]![1]};${gradient[i]![2]}m${ch}`,
+    )
+    .join("");
+}
+
+function strike(rgb: RGB, text: string): string {
+  return `\x1b[9m${fg(rgb, text)}\x1b[29m`;
+}
+
+function underline(text: string): string {
+  return `\x1b[4m${text}\x1b[24m`;
+}
+
+function italic(text: string): string {
+  return `\x1b[3m${text}\x1b[23m`;
+}
+
+function visibleWidth(text: string): number {
+  return unicode.strWidth(text.replace(/\x1b\[[0-9;]*m/g, ""));
+}
+
+function padToWidth(text: string, width: number): string {
+  const extra = Math.max(0, width - visibleWidth(text));
+  return text + " ".repeat(extra);
+}
+
+function buildStatusLine(barWidth: number): string {
+  const statusKey =
+    chip(hexToRgb(lip.statusBadge), hexToRgb(lip.badgeFg), " STATUS ") +
+    "\x1b[49m";
+  const statusVal = fg(hexToRgb(lip.statusBarFg), "Ravishingly Dark!");
+  const encoding = chip(
+    hexToRgb(lip.encodingBadge),
+    hexToRgb(lip.badgeFg),
+    " UTF-8 ",
+  );
+  const fishCake = chip(
+    hexToRgb(lip.fishCakeBadge),
+    hexToRgb(lip.badgeFg),
+    " 🍥 Fish Cake ",
+  );
+
+  const keyPart = statusKey + " ";
+  const rightPart = encoding + fishCake;
+  const valWidth = Math.max(
+    0,
+    barWidth - visibleWidth(keyPart) - visibleWidth(rightPart),
+  );
+
+  return keyPart + padToWidth(statusVal, valWidth) + rightPart;
+}
+
+function centerLine(width: number, text: string): string {
+  const pad = Math.max(0, Math.floor((width - visibleWidth(text)) / 2));
+  return " ".repeat(pad) + text;
+}
+
+let dialogInnerWidth = 50;
 
 const _background = new Box({
   parent: screen,
@@ -163,10 +277,7 @@ const tabsBar = new Box({
   parent: screen,
   height: 3,
   tags: true,
-  style: theme.utils.parseClasses("fg-line bg-bg").style ?? {
-    fg: colors.line,
-    bg: colors.bg,
-  },
+  style: theme.utils.parseClasses("bg-bg").style ?? { bg: colors.bg },
 });
 
 tabsBar.on("click", (data: any) => {
@@ -186,6 +297,12 @@ const patternField = new Box({
     fg: "#2b2b2b",
     bg: colors.bg,
   },
+});
+
+const heroBackdrop = new Box({
+  parent: screen,
+  tags: false,
+  style: theme.utils.parseClasses("bg-bg").style ?? { bg: colors.bg },
 });
 
 const tagStack = new Box({
@@ -220,29 +337,9 @@ const dialog = new Box({
   parent: screen,
   border: { type: "line", style: rounded },
   style: {
-    ...theme.utils.parseClasses("bg-panelAlt").style,
-    border: { fg: colors.accentBorder },
+    border: { fg: lip.dialogBorder },
   },
-  tags: false,
-});
-
-const dialogText = new Box({
-  parent: dialog,
-  top: 1,
-  left: 2,
-  width: "90%",
-  height: 1,
-  align: "center",
-  tags: false,
-});
-
-const dialogButtons = new Box({
-  parent: dialog,
-  top: 3,
-  left: "center",
-  width: 24,
-  height: 1,
-  align: "center",
+  transparent: true,
   tags: false,
 });
 
@@ -289,34 +386,25 @@ const colorGrid = new Box({
 
 const cardLeft = new Box({
   parent: screen,
-  border: { type: "line", style: rounded },
-  style: {
-    ...theme.utils.parseClasses("bg-purpleCard").style,
-    border: { fg: colors.purpleCard },
-  },
   tags: false,
+  align: "right",
+  style: { bg: lip.highlight, fg: lip.historyFg },
   padding: { top: 1, left: 2, right: 2, bottom: 1 },
 });
 
 const cardMiddle = new Box({
   parent: screen,
-  border: { type: "line", style: rounded },
-  style: {
-    ...theme.utils.parseClasses("bg-purpleCard").style,
-    border: { fg: colors.purpleCard },
-  },
   tags: false,
+  align: "center",
+  style: { bg: lip.highlight, fg: lip.historyFg },
   padding: { top: 1, left: 2, right: 2, bottom: 1 },
 });
 
 const cardRight = new Box({
   parent: screen,
-  border: { type: "line", style: rounded },
-  style: {
-    ...theme.utils.parseClasses("bg-purpleCard").style,
-    border: { fg: colors.purpleCard },
-  },
   tags: false,
+  align: "left",
+  style: { bg: lip.highlight, fg: lip.historyFg },
   padding: { top: 1, left: 2, right: 2, bottom: 1 },
 });
 
@@ -413,9 +501,8 @@ function renderTabs(width: number): void {
   let cursor = 0;
   let activeRange: [number, number] | null = null;
   tabRanges = [];
-  const activeBgTag = "{#7656d2-bg}";
-  const activeFgTag = "{#ffffff-fg}";
-  const inactiveFgTag = "{#e6e6e6-fg}";
+  const borderTag = `{${lip.highlight}-fg}`;
+  const textTag = `{${lip.titleFg}-fg}`;
   const resetTag = "{/}";
 
   const baseline = "─".repeat(Math.max(1, width));
@@ -459,115 +546,123 @@ function renderTabs(width: number): void {
     for (let x = activeRange[0]; x <= activeRange[1]; x++) {
       if (x < rows[2].length) rows[2][x] = " ";
     }
-    if (activeRange[0] < rows[2].length) rows[2][activeRange[0]] = "╯";
-    if (activeRange[1] < rows[2].length) rows[2][activeRange[1]] = "╰";
+    if (activeRange[0] < rows[2].length) rows[2][activeRange[0]] = "┘";
+    if (activeRange[1] < rows[2].length) rows[2][activeRange[1]] = "└";
   }
 
-  const row0 = rows[0].join("");
-  const row1 = rows[1].join("");
-  const row2 = rows[2].join("");
+  const styledRows = rows.map((row) => {
+    const line = row.join("");
+    return applyRowStyles(
+      line,
+      new Array<string | null>(line.length).fill(borderTag + textTag),
+      resetTag,
+    );
+  });
 
-  const row0Styles = new Array<string | null>(row0.length).fill(null);
-  const row1Styles = new Array<string | null>(row1.length).fill(null);
-
-  for (const range of tabRanges) {
-    for (let x = range.start; x <= range.end; x++) {
-      if (x < row1Styles.length) row1Styles[x] = inactiveFgTag;
-    }
-  }
-
-  if (activeRange) {
-    for (let x = activeRange[0]; x <= activeRange[1]; x++) {
-      if (x < row0Styles.length) row0Styles[x] = activeBgTag;
-      if (x < row1Styles.length) row1Styles[x] = activeBgTag + activeFgTag;
-    }
-  }
-
-  const styledRow0 = applyRowStyles(row0, row0Styles, resetTag);
-  const styledRow1 = applyRowStyles(row1, row1Styles, resetTag);
-
-  tabsBar.setContent([styledRow0, styledRow1, row2].join("\n"));
+  tabsBar.setContent(styledRows.join("\n"));
 
   if (debugTabs && !debugTabsLogged) {
     debugTabsLogged = true;
-    console.log("TAB_DEBUG", { row0: styledRow0, row1: styledRow1, row2 });
+    console.log("TAB_DEBUG", { rows: styledRows });
   }
 }
 
 function buildColorGrid(width: number, height: number): string {
-  const rows: string[] = [];
-  const cols = Math.max(8, Math.floor(width / 2));
-  const gridRows = Math.max(6, height);
-  for (let y = 0; y < gridRows; y++) {
-    let row = "";
-    for (let x = 0; x < cols; x++) {
-      const r = Math.floor(255 * (x / Math.max(1, cols - 1)));
-      const g = Math.floor(255 * (y / Math.max(1, gridRows - 1)));
-      const b = Math.floor(255 * (1 - x / Math.max(1, cols - 1)));
-      row += bg([r, g, b], "  ");
-    }
-    rows.push(row);
-  }
-  return rows.join("\n");
+  const xSteps = Math.max(8, Math.floor(width / 2));
+  const ySteps = Math.max(6, height);
+  const grid = makeColorGrid(xSteps, ySteps);
+  return grid
+    .map((row) => row.map((color) => bg(color, "  ")).join(""))
+    .join("\n");
 }
 
 function buildPattern(width: number, height: number): string {
-  const line = ".  ".repeat(Math.ceil(width / 3)).slice(0, width);
+  // xterm.js mishandles dense wide-character fills; use single-width dots.
+  const cell = "· ";
+  const subtle = hexToRgb(lip.subtle);
+  let plain = "";
+  while (plain.length < width) {
+    plain += cell;
+  }
+  plain = plain.slice(0, width);
+  const line = fg(subtle, plain);
   return Array.from({ length: height }, () => line).join("\n");
 }
 
 function updateContent(): void {
+  const subtle = hexToRgb(lip.subtle);
+  const special = hexToRgb(lip.special);
+  const doneColor = hexToRgb(lip.listDone);
+  const titleFg = hexToRgb(lip.titleFg);
+
+  const listDone = (text: string) =>
+    `${fg(special, "✓")} ${strike(doneColor, text)}`;
+  const listItem = (text: string) => `  ${fg(colors.text, text)}`;
+
   commandLine.setContent(
-    `${fg(colors.accent2, ">")}${fg(colors.text, " ./lipgloss-example")}`,
+    `${fg(hexToRgb(lip.highlight), ">")}${fg(colors.text, " ./lipgloss-example")}`,
   );
 
+  const titleColors = makeColorGrid(1, 5).map((row) => row[0]!);
   tagStack.setContent(
-    [
-      bg(colors.accent, " Lip Gloss "),
-      " " + bg([255, 105, 196], " Lip Gloss "),
-      "  " + bg([200, 110, 240], " Lip Gloss "),
-      "   " + bg(colors.accent2, " Lip Gloss "),
-    ].join("\n"),
+    titleColors
+      .map(
+        (color, i) =>
+          " ".repeat(i * 2) + chip(color, titleFg, italic(" Lip Gloss ")),
+      )
+      .join("\n"),
   );
 
+  const ruleWidth = Math.max(10, (headerText.width || 40) - 2);
   headerText.setContent(
     [
-      `${fg(colors.text, "Style Definitions for Nice Terminal Layouts")}`,
-      `${fg(colors.muted, "From Charm ")}${fg(colors.accent3, "https://github.com/charmbracelet/lipgloss")}`,
+      fg(colors.text, "Style Definitions for Nice Terminal Layouts"),
+      fg(subtle, "─".repeat(ruleWidth)),
+      `${fg(subtle, "From Charm")}${fg(subtle, " • ")}${fg(special, "https://github.com/charmbracelet/lipgloss")}`,
     ].join("\n"),
   );
 
-  dialogText.setContent(
-    `${fg(colors.accent, "Are you sure ")}` +
-      `${fg(colors.accent4, "you want ")}` +
-      `${fg(colors.accent2, "to eat marmalade?")}`,
-  );
-
-  dialogButtons.setContent(
-    `${bg([252, 85, 174], "  Yes  ")}  ${bg([120, 120, 120], " Maybe ")}`,
+  dialog.setContent(
+    [
+      centerLine(
+        dialogInnerWidth,
+        applyGradient(
+          "Are you sure you want to eat marmalade?",
+          lip.gradientFrom,
+          lip.gradientTo,
+        ),
+      ),
+      "",
+      centerLine(
+        dialogInnerWidth,
+        `${chip(hexToRgb(lip.gradientTo), hexToRgb(lip.badgeFg), underline("  Yes  "))}` +
+          `\x1b[49m  ${chip(hexToRgb(lip.buttonInactive), hexToRgb(lip.badgeFg), " Maybe ")}\x1b[49m`,
+      ),
+      "",
+    ].join("\n"),
   );
 
   listLeft.setContent(
     [
       fg(colors.text, "Citrus Fruits to Try"),
-      fg(hexToRgb(colors.line), "──────────────────"),
-      `${fg(colors.accent3, "✓")} ${fg(colors.muted, "Grapefruit")}`,
-      `${fg(colors.accent3, "✓")} ${fg(colors.muted, "Yuzu")}`,
-      fg(colors.text, "Citron"),
-      fg(colors.text, "Kumquat"),
-      fg(colors.text, "Pomelo"),
+      fg(subtle, "──────────────────"),
+      listDone("Grapefruit"),
+      listDone("Yuzu"),
+      listItem("Citron"),
+      listItem("Kumquat"),
+      listItem("Pomelo"),
     ].join("\n"),
   );
 
   listMiddle.setContent(
     [
       fg(colors.text, "Actual Lip Gloss Vendors"),
-      fg(hexToRgb(colors.line), "────────────────────"),
-      fg(colors.text, "Glossier"),
-      fg(colors.text, "Claire's Boutique"),
-      `${fg(colors.accent3, "✓")} ${fg(colors.muted, "Nyx")}`,
-      fg(colors.text, "Mac"),
-      `${fg(colors.accent3, "✓")} ${fg(colors.muted, "Milk")}`,
+      fg(subtle, "────────────────────"),
+      listItem("Glossier"),
+      listItem("Claire's Boutique"),
+      listDone("Nyx"),
+      listItem("Mac"),
+      listDone("Milk"),
     ].join("\n"),
   );
 
@@ -607,27 +702,9 @@ function updateContent(): void {
       "Europe today.\n",
   );
 
-  const leftBadge = chip([252, 85, 174], [26, 26, 26], " STATUS ");
-  const middleText = fg([189, 189, 189], "Ravishingly Dark!");
-  const rightBadges =
-    `${chip([138, 94, 255], [26, 26, 26], " UTF-8 ")} ` +
-    `${chip([118, 118, 118], [26, 26, 26], " Fish Cake ")}`;
-
-  const pad = (text: string, width: number): string => {
-    const plain = text.replace(/\x1b\[[0-9;]*m/g, "");
-    const extra = Math.max(0, width - plain.length);
-    return text + " ".repeat(extra);
-  };
-
-  const statusLine =
-    pad(leftBadge, statusSlots.left) +
-    " " +
-    pad(middleText, statusSlots.middle) +
-    " " +
-    pad(rightBadges, statusSlots.right);
-
-  statusBar.setContent(statusLine);
-  promptLine.setContent(`${fg(colors.accent2, ">")}`);
+  const barWidth = Math.max(1, statusBar.width || 80);
+  statusBar.setContent(buildStatusLine(barWidth));
+  promptLine.setContent(`${fg(hexToRgb(lip.highlight), ">")}`);
 }
 
 function layout(): void {
@@ -652,22 +729,29 @@ function layout(): void {
   renderTabs(innerWidth);
 
   const patternTop = tabsTop + 3;
+  const heroHeight = 6;
+
+  heroBackdrop.top = patternTop;
+  heroBackdrop.left = margin;
+  heroBackdrop.width = innerWidth;
+  heroBackdrop.height = heroHeight;
+
   tagStack.top = patternTop + 1;
   tagStack.left = margin + 2;
+  tagStack.width = 22;
 
   headerText.top = tagStack.top + 1;
   headerText.left = tagStack.left + 18;
   headerText.width = Math.max(20, innerWidth - 24);
+  headerText.height = 3;
 
-  headerRule.top = headerText.top + 2;
-  headerRule.left = headerText.left;
-  headerRule.width = Math.max(10, innerWidth - (headerText.left - margin) - 2);
-  headerRule.setContent("─".repeat(Math.max(1, headerRule.width)));
+  headerRule.hide();
 
-  dialog.width = Math.min(64, innerWidth - 6);
+  dialog.width = Math.min(54, innerWidth - 6);
   dialog.height = 6;
-  dialog.top = patternTop + 7;
+  dialog.top = patternTop + heroHeight + 1;
   dialog.left = Math.max(margin, Math.floor((cols - dialog.width) / 2));
+  dialogInnerWidth = Math.max(10, dialog.width - 2);
 
   const listsTop = dialog.top + dialog.height + 2;
   const listsHeight = 8;
@@ -686,6 +770,8 @@ function layout(): void {
   colorGrid.width = columnWidth;
   colorGrid.height = listsHeight;
 
+  columnSepLeft.style = { fg: lip.subtle, bg: colors.bg };
+  columnSepRight.style = { fg: lip.subtle, bg: colors.bg };
   columnSepLeft.top = listsTop + 1;
   columnSepLeft.left = middleX - 1;
   columnSepLeft.height = Math.max(1, listsHeight - 1);
@@ -696,10 +782,10 @@ function layout(): void {
   columnSepRight.height = Math.max(1, listsHeight - 1);
   columnSepRight.setContent("│\n".repeat(columnSepRight.height).trimEnd());
 
-  patternField.top = patternTop;
+  patternField.top = dialog.top - 1;
   patternField.left = margin;
   patternField.width = innerWidth;
-  patternField.height = Math.max(3, listsTop - patternTop - 1);
+  patternField.height = dialog.height + 2;
   patternField.setContent(
     buildPattern(patternField.width, patternField.height),
   );
