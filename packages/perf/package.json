@@ -1,7 +1,7 @@
 {
   "name": "@gavin-lynch/unblessed-perf",
   "description": "Performance instrumentation tools for @unblessed render pipeline",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {

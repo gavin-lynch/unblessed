@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/gavin-lynch/unblessed/compare/v1.0.1...v1.0.2) (2026-05-23)
+
+
+### Bug Fixes
+
+* **ci:** wire npm auth into release workflow for pnpm publish ([5afb1f2](https://github.com/gavin-lynch/unblessed/commit/5afb1f20f645622272c6f74c265363f806dfbafb))
+
 ## [1.0.1](https://github.com/gavin-lynch/unblessed/compare/v1.0.0...v1.0.1) (2026-05-23)
 
 

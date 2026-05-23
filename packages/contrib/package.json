@@ -1,7 +1,7 @@
 {
   "name": "@gavin-lynch/unblessed-contrib",
   "description": "Dashboard widgets and charts for @gavin-lynch/unblessed-core - port of blessed-contrib",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Gavin Brady Lynch <gavin.b.lynch@gmail.com>",
   "license": "MIT",
   "publishConfig": {
